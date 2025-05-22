@@ -1,0 +1,83 @@
+Redis is an open source , lightweight , in memory caching tool that uses basic data structures like set , map etc to store data and mostly used where we need to reduce latency.
+Redis is a NoSQL database, so it doesn’t have any tables, rows, or columns. Also, it doesn’t allow statements like select, insert, update, or delete. Instead, Redis uses data structures to store data. As a result, it can serve frequently requested items with sub-millisecond response times and allow easy scaling for larger workloads without increasing the cost of a more expensive back-end system.
+It is a versatile key-value store that supports several data structures, such as Strings, Sorted Sets, Hashes, Lists, Streams, Bitmaps, Sets, etc., because it is a NoSQL database and doesn’t need a predetermined schema.
+Redis may be used to build data infrastructure for real-time applications that need high throughput and low latency.
+If no value is assigned to the ttl property, it becomes -1 by default, which means the data will stay in the cache indefinitely.
+By default springboot caches null values in cache for not storing null values in cache use unless = "#result == null"
+Since Redis is an in-memory database, we need to transform our object into a stream of bytes for storing as well as the other way around for retrieving data. Therefore, we need to serialize/deserialize our data by ensuring that the entity class implements the Serializable class.
+@Cacheable(value = "product", key = "#id" , unless = "#result.price > 1000")
+@Caching(
+     evict = {@CacheEvict(value = "productList", allEntries = true)},
+     put = {@CachePut(value = "product", key = "#id")}
+)
+Spring’s @Cacheable caches the entire method return value, so you can't natively tell it to "cache only part of the object" (like just the email field).
+@Cacheable caches the full return object → not useful for partial field caching.
+Use RedisTemplate to manually cache specific fields like email.
+
+@Autowired
+private RedisTemplate<String, String> redisTemplate;
+
+@GetMapping("/get/{id}")
+public User getById(@PathVariable Long id) {
+    Optional<User> userOptional = userRepository.findById(id);
+    if (userOptional.isPresent()) {
+        User user = userOptional.get();
+
+        // Cache only the email
+        redisTemplate.opsForValue().set("userEmail::" + id, user.getEmail());
+
+        return user; // return full user
+    }
+
+    return null;
+}
+
+@GetMapping("/email/{id}")
+public String getEmailOnly(@PathVariable Long id) {
+    String cachedEmail = redisTemplate.opsForValue().get("userEmail::" + id);
+    if (cachedEmail != null) {
+        return cachedEmail;
+    }
+
+    // Fallback if not in cache
+    Optional<User> user = userRepository.findById(id);
+    return user.map(User::getEmail).orElse(null);
+}
+
+"userEmail::" + id: The cache key. Example: userEmail::5.
+
+user.getEmail(): The value to be stored. Example: john@example.com.
+
+value attribute in cacheable is kind of namespace or bucket and inside that id is used as key.
+
+cacheNames and value attribute in cacheable annotation are same.
+
+ey :
+This is the key with which object will be cached. It uniquely identifies each entry in the cache. If we do not specify the key then Spring uses the default mechanism to create the key.
+
+For example,
+
+@Cacheable(value=”employees”, key="#id")
+public Employee findById(int id) {
+  // some code
+}
+
+keyGenerator :
+It is used to define your own key generation mechanism. We need to create custom key generator class.
+
+For example,
+
+@Cacheable(value=”employees”, keyGenerator=”customKeyGenerator”)
+public Employee findById(int id) {
+  // some code
+}
+
+There is difference between @Cacheable and @CachePut is that @Cacheable annotation skips the method execution while the @CachePut annotation runs the method and put its result in the cache.
+
+By adding starter-redis dependency in classpath RedisCacheManager is automatically configured by springboot. we can customize RedisCacheManager according to our need like for different cache we need
+to define different ttl so in that case will create custom RedisCacheManager.
+
+for customizing caching logic that is need to return the complete object but want to cache only some fields then we can go creating RedisTemplate bean and then use
+redisTemplate.opsForvalue().set("product::"+id,user) for eg and corresponding get method to retrive value.
+
+For implementing reactive programming rdbc2 like is a dependency for connecting and need to extend ReactiveCrudRepository and Table annotation is different for entity class.

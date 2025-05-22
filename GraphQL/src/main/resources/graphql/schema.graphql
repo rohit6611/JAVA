@@ -1,0 +1,46 @@
+type User {
+    id: String!
+    name: String!
+    age: Int!
+    address: Address
+    posts: [Post]
+}
+
+type Address {
+    city: String
+    state: String
+}
+
+type Post {
+    title: String
+    content: String
+}
+
+input AddressInput {
+    city: String
+    state: String
+}
+
+input PostInput {
+    title: String
+    content: String
+}
+
+input UserInput {
+    id: String!
+    name: String!
+    age: Int!
+    address: AddressInput
+    posts: [PostInput]
+}
+
+type Query {
+    getUserById(id: String!): User
+    getAllUsers: [User]
+}
+
+type Mutation {
+    createUser(userInput: UserInput): User
+    updateUser(id: String!, userInput: UserInput): User
+    deleteUser(id: String!): Boolean
+}

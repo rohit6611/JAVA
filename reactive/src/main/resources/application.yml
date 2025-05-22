@@ -1,0 +1,10 @@
+server:
+  port: 8052
+
+spring:
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/local?currentSchema=local
+    username: postgres
+    password: root
+
