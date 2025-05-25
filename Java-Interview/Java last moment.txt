@@ -1,0 +1,1683 @@
+22. If a class implements two interfaces that have static methods with the same name, there is no conflict because static methods in interfaces are not inherited by the 
+implementing class. Static methods in interfaces are associated with the interface itself and can only be called using the interface name.
+
+If a class implements two interfaces that both define default methods with the same name and signature, a conflict arises, and the compiler will force the implementing class to 
+explicitly resolve the ambiguity by overriding the method.
+
+class Parent {
+    static void display() {
+        System.out.println("Parent static method");
+    }
+}
+
+class Child extends Parent {
+    static void display() {
+        System.out.println("Child static method");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Parent obj1 = new Parent();
+        Parent obj2 = new Child();
+
+        obj1.display(); // Output: Parent static method
+        obj2.display(); // Output: Parent static method (NOT Child static method)
+    }
+}
+
+yield() - temporarily pause its execution and give other thread of same priority or higher priority to execute. ThreadScheduler is responsible for this.
+
+Use Static method in interface if you want to associate any method to interface and that can be accesed using interface name.
+ Default method is used to provide some default implementation in the interface.
+ If a class implements two interfaces that have the same default method, a conflict arises because the compiler cannot determine 
+ which default method to inherit. This is often referred to as the "diamond problem" in interfaces.
+ 
+ Static are bind at compile time and cannot be overridden.
+ 
+ 27 . public class A 
+{ 
+private void m1()
+{ 
+ System.out.println("m1-A"); 
+ } 
+} 
+public class B extends A
+{ 
+private void m1()
+{ 
+ System.out.println("m1-B"); 
+} 
+public static void main(String[] args) 
+{ 
+ B b = new B(); 
+ b.m1(); 
+ } 
+}
+Ans: No, Compile time error.
+
+Explanation: The overriding concept is not applicable to the private method. Parent class private method is not visible in the child class. Keep in mind. Based on our requirement, 
+we can define exactly the same private method in the child class. The code is valid but not overriding.
+
+why use tomcat only - 
+Tomcat is a lightweight servlet container, making it faster and easier to set up.
+Consumes less memory and CPU, making it ideal for microservices and cloud environments.
+No need for separate installation—just run your Spring Boot app, and Tomcat starts automatically.
+Tomcat can handle thousands of concurrent connections efficiently.
+Regular updates from Apache Foundation ensure security patches and performance improvements.
+Supports SSL/TLS, authentication, and role-based access control.
+
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+
+Generates unique, auto-incrementing values for the variable mapped to the primary key of the table in the database.
+
+Query Execution Lifecycle
+Method Invocation: When you call findByName("Alice"), Spring Data JPA intercepts the call.
+Query Parsing: It parses the method name and generates the query dynamically.
+JPQL Translation: The query is translated into JPQL.
+SQL Generation: The JPA provider converts the JPQL query into SQL.
+Execution: The SQL query is executed against the database, and the result is mapped back to the entity.
+
+@JsonInclude(JsonInclude.Include.ALWAYS)
+
+In microservices, to manage failures, several patterns are used. The Circuit Breaker pattern
+stops repeated attempts to a service that's failing, which helps avoid further errors. Fallback
+methods give an alternative plan when a service fails. The Retry pattern tries the request
+again, using delays to reduce pressure on the system. Bulkhead and Timeout patterns keep
+failures in one service from affecting others and prevent long waits for responses.
+
+The Circuit Breaker pattern is like a safety switch for microservices. If a service starts to fail
+often, this pattern stops more requests from going to that failing service. This prevents
+further problems and gives the service time to fix itself. After a set time, it checks if the
+service is working well again before allowing requests to go through, helping to keep the
+system stable.
+
+The Bulkhead pattern makes a system more reliable by dividing it into separate sections,
+similar to compartments in a ship. If one section has a problem, it doesn't affect the others.
+This separation helps ensure that if one part of the system fails or gets too busy, it won't
+drag down the entire system. Each section has its own resources, so they don't overwhelm
+each other, keeping the system stable.
+
+The Retry pattern means trying a failed operation again, which can help solve temporary
+problems like a network glitch. The Backoff pattern adds waiting times between these
+retries, increasing the wait after each attempt. This helps avoid overloading the system while
+it's still recovering. Using these patterns together helps the system handle failures smoothly
+by not rushing to retry, giving everything a better chance to get back to normal.
+
+POM (Project Object Model) is an XML file that contains project information and configuration details
+required by Maven for building the project. It includes dependencies, plugins, and other settings.
+
+In a Maven project, manage dependencies by listing them in the pom.xml file under the
+<dependencies> tag. Maven automatically downloads these from repositories and integrates them
+into your project.
+
+persistence unit in jpa consists the information about db connections , which sql driver the application is using and dialect the application is using.
+if your application is connecting to 2 db then it will have 2 persistence unit. on your application bootstrap entityManagerFactory object is created and one persistence unit will have one 
+entityManagerFactory from app.properties or persistence.xml entityManagerFactory object is created. one manager can have mutilple entity manager (Session). each entitymanager has one 
+persistence context which stores the information about object on which operation are to performed basically it holds the object whatever the work it is going to do on entity.entity manger 
+is one for each http request. one persistence context can have many entities associated with it.
+
+Idempotency is a concept by which we can ensure that each request will have same response.that can be handled by client sending one idempotent key when requesting and generally these key 
+are stored in cache and maintained their status and after the completion their status is changed to consumed and if one request is being consumed and its status is changed then no other 
+request are entertained by the server.and if due to some reason cache status can't be changed we use ttl to invalidate the user after some time.
+On server side we maintain idempotency in db lets say we can use  compute hash and for each request we can check for the existence in db and for any 2 concurrent request idempotency is 
+handled by using lock.409 status code for conflict.
+
+If you override only the equals() method without overriding hashCode() in a custom key class used in
+a HashMap, you'll run into problems. Java requires that equal objects must have the same hash code.
+If they don’t, the HashMap might not find the object even though it's there. This inconsistency can
+lead to duplicate keys and unpredictable behavior, as the HashMap uses the hash code to locate
+keys. Always override both methods to ensure correct behavior.
+
+Generic type inference in Java is a feature that allows the Java compiler to automatically determine,
+or infer, the types of generic arguments that are necessary for method calls and expressions. This
+means you don't always have to explicitly specify the generic types when you're coding, which
+simplifies your code. For example, when you use the diamond operator (<>) with collections, the
+compiler can infer the type of the elements in the collection from the context.
+
+The Java Memory Model (JMM) defines how threads interact through memory and what behaviors
+are allowed in concurrent execution. It specifies the rules for reading and writing to memory
+variables and how changes made by one thread become visible to others. The JMM ensures visibility,
+atomicity, and ordering of variables to avoid issues like race conditions and data inconsistency. It is
+fundamental for developing robust and thread-safe Java applications, ensuring that interactions
+between threads are predictable and consistent.
+
+Autowiring is the process of automatic injection of dependency in beans.
+Spring-core module is responsible for injecting dependency through either constructor or setter.
+Spring Boot auto-configuration automatically configures a Spring application based on the jar dependencies added to the project. It reduces the need for manual configuration, 
+simplifying the development process. 
+When a Spring Boot application starts, it scans the classpath for relevant libraries and classes. Based on the presence of these dependencies and other conditions, Spring Boot 
+applies pre-defined auto-configuration classes. These classes define beans and configurations that are automatically applied to the application context. 
+
+The spring-boot-starter-parent project is a special starter project that provides default configurations for our application and a complete dependency tree to quickly build our 
+Spring Boot project. It also provides default configurations for Maven plugins, such as maven-failsafe-plugin, maven-jar-plugin, maven-surefire-plugin, and maven-war-plugin.
+
+Beyond that, it also inherits dependency management from spring-boot-dependencies, which is the parent to the spring-boot-starter-parent.
+
+Once we’ve declared the starter parent in our project, we can pull any dependency from the parent by just declaring it in our dependencies tag. We also don’t need to define 
+versions of the dependencies; Maven will download jar files based on the version defined for the starter parent in the parent tag.
+
+The Circuit Breaker pattern is a design pattern used in microservices to enhance system resilience and fault tolerance. It acts like an electrical circuit breaker by preventing an 
+application from repeatedly trying to execute an operation that is likely to fail, which can lead to cascading failures across the system.
+
+The Bulkhead Pattern is a design principle used in software architecture to improve system resilience and fault tolerance by isolating components or resources within a system. 
+By isolating components, the Bulkhead Pattern helps minimize the impact of failures, maintain system stability, and enhance overall reliability.
+
+To prevent overwhelming the system or causing further issues, retries are spaced out using a backoff strategy. Constant backoff uses a fixed delay between retries, while 
+exponential backoff increases the delay progressively with each retry.
+
+A JSON Web Token (JWT) consists of three parts: a header, payload, and signature. All three parts are Base64Url encoded strings that are separated by dots (.). 
+Header
+The type of token, which is usually "JWT" 
+The algorithm used to sign the token, such as HMAC SHA256 or RSA SHA256 
+Payload 
+A JSON object that contains the claims or transmitted data
+The data typically includes user information, session data, or authorization permissions
+Signature 
+A string that is generated using a cryptographic algorithm to verify the integrity of the JSON payload.
+
+eureka.client.serviceUrl.defaultZone=http://192.168.167.107:8761/eureka/
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+
+spring.boot.admin.client.url=http://192.168.167.107:2525
+spring.boot.admin.client.instance.service-base-url=http://localhost:8080
+spring.boot.admin.client.username=atpl
+spring.boot.admin.client.password=atpl@123
+
+spring.cloud.gateway.routes[0].id=AUTH-MANAGER
+spring.cloud.gateway.routes[0].uri=lb://secova-auth-manager
+spring.cloud.gateway.routes[0].predicates[0]=Path=/auth-manager/**
+spring.cloud.gateway.routes[0].filters[0]=AuthenticationFilter
+Defines the ID for this specific route as "AUTH-MANAGER".
+The ID helps uniquely identify the route in logs and metrics.
+
+lb://secova-auth-manager means load balancing is enabled, and it will route to the microservice registered as "secova-auth-manager" in Spring Cloud LoadBalancer.
+Adds a filter to process the request before forwarding it to the target service.
+
+One of the most important annotations in spring is the @Bean annotation which is applied on a method to specify that it returns a bean to be managed by Spring context. 
+Spring Bean annotation is usually declared in Configuration classes methods. This annotation is also a part of the spring core framework.
+
+Spring Boot is a sub-project of Spring that simplifies application development by removing boilerplate configuration. It allows developers to build applications quickly with minimal
+ setup.
+
+Key Features of Spring Boot:
+🔥 Auto-Configuration – Automatically configures Spring components based on dependencies.
+🔥 Embedded Server – Comes with built-in Tomcat, Jetty, or Undertow, so no need to deploy WAR files manually.
+🔥 Spring Boot Starters – Pre-configured dependency packs (spring-boot-starter-web, spring-boot-starter-data-jpa, etc.).
+🔥 Production-Ready – Includes features like logging, health checks, monitoring (Actuator), and metrics.
+🔥 Microservices Support – Easily integrates with Spring Cloud for building cloud-native applications.
+
+Spring is a powerful Java framework used for building enterprise-grade applications. It provides a comprehensive programming model and helps developers create scalable, maintainable, and testable applications.
+
+Key Features of Spring:
+✅ Dependency Injection (DI) – Manages object creation and dependencies automatically (using the IoC container).
+✅ Aspect-Oriented Programming (AOP) – Separates cross-cutting concerns like logging, security, and transactions.
+✅ Transaction Management – Provides declarative transaction handling for databases.
+✅ Spring MVC – Helps in developing web applications using the Model-View-Controller (MVC) pattern.
+✅ Spring Security – Provides authentication and authorization mechanisms (e.g., JWT, OAuth2).
+✅ Spring Data – Simplifies database access using JPA, Hibernate, and JDBC.
+✅ Spring Cloud – Supports microservices architecture with features like API Gateway, Circuit Breakers, Service Discovery, etc.
+
+The Spring Container creates the bean instance using the class constructor.
+If the bean has dependencies (@Autowired fields), Spring injects them at this stage.
+Spring allows us to execute custom logic after a bean is fully initialized.
+At this stage, the bean is fully initialized and ready for use in the application.
+When the application shuts down, Spring cleans up beans before destroying them.
+
+@FeignClient is a Spring Cloud annotation used to declare a Feign client.
+Attributes:
+name = "address-service": This is the name of the client, typically used for service discovery if you are using tools like Eureka.
+url = "http://localhost:8081": This specifies the base URL of the service you want to call. Here, the service is hosted locally on port 8081.
+path = "/address-service": This is a common path prefix for all requests made through this client. It helps reduce duplication if all endpoints share the same root path.
+
+feature.enabled=true
+Configuration
+public class FeatureConfig {
+
+    @Bean
+    @ConditionalOnProperty(prefix = "feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+    public MyFeature myFeature() {
+        return new MyFeature();
+    }
+}
+
+Whenever you want to find sum or average convert to stream then then mapToInt and then call sum() average() function.
+whenever you want to find max or directly reverse order then go for stream.max(Comparator.comparingInt())
+
+@Component
+public class ClassA {
+
+	
+	private ClassB b;
+	
+	public ClassA(@Lazy ClassB b) {
+		this.b=b;
+	}
+	
+}
+
+@Component
+public class ClassB {
+	
+	private ClassA a;
+	
+	public ClassB(ClassA a) {
+		this.a=a;
+	}
+	
+
+}
+
+Use StringBuilder:
+
+When your application runs in a single-threaded environment.
+When performance is critical and synchronization is not needed.
+
+Use StringBuffer:
+
+When your application runs in a multi-threaded environment.
+When you need synchronized access to the object.
+
+Class.forName() loads a class and also initializes it by executing any static blocks or static variable
+initializations. In contrast, ClassLoader.loadClass() only loads the class without initializing it until it's
+needed later. Use Class.forName() when you need the class to be loaded and initialized immediately,
+while ClassLoader.loadClass() is useful when you want to defer initialization for performance reasons
+or when initializing the class isn't immediately required.
+
+1. Injection Attacks (SQL Injection, XSS, etc.)
+Vulnerability
+Unvalidated user input can lead to SQL Injection or Cross-Site Scripting (XSS).
+Solution
+✅ Prevent SQL Injection:
+
+Use Spring Data JPA or Prepared Statements instead of string concatenation in queries.
+java
+Copy
+Edit
+@Query("SELECT u FROM User u WHERE u.email = :email")
+User findByEmail(@Param("email") String email);
+✅ Prevent XSS:
+
+Use HTML escaping in responses (e.g., Spring Security ContentSecurityPolicy).
+Validate and sanitize user input with JSoup or ESAPI.
+2. Broken Authentication & Session Management
+Vulnerability
+Weak password storage, session hijacking, and JWT token leaks.
+Solution
+✅ Secure Passwords:
+
+Use BCrypt to hash passwords before storing them.
+java
+Copy
+Edit
+BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+String hashedPassword = encoder.encode("password");
+✅ Secure Sessions:
+
+Use Spring Security Session Management to prevent session fixation.
+java
+Copy
+Edit
+http.sessionManagement()
+    .sessionFixation().migrateSession();
+✅ JWT Security:
+
+Use strong signing keys and set short expiration times.
+Implement refresh tokens.
+3. Exposed Sensitive Data (Secrets, API Keys)
+Vulnerability
+Storing credentials in application.properties or exposing sensitive data in logs.
+Solution
+✅ Use Environment Variables:
+
+Store credentials in environment variables instead of hardcoding them.
+yaml
+Copy
+Edit
+spring.datasource.username=${DB_USER}
+spring.datasource.password=${DB_PASS}
+✅ Use Vault or AWS Secrets Manager:
+
+Use Spring Cloud Vault or AWS Secrets Manager for secret management.
+✅ Disable Stack Traces in Production:
+
+Set the following in application.properties:
+properties
+Copy
+Edit
+server.error.include-stacktrace=never
+4. Insecure API Endpoints
+Vulnerability
+APIs exposed without authentication can be accessed by attackers.
+Solution
+✅ Secure Endpoints with Spring Security:
+
+java
+Copy
+Edit
+  @Configuration
+  public class SecurityConfig {
+      @Bean
+      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+          http.authorizeHttpRequests(auth -> 
+              auth.requestMatchers("/admin/**").hasRole("ADMIN")
+                  .anyRequest().authenticated())
+              .formLogin();
+          return http.build();
+      }
+  }
+✅ Use API Gateway for Rate Limiting and Throttling:
+
+Configure Spring Cloud Gateway with rate limiting.
+5. CSRF (Cross-Site Request Forgery)
+Vulnerability
+An attacker can trick an authenticated user into making unwanted requests.
+Solution
+✅ Enable CSRF Protection (for stateful applications):
+
+Spring Security has CSRF protection enabled by default.
+java
+Copy
+Edit
+http.csrf().enable();
+✅ For Stateless APIs (JWT-based), Disable CSRF:
+
+If using JWT, disable CSRF since tokens are stateless.
+java
+Copy
+Edit
+http.csrf().disable();
+6. Directory Traversal & Path Manipulation
+Vulnerability
+A user can manipulate paths to access unauthorized files.
+Solution
+✅ Avoid File Path Manipulation:
+
+Use Path.of() instead of manually concatenating paths.
+java
+Copy
+Edit
+Path safePath = Paths.get("/uploads", filename).normalize();
+✅ Restrict Access to Static Resources:
+
+Use Spring Security filters to block unwanted file access.
+7. Security Misconfigurations
+Vulnerability
+Running applications with debug mode enabled, default passwords, or open ports.
+Solution
+✅ Disable Default Accounts and Endpoints:
+
+Disable default /actuator endpoints or secure them with authentication.
+properties
+Copy
+Edit
+management.endpoints.web.exposure.include=health,metrics
+management.endpoint.health.show-details=never
+✅ Run with Non-Root User in Docker Containers:
+
+dockerfile
+Copy
+Edit
+RUN addgroup --system spring && adduser --system --ingroup spring appuser
+USER appuser
+✅ Enable HTTPS in Production:
+
+properties
+Copy
+Edit
+server.ssl.enabled=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=yourpassword
+8. Dependency Vulnerabilities
+Vulnerability
+Using outdated dependencies can introduce security flaws.
+Solution
+✅ Update Dependencies Regularly:
+
+Use Spring Boot Dependency Management to avoid outdated libraries.
+properties
+Copy
+Edit
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.1</version>
+</dependency>
+✅ Use OWASP Dependency Check:
+
+Run a vulnerability scanner like OWASP Dependency Check.
+9. Logging Sensitive Data
+Vulnerability
+Logging passwords, tokens, or user data.
+Solution
+✅ Mask Sensitive Data in Logs:
+
+Use log masking to filter sensitive information.
+java
+Copy
+Edit
+log.info("User login attempt: {}", user.replaceAll("(?i)password=\\S+", "password=****"));
+✅ Disable Detailed Error Messages in Production:
+
+properties
+Copy
+Edit
+server.error.include-message=never
+10. Insufficient Monitoring & Logging
+Vulnerability
+No alerts when unauthorized access or attacks happen.
+Solution
+✅ Enable Audit Logs in Spring Security:
+
+java
+Copy
+Edit
+http.audit();
+✅ Use Centralized Logging & Monitoring:
+
+Use ELK Stack (Elasticsearch, Logstash, Kibana) or AWS CloudWatch.
+Set up alerts for suspicious activity.
+
+@Configuration
+@EnableJpaRepositories(basePackages = {
+		"com.altruist.model.firebird.repo"}, entityManagerFactoryRef = "firebirdEntityManager", transactionManagerRef = "firebirdTransactionManager")
+public class FirebirdDataSource {
+	
+	@Autowired
+	private Environment env;
+
+	@Bean
+	@Primary
+	public LocalContainerEntityManagerFactoryBean firebirdEntityManager() {
+		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+		em.setDataSource(firebirdDatasource());
+		em.setPackagesToScan(new String[] { "com.altruist.firebird.model" });
+		em.setPersistenceUnitName("firebirdEntityManager");
+		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+		em.setJpaVendorAdapter(vendorAdapter);
+		HashMap<String, Object> properties = new HashMap<String, Object>();
+		properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+		em.setJpaPropertyMap(properties);
+		return em;
+	}
+
+	@Bean
+	@Primary
+	public DataSource firebirdDatasource() {
+
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();  // it is implementation class of data source
+		dataSource.setUrl(env.getProperty("firebird.spring.datasource.url"));
+		dataSource.setUsername(env.getProperty("firebird.spring.datasource.username"));
+		dataSource.setPassword(env.getProperty("firebird.spring.datasource.password"));
+
+		return dataSource;
+	}
+
+	@Bean
+	public PlatformTransactionManager firebirdTransactionManager() {
+
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(firebirdEntityManager().getObject());
+		return transactionManager;
+	}
+	
+}
+
+1. Optimize Database Performance 🏪
+✅ Use Connection Pooling
+Spring Boot uses HikariCP as the default connection pool, which is faster and lightweight. Ensure proper configuration:
+
+properties
+Copy
+Edit
+spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.minimum-idle=5
+spring.datasource.hikari.idle-timeout=30000
+spring.datasource.hikari.max-lifetime=1800000
+✅ Use Indexing in Database
+Add indexes to frequently queried columns to speed up read operations.
+sql
+Copy
+Edit
+CREATE INDEX idx_user_email ON users(email);
+✅ Optimize Queries & Use Pagination
+**Avoid SELECT *** – fetch only necessary columns.
+
+Use Pagination for large datasets instead of retrieving everything at once:
+
+java
+Copy
+Edit
+Page<User> users = userRepository.findAll(PageRequest.of(0, 10));
+✅ Use Batch Processing for Bulk Inserts/Updates
+Instead of inserting records one by one, use batch processing:
+
+java
+Copy
+Edit
+entityManager.unwrap(Session.class)
+    .setJdbcBatchSize(50);
+2. Enable Caching 🗄️
+Spring Cache reduces database queries and speeds up response times.
+✅ Use Spring Boot Cache with Redis or EhCache
+java
+Copy
+Edit
+@EnableCaching
+@Configuration
+public class CacheConfig {
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("users");
+    }
+}
+java
+Copy
+Edit
+@Cacheable("users")
+public User getUserById(Long id) {
+    return userRepository.findById(id).orElse(null);
+}
+Use Redis for distributed caching:
+properties
+Copy
+Edit
+spring.cache.type=redis
+spring.redis.host=localhost
+spring.redis.port=6379
+3. Reduce Memory Usage & Optimize JVM 🛠️
+✅ Tune JVM Parameters
+Use appropriate Garbage Collection (GC) strategies and memory settings:
+sh
+Copy
+Edit
+-java -Xms512m -Xmx2g -XX:+UseG1GC -XX:+UseStringDeduplication
+✅ Use Lazy Initialization
+Spring Boot 2.2+ supports lazy loading to reduce startup time:
+
+properties
+Copy
+Edit
+spring.main.lazy-initialization=true
+Or annotate specific beans with:
+
+java
+Copy
+Edit
+@Lazy
+✅ Avoid Memory Leaks
+Close database connections after use.
+Use WeakReferences for large objects to allow GC to collect them.
+4. Optimize API Performance 🚀
+✅ Use GZIP Compression
+Reduces response size and improves speed.
+properties
+Copy
+Edit
+server.compression.enabled=true
+server.compression.mime-types=text/html,text/xml,text/plain,application/json
+✅ Use Asynchronous Processing
+Offload time-consuming operations using @Async:
+
+java
+Copy
+Edit
+@Async
+public CompletableFuture<String> processAsyncTask() {
+    return CompletableFuture.completedFuture("Processed!");
+}
+5. Reduce Startup Time ⏳
+✅ Remove Unnecessary Starters & Dependencies
+Only include required dependencies in pom.xml.
+Avoid spring-boot-starter-web if only using REST APIs.
+✅ Use Spring Boot DevTools for Faster Development
+properties
+Copy
+Edit
+spring.devtools.restart.enabled=true
+6. Optimize Logging & Monitoring 📊
+✅ Reduce Logging Overhead
+Set logging levels to INFO or ERROR in production:
+
+properties
+Copy
+Edit
+logging.level.root=INFO
+✅ Use Distributed Tracing (Zipkin/Sleuth)
+To trace request latency across services:
+properties
+Copy
+Edit
+spring.zipkin.enabled=true
+7. Enable HTTP/2 for Faster Communication 🌐
+HTTP/2 improves latency with multiplexed streams.
+properties
+Copy
+Edit
+server.http2.enabled=true
+8. Optimize Threading & Concurrency 🧵
+✅ Use a Thread Pool for Async Tasks
+java
+Copy
+Edit
+@Bean
+public Executor taskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(5);
+    executor.setMaxPoolSize(10);
+    executor.setQueueCapacity(100);
+    executor.initialize();
+    return executor;
+}
+9. Use Content Delivery Network (CDN) for Static Files 🌍
+Host CSS, JS, and images on a CDN to reduce load time.
+10. Profile & Benchmark the Application 🛠️
+Use JProfiler, VisualVM, or YourKit to analyze performance bottlenecks.
+
+Enable Spring Boot Actuator for insights:
+
+properties
+Copy
+Edit
+management.endpoints.web.exposure.include=health,metrics
+
+Update the @ComponentScan annotation in your main application class or configuration class to include both com.altruist and com.my packages.
+
+@SpringBootApplication
+@ComponentScan(basePackages = {"com.altruist", "com.my"})
+public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+
+4. Will the following code snippet compile successfully? If yes, what is the output of the following program?
+
+public class Myclass 
+{
+   private int x = 10;
+   static int m1() {
+       int y = x;
+       return y;
+    }
+public static void main(String[] args) {
+     m1();
+   }
+}
+Ans: No, the above code will not be compiled because x is an instance variable and instance member cannot be accessed from static region.
+
+5. Identify the error in the following code snippet. If there is no error then what will be the output of the program?
+
+public class Myclass 
+{
+   private int x = 10;
+   static int m1()
+  {
+      Myclass obj = new Myclass();
+       int y = obj.x;
+       return y;
+   }
+public static void main(String[] args) {
+     System.out.println(m1());
+   }
+}
+Ans: There is no error in the above code snippet. Output: 10.
+
+10. What will be the output of the following code?
+
+public class Myclass {
+     static int a = 20;
+Myclass() {
+     a = 200;
+}
+public static void main(String[] args) {
+    new Myclass();
+    System.out.println(a);
+  }
+}
+Ans: Output: 200.
+
+20. Is there any error in the below code snippet? If yes, identify the error and give the reason behind it.
+
+public class Test
+{
+ void m1(Test test) {
+       System.out.println("Instance method");
+  }
+ static void m1(Test t) {
+         System.out.println("Static method");
+  }
+}
+Ans: Yes, Duplicate method error. This is because we cannot declare a static method and instance method with the same signature in the same class.
+
+ Static block is also called a static initialization block whereas instance block is also called instance initialization block or non-static block.
+ 
+ Checked Exceptions (Compile-time exceptions):
+ Examples: IOException, SQLException
+ 
+ Unchecked Exceptions (Runtime exceptions):
+ Examples: NullPointerException, ArrayIndexOutOfBoundsException.
+ 
+  If we want to create our own HashMap class, can we do it without extending the HashMap class or implementing the Map interface? What do you need to do?
+It is possible to create your own HashMap class without extending the HashMap class or implementing the Map interface.
+
+You would just need to implement the basic functionality of a HashMap, like hashing, handling collisions, resizing, and storing key-value pairs manually.
+
+There are four types of autowiring that can be done in Spring:
+
+1. Autowire by Type (@Autowired with @Qualifier or by default):
+Description: Spring will attempt to autowire the dependency by matching the data type of the field, constructor, or setter method with the available bean in the container.
+Example:
+@Autowired
+private Car car;  // Spring injects the 'Car' bean based on type
+Here, Spring will inject the appropriate Car bean based on its type. If multiple beans of type Car are available, you can use @Qualifier to specify the exact bean:
+@Autowired
+@Qualifier("sedanCar")
+private Car car;  // Autowires the bean with id 'sedanCar'
+2. Autowire by Name:
+Spring will autowire the dependency by matching the name of the property (or field) to the name of the bean in the container.
+Example:
+@Autowired
+private Car sedan;  // If a bean named 'sedan' exists, it will be injected
+This requires that a bean with the same name as the property be present in the Spring context (e.g., sedan).
+
+3. Autowire by Constructor:
+Spring will attempt to autowire the dependencies by matching the constructor parameters with the available beans.
+Example:
+@Autowired
+public CarService(Car car, Engine engine) {
+    this.car = car;
+    this.engine = engine;
+}
+Here, Spring will inject the Car and Engine beans into the constructor based on their types.
+
+4. Autowire by Setter:
+Spring will attempt to autowire the dependencies by matching the setter method parameter types with available beans.
+Example:
+@Autowired
+public void setCar(Car car) {
+    this.car = car;  // Spring injects the 'Car' bean
+}
+This allows Spring to inject dependencies via setter methods.
+
+public class StringJointDemo {
+​
+    public static void main(String[] args) {
+        // Example of StringBuilder
+        String s1 = "Hello ";
+        String s2 = "World";
+        String s3 = new StringBuilder().append(s1).append(s2).toString();
+        System.out.println(s3);
+    }
+}
+
+public class StringJointDemo {
+​
+    public static void main(String[] args) {
+        // Example of concat
+        String s1 = "Hello ";
+        String s2 = "World";
+        String s3 = s1.concat(s2);
+        System.out.println(s3);
+    }
+}
+
+If string concatenation is performed in a loop, consider using StringBuilder and StringBuffer.
+If it’s just a simple string concatenation, you can directly use +.
+
+
+The default implementation in Spring Security is called ProviderManager and rather than handling the authentication request itself, it delegates to a list of configured 
+AuthenticationProvider s, each of which is queried in turn to see if it can perform the authentication. Each provider will either throw an exception or return a fully populated 
+Authentication object. Remember our good friends, UserDetails and UserDetailsService? If not, head back to the previous chapter and refresh your memory. The most common approach to 
+verifying an authentication request is to load the corresponding UserDetails and check the loaded password against the one that has been entered by the user. This is the approach used 
+by the DaoAuthenticationProvider (see below). The loaded UserDetails object - and particularly the GrantedAuthority s it contains - will be used when building the fully populated 
+Authentication object which is returned from a successful authentication and stored in the SecurityContext.
+
+Here's an overview of how the AuthenticationManager works within Spring Security:
+
+Authentication Request: When a user attempts to authenticate, usually by submitting login credentials through a form or an API request, Spring Security intercepts the authentication 
+request.
+
+Authentication Object: Spring Security creates an Authentication object encapsulating the user's credentials (e.g., username and password).
+
+AuthenticationManager: The AuthenticationManager is responsible for processing the Authentication object and determining whether the provided credentials are valid. It delegates the 
+authentication process to one or more configured AuthenticationProvider instances.
+
+AuthenticationProvider: Each AuthenticationProvider in the authentication chain is responsible for authenticating users using a specific method or strategy. For example, 
+Spring Security provides various AuthenticationProvider implementations for different authentication mechanisms, such as username/password authentication, LDAP authentication, 
+or OAuth authentication.
+
+Authentication Process: The AuthenticationManager iterates over the configured AuthenticationProviders until one of them successfully authenticates the user or until all providers have 
+been tried without success.
+
+Authentication Result: If authentication is successful, the AuthenticationManager returns a fully authenticated Authentication object containing details about the authenticated user, 
+including their granted authorities (roles). If authentication fails, an exception is thrown or an unsuccessful authentication response is generated.
+
+Authentication Flow Control: Depending on the outcome of the authentication process, Spring Security may proceed with the requested operation if authentication is successful or deny access and handle authentication failures accordingly.
+
+In summary, the AuthenticationManager is a crucial component in Spring Security responsible for orchestrating the authentication process, validating user credentials, and determining 
+whether access should be granted or denied based on the authentication result. It acts as the central authority for authenticating users within a Spring Security-enabled application.
+AuthenticationManager has a single method authenticate() which authenticate the user.
+
+AuthenticationProvider interface has 2 methods authenticate() and boolean supports. authenticate method returns the fully authenticated object if authenticated.and supports return true 
+if AuthenticationProvider supports the indicated authentication object.and if false then request is delegated to another AuthenticationProvider.
+
+In Spring Security, the AuthenticationManagerBuilder is a class that is used to build and configure an AuthenticationManager. The AuthenticationManager is a central interface in Spring 
+Security responsible for authenticating users based on their credentials.
+
+Here's an overview of how AuthenticationManagerBuilder works:
+
+Configuration: In a Spring Security configuration class (typically annotated with @Configuration), you can use the AuthenticationManagerBuilder to define how authentication should be 
+performed.
+
+Method Chaining: The AuthenticationManagerBuilder provides methods for configuring authentication, such as inMemoryAuthentication(), jdbcAuthentication(), ldapAuthentication(), 
+and userDetailsService(). These methods allow you to specify different authentication mechanisms and providers.
+
+User Details: When configuring authentication, you typically provide details about users, such as their username, password, and authorities (roles). For example, with 
+inMemoryAuthentication(), you can specify users and their roles directly in the configuration.
+
+Delegation: Behind the scenes, the AuthenticationManagerBuilder delegates the configuration to appropriate AuthenticationProvider implementations based on the authentication mechanism 
+being used. For example, inMemoryAuthentication() configures an InMemoryUserDetailsManager, while jdbcAuthentication() configures a DaoAuthenticationProvider backed by a JDBC datasource.
+
+
+Customization: You can also customize the authentication process by providing custom implementations of UserDetailsService, PasswordEncoder, AuthenticationProvider, etc., 
+and registering them with the AuthenticationManagerBuilder.
+
+Building: Once the authentication configuration is complete, you call the AuthenticationManagerBuilder's build() method to build the AuthenticationManager instance.
+
+Usage: The configured AuthenticationManager is then typically injected into other components, such as UsernamePasswordAuthenticationFilter or AuthenticationManager beans, to handle 
+authentication requests within your application.
+
+Overall, the AuthenticationManagerBuilder provides a convenient and flexible way to configure authentication in Spring Security, allowing you to tailor the authentication mechanism to 
+your application's specific requirements.
+
+ProviderManager: The ProviderManager class is responsible for managing a list of AuthenticationProvider instances and using them to authenticate Authentication requests. 
+It iterates over the configured providers and delegates the authentication request to the first provider that supports the given Authentication token.
+
+Best Example of generic class
+public class ApiResponse<T> {
+    private String status;
+    private String message;
+    private T data;
+    private Object metadata;
+
+    public ApiResponse(String status, String message, T data, Object metadata) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+        this.metadata = metadata;
+    }
+
+    // Getters and setters omitted for brevity
+}
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable Long id) {
+        User user = userService.findById(id);
+        ApiResponse<User> response = new ApiResponse<>(
+                "success",
+                "User retrieved successfully",
+                user,
+                null
+        );
+        return ResponseEntity.ok(response);
+    }
+}
+
+
+
+1. What is Type Erasure in Java?
+Answer:
+
+Type erasure is a process by which the Java compiler removes all generic type information during compilation. This means that generic types are enforced only at compile-time, 
+and the compiled bytecode contains raw types. It’s how Java ensures backward compatibility with older versions that didn’t use generics.
+
+2. Can You Override a Private or Static Method in Java?
+Answer:
+
+No, you cannot override a private or static method. Private methods are not visible to subclasses, and static methods belong to the class, not instances. However, you can hide a
+static method by declaring a new static method in the subclass with the same signature.
+
+
+The volatile keyword ensures that a variable's value is always read from the main memory, not from a thread's local cache. It's used to prevent memory consistency errors 
+in multithreaded environments.
+
+A ClassLoader is a part of the Java Runtime Environment that loads classes into memory. It abstracts the process of locating and importing class files.
+
+19. How Do You Prevent a Class from Being Subclassed?
+Answer:
+
+By declaring the class as final, you prevent it from being subclassed.
+
+public final class MyClass {
+    // class body
+}
+
+20. What is the Difference Between Callable and Runnable Interfaces?
+Answer:
+
+Runnable doesn't return a result and cannot throw checked exceptions.
+Callable returns a result and can throw checked exceptions.
+
+A WeakReference allows you to hold a reference to an object without preventing it from being garbage collected. Useful for caches where you want to allow GC to reclaim memory if 
+needed.
+
+
+The Fork/Join framework is used for parallel execution of tasks. It splits a task into smaller subtasks (forks), processes them in parallel, and then joins the results.
+Java Streams provide a powerful way to process sequences of elements, and parallel streams allow you to perform operations on those elements concurrently, taking advantage of 
+multiple CPU cores
+
+A parallel stream divides the source data into multiple parts and processes each part in parallel using multiple threads. This can improve performance for large datasets, especially 
+for CPU-intensive operations.
+
+ClassNotFoundException occurs when you try to load a class at runtime using Class.forName() or loadClass() methods and requested classes not found in classpath. This error occurs 
+when you do not have corresponding Jar on classpath. It is a checked exception.
+
+NoClassDefFoundError occurs when the class was present during compile time and the program was compiled successfully but the class was not present during runtime. It is an Error. 
+May be compile your project and then deleted one of the .class file. It will give NoClassDefFoundError.
+
+CQRS (Command Query Responsibility Segregation) is a design pattern used to separate the read and write operations in a system. It splits the responsibilities of handling commands 
+(operations that change the state of an application) from queries (operations that retrieve data without modifying it).
+
+The finally block always executes, even if an exception is thrown. But if an exception occurs within finally, it will override any previous exceptions.
+
+A ThreadLocal variable provides each thread with its own independently initialized variable. This is useful when you want to avoid sharing variables between threads, like in cases 
+of user sessions or database connections.
+
+
+If there is no explicit transaction (e.g., using @Transactional), Spring creates a default transaction at the repository level only for the specific save() operation. However, 
+this is a limited transaction scope and might not encompass other related operations or fail during complex use cases like cascading operations.
+
+@Transactional(readOnly = true)
+
+1. Implement Security Measures
+Authentication and Authorization
+Use Spring Security: Implement role-based access control (RBAC) and secure endpoints using @PreAuthorize, @Secured, or @RolesAllowed.
+JWT/OAuth2: Use JSON Web Tokens (JWT) or OAuth2 for secure authentication and stateless sessions.
+Password Security: Hash passwords using bcrypt or PBKDF2.
+Secure Communication
+HTTPS: Use HTTPS to encrypt communication between clients and the server.
+HSTS: Enforce HTTP Strict Transport Security (HSTS).
+Protect Against Common Vulnerabilities
+CSRF Protection: Enable CSRF tokens in Spring Security.
+CORS Configuration: Configure CORS policies to restrict cross-origin requests.
+SQL Injection Prevention: Use parameterized queries or Hibernate’s ORM.
+XSS Protection: Sanitize input and enable HTTP headers like Content-Security-Policy.
+Sensitive Data Management
+Encrypt Sensitive Data: Encrypt sensitive fields in the database (e.g., account numbers, PINs).
+Environment Variables: Store credentials securely using tools like AWS Secrets Manager, HashiCorp Vault, or Spring Boot’s @ConfigurationProperties.
+Logging and Monitoring
+Audit Trails: Maintain logs for authentication attempts, access patterns, and transactions.
+Centralized Logging: Use ELK (Elasticsearch, Logstash, Kibana) or similar tools.
+
+class Address {
+    String city;
+    Address(String city) {
+        this.city = city;
+    }
+}
+class Person implements Cloneable {
+    String name;
+    int age;
+    Address address;
+    Person(String name, int age, Address address) {
+        this.name = name;
+        this.age = age;
+        this.address = address;
+    }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    @Override
+    public String toString() {
+        return "Person{name='" + name + "', age=" + age + ", address=" + address.city + "}";
+    }
+    public static void main(String[] args) {
+        try {
+            Address address = new Address("New York");
+            Person original = new Person("Alice", 30, address);
+            Person cloned = (Person) original.clone();
+            System.out.println("Original: " + original);
+            System.out.println("Cloned: " + cloned);
+            // Modify the address in the cloned object
+            cloned.address.city = "Los Angeles";
+            
+            System.out.println("After modifying cloned object:");
+            System.out.println("Original: " + original);
+            System.out.println("Cloned: " + cloned);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Output:
+
+Original: Person{name='Alice', age=30, address=New York}
+Cloned: Person{name='Alice', age=30, address=New York}
+After modifying cloned object:
+Original: Person{name='Alice', age=30, address=Los Angeles}
+Cloned: Person{name='Alice', age=30, address=Los Angeles}
+As seen in the output, modifying the address field in the cloned object also affects the original object because both the original and the clone share the same Address object.
+
+To implement a deep copy, you need to clone each field that is an object:
+
+class Address implements Cloneable {
+    String city;
+    Address(String city) {
+        this.city = city;
+    }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+class Person implements Cloneable {
+    String name;
+    int age;
+    Address address;
+    Person(String name, int age, Address address) {
+        this.name = name;
+        this.age = age;
+        this.address = address;
+    }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Person cloned = (Person) super.clone();
+        cloned.address = (Address) address.clone(); // Deep copy of address
+        return cloned;
+    }
+    @Override
+    public String toString() {
+        return "Person{name='" + name + "', age=" + age + ", address=" + address.city + "}";
+    }
+    public static void main(String[] args) {
+        try {
+            Address address = new Address("New York");
+            Person original = new Person("Alice", 30, address);
+            Person cloned = (Person) original.clone();
+            System.out.println("Original: " + original);
+            System.out.println("Cloned: " + cloned);
+            // Modify the address in the cloned object
+            cloned.address.city = "Los Angeles";
+            
+            System.out.println("After modifying cloned object:");
+            System.out.println("Original: " + original);
+            System.out.println("Cloned: " + cloned);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Output:
+
+Original: Person{name='Alice', age=30, address=New York}
+Cloned: Person{name='Alice', age=30, address=New York}
+After modifying cloned object:
+Original: Person{name='Alice', age=30, address=New York}
+Cloned: Person{name='Alice', age=30, address=Los Angeles}
+In this case, modifying the address field in the cloned object does not affect the original object because both the original and the clone have their own separate Address objects.
+What is applicationContext?
+applicationContext is the central interface to the Spring IoC container. It is responsible for instantiating, configuring, and assembling the beans in the application. 
+It acts as a container that holds all the beans and provides various functionalities such as dependency injection, event propagation, and resource loading.
+
+What is Dependency Injection?
+Dependency Injection is a technique where an object receives its dependencies from an external source rather than creating them itself.
+
+What is IoC in Spring?
+Inversion of Control (IoC) is a principle where the control of creating and managing objects is transferred from the application code to the framework. In Spring, IoC is 
+achieved through the Spring IoC container, which manages the beans and their dependencies.
+
+Synchronized Collections:
+
+Collections from the java.util package that are made thread-safe by wrapping them using the Collections.synchronizedXXX methods.
+Example: Collections.synchronizedList, Collections.synchronizedMap.
+Concurrent Collections:
+
+Collections from the java.util.concurrent package designed specifically for concurrent access.
+They provide better scalability and performance than synchronized collections in multi-threaded scenarios.
+Example: ConcurrentHashMap, CopyOnWriteArrayList.
+
+Copy code
+List<String> list = Collections.synchronizedList(new ArrayList<>());
+synchronized (list) { 
+    for (String item : list) { 
+        System.out.println(item); 
+    }
+}
+
+ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
+map.put("key", "value");
+
+save() - inserts the record to database and generates the new unique identifier and return it.
+saveOrUpdate() - save if no record is present and if present then updates the existing one.
+The persist method is intended to add a new entity instance to the persistence context, i.e. transitioning an instance from a transient to persistent state.
+
+We usually call it when we want to add a record to the database (persist an entity instance):
+
+Person person = new Person();
+person.setName("John");
+session.persist(person);
+What happens after we call the persist method? The person object has transitioned from a transient to persistent state. The object is in the persistence context now, but not yet 
+saved to the database. The generation of INSERT statements will occur only upon committing the transaction, or flushing or closing the session.
+
+transient — This instance isn’t, and never was, attached to a Session. This instance has no corresponding rows in the database; it’s usually just a new object that we created to 
+save to the database.
+persistent — This instance is associated with a unique Session object. Upon flushing the Session to the database, this entity is guaranteed to have a corresponding consistent 
+record in the database.
+detached — This instance was once attached to a Session (in a persistent state), but now it’s not. An instance enters this state if we evict it from the context, clear or close 
+the Session, or put the instance through serialization/deserialization process.
+
+To set the name of a bean after its instantiation in Spring, you can use the @BeanNameAware interface. This interface provides a method called setBeanName(String name) that Spring 
+calls after the bean is instantiated but before its initialization phase.
+
+Spring bean lifecycle starts with initialising the bean and then injecting dependencies nad then firing init() method and then our utility method and after that the bean is 
+destroyed using destroy() method and init and destroy method is implemented by implementing InitializingBean and DisposableBean. 
+
+@Cacheable: Indicates that the result of invoking a method should be cached. If the same method is called again with the same arguments, the cached value is returned instead of 
+invoking the method again.
+@CachePut: Indicates that the result of invoking a method should be cached, but the method should always be invoked. Here the Cache Value for a particular key will be updated with 
+the new value returned from the invoked method.
+@CacheEvict: Indicates that the cache entries associated with the method should be removed from the cache.
+
+Use @Cacheable when the result is consistent for the same inputs and you want to avoid redundant computations.
+Use @CachePut when the result changes frequently and you need the cache to reflect the latest value after every method execution.
+
+@CachePut ensures that after a method modifies or generates a new result, this result is always written back to the cache. This is essential for use cases where the data changes 
+frequently, and you want subsequent reads to fetch the updated value from the cache instead of outdated or invalid data.
+
+@Caching is used for multiple nested caching on the same method.
+
+@PutMapping("/{id}")
+@Caching(
+     evict = {@CacheEvict(value = "productList", allEntries = true)},
+     put = {@CachePut(value = "product", key = "#id")}
+)
+public Product editProduct(@PathVariable long id, @RequestBody Product product)
+
+Summary Table  load factor is same ie 0.75 ie on reaching load factor size increases
+Collection	Default Initial Capacity	Resize Behavior
+ArrayList		10							Grows by 50% of the current size
+LinkedList		No fixed capacity			Dynamically grows
+HashSet			16							Doubles when load factor exceeded
+LinkedHashSet		16						Doubles when load factor exceeded
+TreeSet			No fixed capacity			Dynamically grows (balanced tree)
+HashMap			16								Doubles when load factor exceeded
+LinkedHashMap		16						Doubles when load factor exceeded
+TreeMap			No fixed capacity				Dynamically grows (balanced tree)
+PriorityQueue		11						Dynamically grows
+ArrayDeque		16							Doubles during resizing
+
+String str = "I like Marvel Movies";
+boolean doesContainsWhiteSpace = StringUtils.containsWhitespace(str);
+Here doesContainsWhiteSpace will be true as the string contains white spaces.
+
+We can remove all the white space using another StringUtils method as below:
+
+String newString = StringUtils.trimAllWhitespace(str);
+The value of newString in the above case will be IlikeMarvelMovies
+
+Validation for GET Request
+Add @Validated to the Class or Method
+@RestController
+@Validated
+public class WishListController {
+
+    @GetMapping("/api/wish")
+    public String getWishes(
+            @RequestParam @NotBlank(message = "Category must not be blank") String category) {
+        return String.format("Fetching wishes in category: %s", category);
+    }
+}
+
+@RestController
+@Validated
+public class WishListController {
+
+    @GetMapping("/api/wish/{year}")
+    public String getWishesByTargetYear(
+            @PathVariable @NotBlank(message = "Year must not be blank")
+            @Size(min = 2, max = 4, message = "Year must be between 2 and 4 characters")
+            String year) {
+        return String.format("Fetching wishes for year : %s", year);
+    }
+
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Thread thread = new Thread(() -> {});
+        System.out.println(thread.getName()+":"+thread.getState());
+        thread.start();
+        System.out.println(thread.getName()+":"+thread.getState());
+    }
+}
+Output:
+
+Thread-0:NEW
+Thread-0:RUNNABLE
+When a Thread is created, it is in the NEW state. Calling the start() method moves the thread to the RUNNABLE state.
+
+What happens if we pass null to the main method as an argument?
+Answer: If null is passed to the main method as an argument, it will not cause a NullPointerException.
+Instead, the args parameter will be null, and accessing its length or elements will throw a NullPointerException:
+public static void main(String[] args) {
+    System.out.println(args); // Prints: null
+    System.out.println(args.length); // Throws NullPointerException
+}
+
+
+A persistence unit is a logical grouping of related entity classes and their configurations, defined in the `persistence.xml` file. It specifies which entity classes are managed by 
+an `EntityManager` and includes database connection details.
+
+- AUTO: Lets the persistence provider choose the generation strategy.
+- IDENTITY: Relies on the database’s identity column for primary key generation.
+- SEQUENCE: Uses a database sequence to generate primary keys.
+- TABLE: Uses a dedicated database table to generate primary keys.
+
+lustered Index
+Only one clustered index can be there in a table
+Sort the records and store them physically according to the order
+Data retrieval is faster than non-clustered indexes
+Do not need extra space to store logical structure
+
+Non Clustered Index
+There can be any number of non-clustered indexes in a table
+Do not affect the physical order. Create a logical order for data rows and use pointers to physical data files
+Data insertion/update is faster than clustered index
+Use extra space to store logical structure
+
+1. Main Method Execution:
+
+• The boot process begins with the execution of the main method in the main application class, which is typically annotated with @SpringBootApplication. This class serves as the 
+entry point for the application.
+
+import org.springframework.boot.SpringApplication;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+
+public class MySpringBootApplication {
+
+public static void main(String[] args) {
+
+SpringApplication.run(MySpringBootApplication.class, args);
+
+}
+
+}
+
+2. SpringApplication Initialization:
+
+• The SpringApplication.run() method is invoked, which creates an instance of SpringApplication. This class is responsible for starting the Spring application context.
+
+3. Application Context Creation:
+
+• Spring Boot determines the type of application context to create (e.g., AnnotationConfigApplicationContext for a standalone application or 
+AnnotationConfigEmbeddedWebApplicationContext for a web application).
+
+4. Auto-Configuration:
+
+• The @EnableAutoConfiguration aspect of @SpringBootApplication kicks in. Spring Boot scans the classpath for dependencies and automatically configures beans based on those 
+dependencies and your application properties. For example, if you have spring-boot-starter-web in your dependencies, Spring Boot will set up a web server and configure Spring MVC.
+
+5. Component Scanning:
+
+• The @ComponentScan aspect of @SpringBootApplication scans the package where the main application class is located (and its sub-packages) for Spring components, such as 
+@Component, @Service, @Repository, and @Controller annotations. These beans are registered in the application context.
+
+6. Bean Initialization:
+
+• Beans are instantiated, and dependencies are injected based on the configuration and annotations. Spring’s dependency injection mechanism is used to wire beans together.
+
+7. CommandLineRunners and ApplicationRunners:
+
+• If any beans implement CommandLineRunner or ApplicationRunner, their run methods are called after the application context has been fully initialized, allowing for additional 
+startup logic to be executed.
+
+8. Embedded Server Start (if applicable):
+
+• If the application is a web application, the embedded server (e.g., Tomcat, Jetty, or Undertow) is started. Spring Boot configures the server and binds it to the specified port, 
+which can be set in the application.properties file.
+
+9. Application Ready:
+
+• The application is now fully initialized and ready to handle requests. At this point, any additional initializations, such as setting up schedulers or listeners, are completed.
+
+10. Lifecycle Management:
+
+• Spring Boot manages the lifecycle of the application, handling tasks such as shutting down the application context gracefully when the application is stopped.
+
+What all are the status code that you define for APIs?
+When designing APIs, especially RESTful APIs, it’s important to use HTTP status codes to indicate the result of a client’s request. Here are some common HTTP status codes that are 
+typically used to convey different outcomes:
+
+public enum Direction {
+ NORTH,
+ SOUTH,
+ EAST,
+ WEST
+}
+Enum constants are public, static, and final implicitly. We can create Enums inside another class or in a separate file.
+We compare Enums using == operator not .equals() method.
+
+
+public class Main {
+    public static void main(String[] args) {
+        String s = "Java";
+        s.concat(" World"); 
+        System.out.println(s);    }
+}
+Output:
+
+Java
+Explanation:
+
+Strings in Java are immutable. The concat method creates a new String but does not modify the original String (s). Since the new string is not assigned to s, the value of s 
+remains "Java".
+
+To update s with the concatenated value, assign the result of concat back to s:
+
+
+try {
+    // Code that may throw exceptions
+} catch (Exception e) {
+    // Print StackTrace
+} catch (NullPointerException npe) {
+    // Print StackTrace
+}
+Explanation:
+
+In Java, you cannot catch a larger exception (e.g., Exception) before a smaller one (e.g., NullPointerException) because exception classes follow an inheritance hierarchy. 
+NullPointerException is a subclass of Exception, so if you catch Exception first, it would already handle all exceptions of its subclasses (like NullPointerException), leaving the 
+smaller, more specific exceptions unreachable.
+
+10. What is Qualifier annotation and what is it’s alternative?
+
+The @Qualifier annotation in Java is used in dependency injection to specify which bean should be injected when there are multiple candidates of the same type. It helps 
+disambiguate between beans that share the same type but are meant for different purposes.
+
+Example:
+
+@Qualifier("serviceA")
+@Autowired
+private Service service;
+In this example, @Qualifier("serviceA") ensures that the serviceA bean is injected, even if there are other Service beans available.
+
+Alternatives:
+
+Primary Annotation (@Primary):
+Used to mark a bean as the default choice when multiple beans of the same type are available.
+Example:
+@Primary 
+@Bean 
+public Service serviceA() 
+{     
+  return new ServiceA(); 
+}
+
+@Slf4j
+@Component
+public class LoggingInterceptor implements HandlerInterceptor {
+
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        log.info("Request URL: " + request.getRequestURL());
+        log.info("Request Method: " + request.getMethod());
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        // Can log response details here
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) throws Exception {
+        // Can log completion details here
+        log.info("Request Process completed");
+
+    }
+}
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Autowired
+    private LoggingInterceptor loggingInterceptor;
+
+    @Autowired
+    private ProductInterceptor productInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loggingInterceptor)
+                .addPathPatterns("/api/**") // Define the URL patterns to be intercepted
+                .excludePathPatterns("/api/auth/**"); // Define the URL patterns to be excluded from interception
+
+        registry.addInterceptor(productInterceptor)
+                .addPathPatterns("/product/**") // Define the URL patterns to be intercepted
+                .excludePathPatterns("/api/auth/**");
+    }
+}
+
+Will the following code compile? If not, why?
+
+class Parent {
+    protected void show() {
+        System.out.println("Parent show() method");
+    }
+}
+class Child extends Parent {
+    private void show() {  // Cannot reduce visibility of overridden method
+        System.out.println("Child show() method");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+        obj.show();
+    }
+}
+Output:
+Compilation Error: show() in Child cannot override show() in Parent; attempting to reduce the visibility from protected to private.
+
+Explanation:
+In Java, when overriding a method, the access modifier cannot be more restrictive than the parent class method. The Parent class show() method is protected, but in the Child class, 
+it's private, which is not allowed. The compiler throws an error.
+
+What will be the output of the following code?
+
+class Parent {
+    Parent() {
+        System.out.println("Parent Constructor");
+    }
+}
+
+class Child extends Parent {
+    Child() {
+        super();  // Calls the Parent class constructor
+        System.out.println("Child Constructor");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+    }
+}
+Output:
+
+Parent Constructor
+Child Constructor
+Explanation:
+Constructors cannot be overridden. In this case, the Child class constructor calls the Parent class constructor using super(). This prints the message from the Parent constructor 
+first, followed by the message from the Child constructor.
+
+Given the following code, will it compile or give a compilation error?
+
+class Parent {
+    String show() {
+        return "Parent show() method";
+    }
+}
+
+class Child extends Parent {
+    int show() {  // Return type differs, this will cause an error
+        return 10;
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+        System.out.println(obj.show());
+    }
+}
+Output:
+Compilation Error: show() in Child cannot override show() in Parent; attempting to use incompatible return type int.
+
+Explanation:
+In Java, for method overriding, the return type must be the same or a subclass of the return type in the parent class. Here, the parent class show() returns a String, but the child 
+class show() returns an int, causing a compilation error.
+
+What will be the output of the following code?
+
+class Parent {
+    void show(int num) {
+        System.out.println("Parent show() method with int: " + num);
+    }
+}
+class Child extends Parent {
+    @Override
+    void show(int num) {
+        System.out.println("Child show() method with int: " + num);
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+        obj.show(10);
+    }
+}
+Output:
+
+Child show() method with int: 10
+Explanation:
+The method is overridden with the same parameter type (int). At runtime, the method from the Child class is called due to polymorphism, printing "Child show() method with int: 10".
+
+What will be the output of the following code?
+
+class Parent {
+    void show() {
+        System.out.println("Parent show() method");
+    }
+}
+class Child extends Parent {
+    @Override
+    void show() {
+        super.show();  // Calls the Parent class method
+        System.out.println("Child show() method");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+        obj.show();
+    }
+}
+Output:
+
+Parent show() method
+Child show() method
+Explanation:
+The super.show() in the Child class explicitly calls the show() method from the Parent class before executing the Child class's own logic. Therefore, the output is "Parent show() 
+method" followed by "Child show() method".
+
+Given the following code, what will happen?
+
+interface Interface1 {
+    default void show() {
+        System.out.println("Interface1 show() method");
+    }
+}
+
+interface Interface2 {
+    default void show() {
+        System.out.println("Interface2 show() method");
+    }
+}
+class Child implements Interface1, Interface2 {
+    @Override
+    public void show() {
+        Interface1.super.show();  // Resolving the conflict
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+        obj.show();
+    }
+}
+Output:
+
+Interface1 show() method
+Explanation:
+When a class implements multiple interfaces with the same default method, it must override the method to resolve the conflict. Here, the Child class explicitly calls 
+Interface1.super.show(), so the output is "Interface1 show() method".
+
+What will happen when you try to call a constructor from the subclass after the superclass constructor?
+
+class Parent {
+    Parent() {
+        System.out.println("Parent Constructor");
+    }
+}
+class Child extends Parent {
+    Child() {
+        super();  // Calls Parent constructor explicitly
+        System.out.println("Child Constructor");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+    }
+}
+Output:
+
+Parent Constructor
+Child Constructor
+Explanation:
+The super() keyword is used in the Child constructor to invoke the Parent class constructor. As a result, "Parent Constructor" is printed first, followed by "Child Constructor".
+
+What will be the output when trying to override a final method?
+
+class Parent {
+    final void show() {
+        System.out.println("Parent show() method");
+    }
+}
+class Child extends Parent {
+    @Override
+    void show() {  // Compilation Error: Cannot override final method
+        System.out.println("Child show() method");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+        obj.show();
+    }
+}
+Output:
+
+Compilation Error: Cannot override final method show() in Parent.
+
+Explanation:
+The final keyword in Java prevents a method from being overridden. In this case, the show() method in the Parent class is final, so the compiler throws an error when trying to 
+override it in the Child class.

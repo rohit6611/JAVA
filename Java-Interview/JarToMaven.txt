@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=D:\NsdlUtility\UtilityBills\src\main\lib\poi-object-mapper.jar -DgroupId=poi-object-mapper -DartifactId=poi-object-mapper  -Dversion=2.0.0 -Dpackaging=jar -DpomFile=D:\NsdlUtility\UtilityBills\pom.xml

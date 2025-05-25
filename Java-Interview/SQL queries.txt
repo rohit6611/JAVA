@@ -1,0 +1,19 @@
+Get yesterdays date
+select * from verifiererror where date(l2date)=Date_add(curdate(),interval -1 day);
+
+
+
+select date(otp_date_time),count(*) as Total_Forgot_password_OTP from otp1  where date(otp_date_time) > 
+Date_add(curdate(),interval -7 day) group by date(otp_date_time);
+
+
+
+
+select date(otp_date_time),count(*) as Total_Forgot_password_OTP from otp1  where date(otp_date_time) > 
+Date_add(curdate(),interval -7 day) group by date(otp_date_time);
+
+select date(sentdate),count(*) as Total_Forgot_password_OTP from email_logs  where date(sentdate) > 
+Date_add(curdate(),interval -7 day) group by date(sentdate);
+
+select date(sentdate),count(*) as Total_Sms_On_HOld from sms_logs  where date(sentdate) > 
+Date_add(curdate(),interval -7 day) group by date(sentdate);

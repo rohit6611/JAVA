@@ -1,0 +1,78 @@
+Sudo apt git install
+
+when you first install git you need to configure username and email and the registered email is used for commits and fetching data from remote to local.
+
+git --version to check the version of git.
+git config --global user.name "Rohit"
+git config --global user.email "email@gmail.com"
+git config user.name to check the username and similarly to check the email
+git config user.email
+--global indicated that all the repo are configured using this email and username.
+GitHub,gitlab.bitbucket hosting platform for code.
+
+git rm --cached home.html to unstage
+
+:wq! to persist the changes q! for not saving the changes
+
+git switch to change branch and when you do git checkout branch then the untracked changes are also discarded and the changes are irreversible.
+
+# to edit the commit git commit --amend -m "sign up .."
+git log --oneline
+
+.gitignore to ignore files that are not to be commited it is hidden file
+ls -a to list hidden files.
+ls -al to list properly like file permission date time etc
+
+in .gitignore we can write like
+/properties
+password.txt
+*.log
+
+git commit -am "commit msg" this command can be used to add and commit consecutively.
+this command only used with already tracked files and new file can't be commited with this command.
+
+say you are on branch master and you have successfully tested the code of branch logout and you want to merge it to master then go to branch master and fire
+git merge logout
+
+and then can delete logout branch using git branch -d logout
+for force delete use -D
+
+git branch -m branchname  it will rename a branch
+
+git diff to find the difference between current head and the last commit.
+git restore --staged to unsatge staged file
+
+git stash apply - apply the last stash changes and still present in the stashed list
+
+git add file1.txt  added to staged
+git reset   unstage the recent commit
+
+git reset -- soft commitid then changes will not be discarded and all changes above that commit will be back to staging.
+on other hand --hard will delete all the changes
+
+
+
+#To undo last commit-
+git reset --soft HEAD^ it will revert commit but changes are still on staging
+git reset --hard HEAD^ it will undo last commit and remove the file from staging as well.
+
+#To undo the last 2 commits and all changes.
+git reset –hard HEAD^^
+
+#To delete the Testing branch.  
+git branch -d Testing
+
+#To create a new branch admin and set it as the current branch.
+git checkout -b admin
+
+#To fetch down any changes from the global repository to the current repository.
+git fetch
+
+#To move staged files to the stash area which is present in the staging area.
+git stash 
+
+#To get back the files that are present in the stash area.
+git stash pop
+
+if you want to unstage the staged change then first do soft reset and it will take back you commit changes and then again git reset unstaged the staged changes.
+

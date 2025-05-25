@@ -1,0 +1,45 @@
+List - arraylist,linkedlist,vector,stack
+
+arraylist - data is stored in contiguous memory location.
+vector - data is stored in contiguous memory location.
+Only difference between vector and linkedlist is vector is synchronized and arraylist is not.
+linkedlist - data is stored in non-contiguous memory location. concept of pointers to next element is used and a data is stored as a node.
+stack - follows lifo and in addition it has 3 more function empty,peek,search.
+stack is a subclass of vector so it is also thread safe.
+
+Queue-follows fifo structure. it has 2 subclass priorityqueue,arraydeque.
+priorityQueue-elements are processed according to the priority.
+deque-is a class from where we can add and subtract elements from front and back.
+arraydeque is the implementation class of deque interface which extends queue interface.
+
+Set - to store unique elements. implementation classes-hashset,treeset,linkedhashset.
+HashSet - The HashSet class is an inherent implementation of the hash table data structure. The objects that we insert into the HashSet do not 
+guarantee to be inserted in the same order. The objects are inserted based on their hashcode. This class also allows the insertion of NULL elements.
+LinkedHashSet - A LinkedHashSet is very similar to a HashSet. The difference is that this uses a doubly linked list to store the data and retains the ordering of the elements.
+The TreeSet class uses a Tree for storage. The ordering of the elements is maintained by a set using their natural ordering whether or not an explicit comparator is provided.
+This must be consistent with equals if it is to correctly implement the Set interface. It can also be ordered by a Comparator provided at set creation time, depending on which constructor is used.
+
+Map Interface - A map is a data structure that supports the key-value pair for mapping the data. This interface doesn’t support duplicate keys because the same key cannot have multiple mappings,
+however it allows duplicate values in different keys.
+Hashmap -  HashMap provides the basic implementation of the Map interface of Java. It stores the data in (Key, Value) pairs. To access a value in a HashMap, we must know its key. HashMap uses a technique called Hashing.
+Hashing is a technique of converting a large String to a small String that represents the same String so that the indexing and search operations are faster.
+TreeMap in Java is a concrete implementation of the java.util.SortedMap interface. It provides an ordered collection of key-value pairs, where the keys are ordered based on their natural order or a custom Comparator passed to the constructor.
+hashmap doen't follows ordering while treemap follows ordering.
+
+		Collection interface-> List,set,queue(interface)
+Map doest not implement collection interface
+
+#arraylist,linkedlist,vector implements list.stack extends vector and they both are synchronized.vector doubles its size when reaches its capacity while lists increase by 50%.
+
+#hashset and linked hashset are implementation class for set interface. while treeset is implentation of sortedset which extends set interface.
+hashset store elements without ordering ie in random order while linked hashset maintains the natural ordering and treeset store elements in sorted order.
+
+#Queue implementation class is prorityqueue in which elements are stored on the basis of prioroty associated with them.
+deque interface extends queue interface and the implementation class for deque is arraydeque .
+
+#map interface has implementation class hashmap and hashtable and .sortedmap interface extends map interface and its implementation class is treemap.
+
+#internal working of hashmap -- key value collectively called as entry object and the entry object is saved in hashtable by passing the key in hashing function it will generate one index and at that index entry object is placed.in case there is a collision between two objects then a linkedlist is created in which references to a next node and when the get function of map implementation class is called key is passed through hashing function and and at the generated index the key is being searched and it uses internally equals function to check whether the key matches or not if matches returns the key else keeps in traversing the linkedlist until the key is found.
+
+ 
+		

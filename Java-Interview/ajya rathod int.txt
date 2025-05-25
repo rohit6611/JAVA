@@ -1,0 +1,813 @@
+
+# Stream.of(1,2,3,4,5,6).collect(Collectors.groupingBy(n -> n%2==0)).entrySet().forEach(System.out::println);
+
+Explain how the @Transactional annotation works in Spring. What are the key attributes one should be aware of?
+Answer:
+
+The @Transactional annotation in Spring enables declarative transaction management, which means you can handle transactions without explicitly coding them into your business logic. 
+It is applied to classes or methods to define the scope of a transaction:
+
+How it Works: When you annotate a method or class with @Transactional, Spring wraps the method call in a transaction. If an exception is thrown within the method, the transaction 
+will roll back; otherwise, it will commit at the end of the method execution.
+Key Attributes:
+
+propagation: Defines how the transaction should behave when one transaction context calls another. Common values include REQUIRED (default), REQUIRES_NEW (new transaction), NESTED 
+(nested transaction within existing one).
+isolation: Specifies the transaction isolation level to prevent problems like dirty reads, non-repeatable reads, and phantom reads. Options include READ_COMMITTED, READ_UNCOMMITTED, 
+REPEATABLE_READ, SERIALIZABLE.
+rollbackFor: Specifies the exception types that should trigger a transaction rollback. By default, only runtime exceptions cause a rollback; checked exceptions do not.
+readOnly: If set to true, it hints that the transaction is read-only, which can optimize performance for some transactional resources.
+@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, 
+                rollbackFor = Exception.class, readOnly = false)
+public void saveData(MyData data) {
+    // Business logic here
+}
+In this example, we’re ensuring a transaction with specific rules about how it should propagate, its isolation level, and that it will rollback for any exception, not just runtime 
+ones.
+
+What happens if you have multiple @Transactional annotations in a method call chain?
+Answer:
+
+When multiple @Transactional annotations are present in a method call chain:
+
+Propagation: The behavior depends on the propagation attribute of each @Transactional annotation. If a method annotated with @Transactional(propagation = Propagation.REQUIRES_NEW) 
+is called from within another transactional method, a new physical transaction will be created for that method, independent of the outer transaction.
+Nesting: If methods are annotated with @Transactional but without REQUIRES_NEW, they typically join the existing transaction unless specified otherwise. However, with NESTED, Spring 
+uses savepoints within the same physical transaction to allow partial rollbacks.
+Outcome: If an exception occurs, the transaction behavior (commit or rollback) depends on the outermost transaction’s configuration unless inner transactions are configured with 
+REQUIRES_NEW or NESTED with savepoints.
+This setup can lead to complex transactional boundaries, and understanding how transactions propagate and interact is crucial for managing data consistency in applications.
+
+The default propagation level in Spring is REQUIRED: 
+REQUIRED
+The default propagation level that creates a new transaction if there isn't one in progress, or uses an existing one if there is. It's the most commonly used propagation level. 
+SUPPORTS
+Allows a method to participate in a transaction if one exists, but executes non-transactionally if there isn't. 
+MANDATORY
+Requires a method to execute within an active transaction, and throws an exception if there isn't one. 
+REQUIRES_NEW
+Always creates a new transaction, and suspends any existing transaction until the new one completes. 
+NOT_SUPPORTED
+Specifies that a method should execute non-transactionally, regardless of whether there's an active transaction. 
+Transaction propagation levels control how @Transactional methods join, use, or create transactions.
+
+What are these terminologies Serialization, deserialization, and externalization in java?
+Serialization is the process of converting an object’s state into a byte stream, so it can be easily saved to a file, sent over a network, or stored in a database. This byte stream 
+can then be deserialized back into a copy of the object.
+
+Deserialization
+Deserialization is the reverse process of serialization. It involves converting a byte stream back into a copy of the original object. This allows the object to be reconstructed 
+from its serialized form.
+
+Externalization
+Externalization is an alternative to serialization in Java. It allows developers to have more control over the serialization process by implementing the Externalizable interface. 
+This interface requires the implementation of two methods: writeExternal and readExternal, which handle the custom serialization and deserialization logic.
+
+import java.io.*;
+
+class Person implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{name='" + name + "', age=" + age + "}";
+    }
+}
+
+public class SerializationExample {
+    public static void main(String[] args) {
+        Person person = new Person("John Doe", 30);
+
+        // Serialization
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("person.ser"))) {
+            oos.writeObject(person);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Deserialization
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("person.ser"))) {
+            Person deserializedPerson = (Person) ois.readObject();
+            System.out.println(deserializedPerson);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Externalization
+import java.io.*;
+
+class Person implements Externalizable {
+    private String name;
+    private int age;
+
+    public Person() {
+        // No-arg constructor for deserialization
+    }
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(name);
+        out.writeInt(age);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        name = (String) in.readObject();
+        age = in.readInt();
+    }
+
+    @Override
+    public String toString() {
+        return "Person{name='" + name + "', age=" + age + "}";
+    }
+}
+
+public class ExternalizationExample {
+    public static void main(String[] args) {
+        Person person = new Person("Jane Doe", 25);
+
+        // Serialization
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("person.ext"))) {
+            person.writeExternal(oos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Deserialization
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("person.ext"))) {
+            Person deserializedPerson = new Person();
+            deserializedPerson.readExternal(ois);
+            System.out.println(deserializedPerson);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Serialization: Automatic process using Serializable interface.
+Deserialization: Automatic process to reconstruct the object.
+Externalization: Manual process using Externalizable interface for custom serialization logic
+
+Default serialVersionUID
+If you do not explicitly define a serialVersionUID, the Java compiler will generate one automatically based on various aspects of the class. However, this automatically generated 
+serialVersionUID can change if the class structure changes, potentially causing InvalidClassException during deserialization.
+
+What is the difference between Synchronized (HashMap) vs ConcurrentHashMap?
+
+HashMap and ConcurrentHashMap are both implementations of the Map interface in Java, but they are designed for different use cases, especially when it comes to concurrency.
+
+- Synchronized HashMap
+A HashMap can be synchronized externally to make it thread-safe. This is typically done by wrapping the HashMap using Collections.synchronizedMap.
+
+Key Points
+
+Thread Safety: Achieved by synchronizing the entire map.
+Performance: Synchronizing the entire map can lead to significant contention and performance degradation in a multi-threaded environment.
+Usage: Suitable for scenarios with low concurrency or where the map is mostly read-only.
+- ConcurrentHashMap
+ConcurrentHashMap is designed specifically for concurrent access. It provides thread safety without locking the entire map, thus offering better performance in a multi-threaded 
+environment.
+
+Key Points
+
+Thread Safety: Achieved through fine-grained locking (using segments or internal locks).
+Performance: Better performance under high concurrency due to reduced contention.
+Usage: Suitable for scenarios with high concurrency where multiple threads frequently read and write to the map.
+
+public class EmployeeSortExample {
+    public static void main(String[] args) {
+        List<Employee> employees = Arrays.asList(
+            new Employee("Alice", 30),
+            new Employee("Bob", 25),
+            new Employee("Charlie", 35)
+        );
+
+        // Sort in ascending order by age
+        List<Employee> sortedAsc = employees.stream()
+            .sorted(Comparator.comparingInt(Employee::getAge))
+            .collect(Collectors.toList());
+
+        System.out.println("Ascending Order:");
+        sortedAsc.forEach(System.out::println);
+
+        // Sort in descending order by age
+        List<Employee> sortedDesc = employees.stream()
+            .sorted(Comparator.comparingInt(Employee::getAge).reversed())
+            .collect(Collectors.toList());
+
+        System.out.println("Descending Order:");
+        sortedDesc.forEach(System.out::println);
+    }
+}
+ 
+ How filter work in spring?
+In Spring, filters are used to perform tasks such as logging, authentication, and authorization before or after the request is processed by a servlet. Filters are part of the 
+Servlet API and can be configured in Spring Boot applications using the @Component annotation or by registering them as beans.
+
+Summary
+
+Filters: Used for tasks like logging, authentication, and authorization.
+Configuration: Can be configured using @Component or FilterRegistrationBean.
+Lifecycle Methods: init, doFilter, and destroy methods manage the filter's lifecycle.
+
+How to make post method idempotent inside spring boot?
+To make a POST method idempotent in a Spring Boot application, you need to ensure that multiple identical requests do not result in different outcomes. One common approach is to 
+use a unique identifier (such as a request ID) to detect and handle duplicate requests.
+
+Example
+
+Here is an example of how you can achieve idempotency for a POST method in a Spring Boot application:
+
+Create a Request DTO with a Unique Identifier
+Create a Service to Handle Idempotency
+Create a Controller to Handle the POST Request
+Unique Identifier: Use a unique identifier in the request to detect duplicates.
+
+Idempotency Check: Store processed request IDs and check for duplicates before processing.
+
+Exception Handling: Handle duplicate requests appropriately, such as by throwing an exception or returning a specific response.
+
+What is a JWT token?
+A JWT (JSON Web Token) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as 
+the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure, enabling the claims to be digitally signed or integrity protected 
+with a Message Authentication Code (MAC) and/or encrypted.
+
+Structure of a JWT
+
+A JWT typically consists of three parts separated by dots (.):
+
+Header: Contains metadata about the token, such as the type of token (JWT) and the signing algorithm (e.g., HS256).
+Payload: Contains the claims. This is where the actual data is stored.
+Signature: Used to verify the token’s integrity and authenticity.
+
+Can singleton bean scope handle multiple parallel requests?
+No, a singleton bean scope in a Spring application cannot handle multiple parallel requests in a thread-safe manner by default. The singleton scope means that only one instance of 
+the bean is created and shared across the entire application context. If multiple threads access this single instance simultaneously, it can lead to concurrency issues.
+
+To handle multiple parallel requests safely, you need to ensure that the singleton bean is thread-safe. This can be achieved by:
+
+Making the bean stateless.
+Using synchronization mechanisms to protect shared state.
+Using thread-safe data structures.
+Alternatively, you can use other bean scopes like prototype, request, or session depending on your use case.
+
+is singleton bean scope thread-safe? How to make it thread-safe?
+No, a singleton bean scope in Spring is not inherently thread-safe. The singleton scope means that only one instance of the bean is created and shared across the entire application 
+context. If this bean maintains state and is accessed by multiple threads simultaneously, it can lead to concurrency issues.
+
+To make a singleton bean thread-safe, you can:
+
+Make the bean stateless: Ensure that the bean does not maintain any state that can be modified by multiple threads.
+Use synchronization: Protect shared state with synchronization mechanisms like synchronized blocks or methods.
+Use thread-safe data structures: Utilize thread-safe collections and other concurrency utilities provided by the Java java.util.concurrent package.
+
+What are the Difference between these terminology, MultiThreading, MultiProcessing, MultiProgramming and MultiTasking?
+
+Multithreading
+Definition: Multiple threads within a single process.
+Context: Concurrent execution within the same application.
+Example: A web server handling multiple requests.
+Multiprocessing
+Definition: Multiple CPUs or cores executing processes.
+Context: Parallel execution across multiple processors.
+Example: High-performance computing systems.
+Multiprogramming
+Definition: Multiple programs loaded into memory and executed by the CPU.
+Context: Increases CPU utilization by switching between programs.
+Example: Running a text editor and a web browser simultaneously.
+Multitasking
+Definition: Executing multiple tasks (processes) simultaneously.
+Context: Can be achieved via multithreading or multiprocessing.
+Example: An operating system running multiple applications at the same time.
+
+What is the Life cycle of a Thread?
+
+These are the phases of Thread:
+
+New: Created but not started.
+Runnable: Ready to run.
+Running: Executing.
+Blocked/Waiting: Waiting for a resource.
+Timed Waiting: Waiting for a specified time.
+Terminated: Finished execution.
+
+is it possible to we Override start() method in Thread?
+
+Yes, it is possible to override the start() method in the Thread class, but it is generally not recommended. The start() method is responsible for creating a new thread and then 
+calling the run() method. Overriding it can lead to unexpected behavior and may prevent the thread from starting correctly.
+
+Can we Override run() method?
+
+Yes, you can and should override the run() method when creating a new thread in Java. The run() method contains the code that constitutes the new thread's task.
+
+How to Override run() Method
+
+Using Thread Class
+Extend Thread Class: Create a subclass of Thread.
+Override run() Method: Implement the run() method with the code you want the thread to execute.
+public class MyThread extends Thread {
+    @Override
+    public void run() {
+        System.out.println("Thread is running");
+    }
+
+    public static void main(String[] args) {
+        MyThread thread = new MyThread();
+        thread.start(); // This will call the overridden run method
+    }
+}
+Using Runnable Interface
+
+Implement Runnable Interface: Create a class that implements the Runnable interface.
+Override run() Method: Implement the run() method with the code you want the thread to execute.
+Pass to Thread: Create a Thread object and pass the Runnable instance to it.
+Key Points
+
+Override run(): Define the task that the thread will execute.
+Use start(): Always call start() to begin the thread's execution, which in turn calls the run() method.
+Two Approaches: Extend Thread or implement Runnable.
+
+Can we start a thread twice?
+
+No, you cannot start a thread twice in Java. Once a thread has been started and has completed its execution, it cannot be restarted. Attempting to start a thread that has already 
+been started will result in an IllegalThreadStateException.
+
+public class MyThread extends Thread {
+    @Override
+    public void run() {
+        System.out.println("Thread is running");
+    }
+
+    public static void main(String[] args) {
+        MyThread thread = new MyThread();
+        thread.start(); // Starts the thread and calls run()
+        
+        try {
+            thread.start(); // Attempting to start the thread again
+        } catch (IllegalThreadStateException e) {
+            System.out.println("Cannot start a thread twice: " + e);
+        }
+    }
+}
+Thread is running
+Cannot start a thread twice: java.lang.IllegalThreadStateException
+Summary
+
+Cannot Restart: A thread cannot be started more than once.
+Exception Handling: Starting a thread twice results in IllegalThreadStateException.
+
+What happens if run() method is called without start()?
+
+Calling run() Method Without start() in Java
+
+If you call the run() method directly without using the start() method, the run() method will execute in the current thread rather than starting a new thread. This means that no 
+new thread is created, and the code inside the run() method runs as a normal method call within the calling thread.
+
+Key Differences:
+
+Purpose:
+
+volatile: Ensures visibility of changes to variables across threads.
+synchronized: Ensures both visibility and atomicity of code execution.
+Atomicity:
+
+volatile: Does not guarantee atomicity.
+synchronized: Guarantees atomicity within the synchronized block or method.
+Overhead:
+
+volatile: Lower overhead, no locking mechanism.
+synchronized: Higher overhead due to locking and unlocking.
+Scope:
+
+volatile: Only applicable to variables.
+synchronized: Applicable to methods and blocks of code.
+Use Cases:
+
+volatile: Suitable for flags, state variables, and other simple variables that are frequently read and written.
+synchronized: Suitable for protecting critical sections of code that require atomicity and complex operations.
+
+What are Atomic variables?
+
+Atomic variables in Java are part of the java.util.concurrent.atomic package and provide a way to perform atomic operations on single variables without using synchronization. 
+These variables are designed to be thread-safe and provide lock-free, thread-safe operations on single variables.
+
+Key Features
+
+Atomicity: Operations on atomic variables are performed atomically, meaning they are indivisible and will complete without interference from other threads.
+Lock-Free: Atomic variables use low-level atomic machine instructions (like compare-and-swap) to achieve thread safety without the overhead of locks.
+Thread-Safe: Multiple threads can safely read and write to atomic variables without additional synchronization.
+Common Atomic Classes
+
+AtomicInteger: Provides atomic operations for int values.
+AtomicLong: Provides atomic operations for long values.
+AtomicBoolean: Provides atomic operations for boolean values.
+AtomicReference<V>: Provides atomic operations for object references.
+
+public class CallableExample implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        return "Callable task completed";
+    }
+
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        CallableExample callableTask = new CallableExample();
+        Future<String> future = executor.submit(callableTask);
+
+        try {
+            String result = future.get(); // Get the result of the callable task
+            System.out.println(result);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            executor.shutdown();
+        }
+    }
+}
+
+CompletableFuture is a class in the java.util.concurrent package that represents a future result of an asynchronous computation. It extends the Future interface and provides a more
+ flexible and powerful way to handle asynchronous programming in Java. CompletableFuture supports various methods for combining, chaining, and handling asynchronous tasks.
+ 
+       Set<String> hs = new HashSet<String>();
+    hs.add("Abcd");
+hs.add("efg");
+hs.add("abcd");
+String s = new String("Abcd");
+hs.add(s);
+hs.add("Abcdefg");
+System.out.println(hs);
+
+[Abcdefg, efg, Abcd, abcd]
+
+No, in Java, you cannot have two finally blocks for one try-catch block. Each try block can be followed by zero or more catch blocks and only one finally block. The finally block is
+ optional but, if present, must come after the try and any catch blocks.
+ 
+ The argument passed to System.exit() is a status code. By convention, a nonzero status code indicates abnormal termination.
+ In the context of System.exit(1), the 1 would be returned to the system as the exit status of the JVM, indicating that the JVM terminated abnormally.
+ 
+ What is Response Entity in Spring-Boot?
+In Spring Boot, a ResponseEntity is a class used to represent the entire HTTP response sent back to a client. It goes beyond just the data itself and encapsulates three key aspects:
+
+Status Code: This indicates the outcome of the request, like success (200 OK), not found (404), or internal server error (500).
+Headers: These are optional key-value pairs that provide additional information about the response, such as content type, cache control, or authentication details.
+Body: This is the actual data being sent back to the client. It can be anything from JSON or XML to plain text, depending on your API design.
+By using ResponseEntity, you gain fine-grained control over how Spring Boot constructs the response. You can set the appropriate status code, add custom headers, and include the 
+response data in the body. This allows you to build more informative and flexible APIs.
+
+Merge two Employee ArrayList and sort by age in using java8 stream API
+
+List<Employee> list1 = ...; // Your first list
+List<Employee> list2 = ...; // Your second list
+
+List<Employee> mergedAndSorted = Stream.concat(list1.stream(), list2.stream())
+    .sorted(Comparator.comparingInt(Employee::getAge))
+    .collect(Collectors.toList());
+	
+	Find even numbers from ArrayList and find the sum of all numbers using Java 8 stream API
+
+List<Integer> numbers = Arrays.asList(1,2,3,4,5,6); // Your list of numbers
+
+int sumOfEvenNumbers = numbers.stream()
+    .filter(n -> n % 2 == 0)
+    .mapToInt(Integer::intValue)
+    .sum();
+	
+	Sort employee byname and salary using java 8 stream API
+
+public class Employee {
+    String firstName;
+    int age;
+}
+
+        List<Employee> employees = new ArrayList<>();
+        Employee e1 = new Employee("Ajay",35);
+        Employee e2 = new Employee("Vijay",5);
+        Employee e3 = new Employee("Zack",30);
+        Employee e4 = new Employee("David",51);
+
+
+List<Employee> sortedEmployees = employees.stream()
+    .sorted(Comparator.comparing(Employee::getName).thenComparing(Employee::getSalary))
+    .collect(Collectors.toList());
+	
+	Collection: Collection is a interface present in java.util package. It is used to represent a group of individual objects as a single unit. It is similar to the container in the 
+	C++ language. The collection is considered as the root interface of the collection framework. It provides several classes and interfaces to represent a group of individual 
+	objects as a single unit.
+	
+	Collections: Collections is a utility class present in java.util package. It defines several utility methods like sorting and searching which is used to operate on collection. 
+	It has all static methods. These methods provide much-needed convenience to developers, allowing them to effectively work with Collection Framework. For example, It has a 
+	method sort() to sort the collection elements according to default sorting order, and it has a method min(), and max() to find the minimum and maximum value respectively in the 
+	collection elements.
+	
+	                                  Collection	                                          Collections
+It is an interface.	It is a utility class.
+It is used to represent a group of individual objects as a single unit. 	It defines several utility methods that are used to operate on collection.
+The Collection is an interface that contains a static method since java8. The Interface can also contain abstract and default methods.	It contains only static methods.
+
+In general, FetchMode defines how Hibernate will fetch the data (by select, join or subselect). FetchType, on the other hand, defines whether Hibernate will load data eagerly or 
+lazily.
+
+The exact rules between these two are as follows:
+
+if the code doesn’t set FetchMode, the default one is JOIN and FetchType works as defined
+with FetchMode.SELECT or FetchMode.SUBSELECT set, FetchType also works as defined
+with FetchMode.JOIN set, FetchType is ignored and a query is always eager
+For further information please refer to Eager/Lazy Loading In Hibernate.
+
+If you need to ensure child entities are removed when they are removed from the parent's collection, orphanRemoval = true should be used.
+
+A Bloom Filter is a smart, space-efficient tool used to check if an item is part of a set. It’s especially useful when you want to avoid storing large amounts of data. The catch? 
+It might occasionally tell you an item is in the set when it’s not (false positive), but it will never miss an item that is actually in the set (no false negatives).
+
+How It Works:
+
+A Bloom Filter uses a bit array and several hash functions.
+When you add an item (like a username), the filter uses the hash functions to flip certain bits in the array to 1.
+To check if an item exists, it runs the item through the same hash functions. If all the corresponding bits are 1, the item might be in the set. If any bit is 0, the item is 
+definitely not in the set.
+
+Thread t1 = new Thread(() -> {
+            
+            for(int i=0;i<5;i++){
+            	System.out.println("Thread 1 is running - "+i);	
+            }
+        });
+
+        Thread t2 = new Thread(() -> {
+        	for(int i=0;i<5;i++){
+            	System.out.println("Thread 2 is running - "+i);	
+            }
+        });
+
+        Thread t3 = new Thread(() -> {
+        	for(int i=0;i<5;i++){
+            	System.out.println("Thread 3 is running - "+i);	
+            }
+        });
+
+        // Start threads without enforcing order
+        t1.start();
+        t1.join();
+        t2.start();
+        t2.join();
+        t3.start();
+        t3.join();
+		
+		
+		output - 
+Thread 1 is running - 0
+Thread 1 is running - 1
+Thread 1 is running - 2
+Thread 1 is running - 3
+Thread 1 is running - 4
+Thread 2 is running - 0
+Thread 2 is running - 1
+Thread 2 is running - 2
+Thread 2 is running - 3
+Thread 2 is running - 4
+Thread 3 is running - 0
+Thread 3 is running - 1
+Thread 3 is running - 2
+Thread 3 is running - 3
+Thread 3 is running - 4
+without join method there will be random results displayed.
+
+public class Person implements Externalizable {
+    private String name;
+    private int age;
+
+    // Default constructor is necessary for Externalizable
+    public Person() {
+    }
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        // Custom serialization logic
+        out.writeUTF(name);
+        out.writeInt(age);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        // Custom deserialization logic
+        name = in.readUTF();
+        age = in.readInt();
+    }
+
+    @Override
+    public String toString() {
+        return "Person{name='" + name + "', age=" + age + "}";
+    }
+
+    public static void main(String[] args) {
+        Person person = new Person("Alice", 30);
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("person.dat"));
+             ObjectInputStream ois = new ObjectInputStream(new FileInputStream("person.dat"))) {
+
+            // Serialize the object
+            oos.writeObject(person);
+
+            // Deserialize the object
+            Person deserializedPerson = (Person) ois.readObject();
+            System.out.println("Deserialized Person: " + deserializedPerson);
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+@Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true; // Check for self-comparison
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Check for null and ensure the same class
+        }
+        Person person = (Person) obj;
+        return age == person.age && name.equals(person.name); // Compare relevant fields
+    }
+
+    // Override hashCode
+    @Override
+    public int hashCode() {
+        int result = name.hashCode(); // Start with a prime number and field hash
+        result = 31 * result + age;   // Multiply by another prime and add other fields' hashes
+        return result;
+    }
+	
+	Summary Table  load factor is same ie 0.75 ie on reaching load factor size increases
+Collection	Default Initial Capacity	Resize Behavior
+ArrayList		10							Grows by 50% of the current size
+LinkedList		No fixed capacity			Dynamically grows
+HashSet			16							Doubles when load factor exceeded
+LinkedHashSet		16						Doubles when load factor exceeded
+TreeSet			No fixed capacity			Dynamically grows (balanced tree)
+HashMap			16								Doubles when load factor exceeded
+LinkedHashMap		16						Doubles when load factor exceeded
+TreeMap			No fixed capacity				Dynamically grows (balanced tree)
+PriorityQueue		11						Dynamically grows
+ArrayDeque		16							Doubles during resizing
+
+Popular implementations of the Map are:
+
+HashMap - accepts one null key
+Hashtable - doesn't accept any null key
+TreeMap - doesn't accept any null key
+LinkedHashMap - accepts one null key
+Any number of null values can be added as value in any of above implementations
+
+Popular implementations of the Set are:
+
+HashSet - accepts one null element
+TreeSet - doesn't accept any null element
+LinkedHashSet - accepts one null element
+Any implementations of List, like ArrayList or LinkedList can accept nulls.
+
+tree type doesn't accepts null because they are used to sort the elements and internally use comparator which will throw nullPointerException.
+
+Optimize Serialization
+Use efficient serialization libraries like Jackson, Gson, or Protobuf for large JSON payloads.
+Configure Jackson for better performance:
+@Bean
+public ObjectMapper objectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    return mapper;
+}
+
+@NotNull validates that the annotated property value isn’t null.
+@AssertTrue validates that the annotated property value is true.
+@Size validates that the annotated property value has a size between the attributes min and max. We can apply it to String, Collection, Map, and array properties.
+@Min validates that the annotated property has a value no smaller than the value attribute.
+@Max validates that the annotated property has a value no larger than the value attribute.
+@Email validates that the annotated property is a valid email address.
+Some annotations accept additional attributes, but the message attribute is common to all of them. This is the message that will usually be rendered when the value of the respective 
+property fails validation.
+
+Here are some additional annotations we can find in the JSR:
+
+@NotEmpty validates that the property isn’t null or empty. We can apply it to String, Collection, Map or Array values.
+@NotBlank can be applied only to text values, and validates that the property isn’t null or whitespace.
+@Positive and @PositiveOrZero apply to numeric values, and validate that they’re strictly positive, or positive including 0.
+@Negative and @NegativeOrZero apply to numeric values, and validate that they’re strictly negative, or negative including 0.
+@Past and @PastOrPresent validate that a date value is in the past, or the past including the present. We can apply it to date types, including those added in Java 8.
+@Future and @FutureOrPresent validate that a date value is in the future, or in the future including the present.
+
+@FeignClient(name = "address-service", url = "http://localhost:8081", path = "/address-service")
+public interface AddressClient {
+
+    @GetMapping("/address/{id}")
+    public ResponseEntity<AddressResponse> getAddressByEmployeeId(@PathVariable("id") int id);
+
+}
+
+@Pattern(regexp = "[^\\/:*?\"<>|]", message = "Not valid")
+private String title;
+
+
+Restful services are lightweight secure and stateless that uses http protocol and http methods like get,put,patch,delete,post.
+soap services return xml response.
+
+Cohesion is the degree to which the elements inside a module belong together. A module could be a class or a package or even a microservice. Simply put, it means “the code that 
+changes together, stays together”.
+
+A module with high cohesion contains elements that are tightly related to each other and united in their purpose. For example, all the methods within a User class should represent 
+the user behavior.
+
+A module is said to have low cohesion if it contains unrelated elements. For example, a User class containing a method on how to validate the email address. User class can be 
+responsible for storing the email address of the user but not for validating it or sending an email:
+
+Modules with a single, well-defined purpose are easy to understand and much more readable. 
+It is easier to make code changes since all the related code is within the module.
+It is easier to test the code. 
+Overall, highly cohesive modules reflect better quality of software design.
+
+Coupling is the degree of interdependence between software modules. A module could be a class or a package or even a microservice. Effectively, the coupling is about how changing 
+one thing required change in another.
+
+feature.enabled=true
+Configuration
+public class FeatureConfig {
+
+    @Bean
+    @ConditionalOnProperty(prefix = "feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+    public MyFeature myFeature() {
+        return new MyFeature();
+    }
+}
+
+@Retryable in Spring Boot comes from Spring Retry, which allows retrying operations in case of failures like network issues, database errors, or transient exceptions. 
+It is useful for handling failures in payment processing, API calls, or database queries.
+
+<dependency>
+    <groupId>org.springframework.retry</groupId>
+    <artifactId>spring-retry</artifactId>
+</dependency>
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.EnableRetry;
+
+@Configuration
+@EnableRetry
+public class RetryConfig {
+}
+
+@Service
+public class PaymentService {
+
+    @Retryable(
+        value = { RestClientException.class },  // Specify exceptions to retry
+        maxAttempts = 3,   // Number of retry attempts
+        backoff = @Backoff(delay = 2000)  // Wait time before retry (in milliseconds)
+    )
+    public String processPayment() {
+        // Simulate bank API call
+        System.out.println("Attempting Payment...");
+        
+        if (Math.random() < 0.7) { // Simulating failure 70% of the time
+            throw new RestClientException("Bank API Failure");
+        }
+        
+        return "Payment Successful";
+    }
+}
+
+import org.springframework.retry.annotation.Recover;
+import org.springframework.web.client.RestClientException;
+
+@Service
+public class PaymentService {
+
+    @Recover
+    public String recover(RestClientException e) {
+        System.out.println("Payment failed after retries: " + e.getMessage());
+        return "Payment Failed. Please try again later.";
+    }
+}
+
+Attempting Payment...
+Attempting Payment...
+Attempting Payment...
+Payment failed after retries: Bank API Failure
+

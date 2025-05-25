@@ -1,0 +1,3338 @@
+Why constructors in Java cannot be static?
+The constructors cannot be static in Java. When we declare a method as static, it means the method belongs to the class and not to a specific object.
+But the constructor is always invoked to the reference of objects. So, there is no sense in making a constructor static.
+
+Can we make a constructor final?
+No, we cannot make a constructor final. If we made a constructor final, it would throw a compile-time error "modifier final not allowed".
+
+Can we define private and protected modifiers for data members (fields) in interfaces?
+No, we cannot define private and protected modifiers for variables in interface because the fields (data members) declared in an interface are by default 
+public, static, and final.
+
+Note that a blank final variable marked with a static keyword can only be assigned in the static block.
+public class Myclass 
+{
+  final static int x;
+  static {
+      x = 10;
+  }
+public static void main(String[] args) {
+    System.out.println(x);
+   }
+}
+
+
+SELECT * FROM Persons
+WHERE LastName LIKE '[bsp]%'
+
+The result-set will look like this:
+P_Id LastName FirstName Address City
+2 Svendson Tove Borgvn 23 Sandnes
+3 Pettersen Kari Storgt 20 Stavanger
+
+Next, we want to select the persons with a last name that do not start with "b" or "s" or "p" from the
+"Persons" table.
+We use the following SELECT statement:
+SELECT * FROM Persons
+WHERE LastName LIKE '[!bsp]%'
+
+The result-set will look like this:
+P_Id LastName FirstName Address City
+1 Hansen Ola Timoteivn 10 Sandnes
+
+query to find nth highest and lowest salary
+SELECT *
+FROM employee
+WHERE salary = (
+    SELECT DISTINCT salary
+    FROM employee
+    ORDER BY salary DESC
+    LIMIT 1 OFFSET n - 1
+);
+for finding 3rd highest i need to skip 1st 2 rows so n-1 will skip 
+
+The 'OFFSET' clause in SQL is used to skip a certain number of rows in the result set of a query. It is often used with the 'LIMIT' clause to paginate results in SQL queries.
+SELECT * FROM Employees
+LIMIT 10
+OFFSET 5;
+This query would skip the first 5 records and then return the next 10. It's a powerful way to navigate large datasets and retrieve only the data you need.
+
+
+
+When a cache gets full, it can’t store new data without getting rid of old data. That’s what cache eviction is all about.
+ It’s the process of getting rid of or swapping out data in the cache to make room for new stuff. It’s done by using 
+algorithms to figure out which data to get rid of. There are different policies for doing this, like LRU (Least Recently Used),
+ LFU (Frequently Used), and RPP (Random Replacement). These policies are picked based on the type of data being stored and how
+ often it’s accessed. The idea is to make sure the cache only has stuff that’s important and frequently accessed. That way,
+ it’ll be more efficient and work better.
+
+When a reference variable doesn’t point to any value it is assigned null. 
+Example : Employee employee; 
+In the above example employee object is not instantiate so it is pointed no where 
+
+37) Can we have multiple classes in single file ? 
+Yes we can have multiple classes in single file but it people rarely do that and not recommended. We can 
+have multiple classes in File but only one class can be made public. If we try to make two classes in File 
+public we get following compilation error. 
+“The public type must be defined in its own file”.
+
+- springboot is a java framework or module of spring which provides rapid application development,helps in dependency management need to add dependency
+only in pom.xml things will be auto configured, reduces most of the boiler plate code,helps in auto configuration and provide embedded server.it provides 
+production ready application like metrix and health check
+
+-working of springboot- springboot starts by scanning the starter dependcies in pom.xml then download and auto configure the module as you included in pom.xml
+it downloads all dependencies when we have build and auto configure all the dependicies.
+
+- how springboot starts- starts by calling main() method of your class.
+the run() method of springApplication is called.this method starts the application by creating an application context and initializing it.
+@Springbootapplication is combination of @Componentscan(scans all the packages in the package and subpackage of this main class),@Configuration and @enableAutoConfiguration
+to auto configure the beans . applicationcontext is container in which all beans are stored.
+once the application context is initialized,the run() method starts the application's embedded web server.
+@Configuration to make spring class class as configuration class so that we can create bean of it.
+
+- starters are a collection of pre-configured dependencies that make it easier to develop particular kinds of applications.these starters include all of dependencies,version 
+control and configuration needed to make certain features of springboot application functional
+
+- springboot starter parent is a starter project that provides the default configuration for spring-based applications.
+eg dependency management, resource filtering and profile-specific files.if in dependency version is not specified then it will be handled by parent.
+
+The lifecycle of any object means when & how it is born, how it behaves throughout its life, and when & how it dies. Similarly, the bean life cycle refers to when & 
+how the bean is instantiated, what action it performs until it lives, and when & how it is destroyed.
+
+Bean life cycle is managed by the spring container. When we run the program then, first of all, the spring container gets started. After that, the container creates the
+instance of a bean as per the request, and then dependencies are injected. And finally, the bean is destroyed when the spring container is closed. Therefore, 
+if we want to execute some code on the bean instantiation and just after closing the spring container, then we can write that code inside the custom init() method
+and the destroy() method.
+
+@PostContruct in the spring annotation that is invoked after dependency is injected and after we can create any initialization code.
+
+Spring IoC (Inversion of Control) Container is the core of Spring Framework. It creates the objects, configures and assembles their dependencies, manages their entire 
+life cycle. The Container uses Dependency Injection(DI) to manage the components that make up the application. It gets the information about the objects from a configuration 
+file(XML) or Java Code or Java Annotations and Java POJO class. These objects are called Beans. Since the Controlling of Java objects and their lifecycle is not done by the 
+developers, hence the name Inversion Of Control.
+
+The main differnece between @Autowired and @Inject is that inject is a standard annotation for dependency injection and @autowired is spring specific.
+
+@Bean annotation returns an object that spring should register as bean in application context.The body of the method bears the logic responsible for creating the instance.
+
+Bean Scopes
+singleton-the bean instance will be created only once and same instance will be returned by the IOC container.it is default scope.
+prototype-the bean will be created each time it is requested.
+request-per request bean will be created.
+sesion-valid per session.
+
+SerialVersionUID is a unique identifier for each class, JVM uses it to compare the versions of the class ensuring that the same class was used during Serialization is 
+loaded during Deserialization. Specifying one gives more control, though JVM does generate one if you don't specify.
+
+Constructor Injection:
+
+Advantages:
+
+Immutability: Objects created using constructor injection are typically immutable, meaning their state cannot be changed after instantiation. This can lead to more predictable 
+and safer code.
+Guaranteed Dependencies: With constructor injection, dependencies are guaranteed to be injected during object creation, ensuring that the object is in a valid state.
+Use constructor injection when dependencies are required for the object to function properly.
+Prefer constructor injection for mandatory dependencies that must be present.
+
+Setter Injection:
+
+Advantages:
+
+Flexibility: Setter injection allows for more flexibility, as dependencies can be changed or updated after object creation.
+Optional Dependencies: Use setter injection for optional dependencies that can be set or changed at runtime.
+When to Use:
+
+Use setter injection when dependencies are optional or when you need the flexibility to change dependencies after object creation.
+
+Lambda Expressions are anonymous functions. These functions do not need a name or a class to be used. Lambda expressions are added in Java 8. 
+Lambda expressions basically express instances of functional interfaces An interface with a single abstract method is called a functional interface
+
+Hibernate is an open-source object-relational mapping (ORM) framework for Java applications. It provides a framework for mapping Java objects to 
+relational database tables and vice versa. The primary goal of Hibernate is to simplify database programming in Java by handling the data conversion and interaction between 
+the application and the database.
+
+In the context of Spring and Hibernate integration, you may use @Primary when you have multiple beans of the same type and want to indicate a primary or default bean to 
+be injected when there is ambiguity.
+
+If there is only one bean of the required type, Spring will automatically inject it. If there are multiple beans and one is marked as @Primary, that bean will be 
+injected by default. If you need a different bean, you can use @Qualifier to specify the bean's name.
+
+In Java, you can overload the main method, but the JVM (Java Virtual Machine) will always look for the standard public static void main(String[] args) 
+method to start the execution of a Java program. Other overloaded main methods will not be recognized as the entry point for the program.
+
+A trigger is a set of instructions that are automatically executed ("triggered") in response to certain events on a particular table or view. 
+These events can include data modifications (INSERT, UPDATE, DELETE) or specific database actions.
+
+Triggers can be used to log changes to specific tables, providing an audit trail of modifications.
+
+SELECT USER()  to find out the currently logged in user in db.
+
+A cursor in the context of databases is a mechanism or pointer that is used to traverse the results of a query. It allows you to iterate over the rows returned by a query, 
+one row at a time
+
+An interface in Java is a collection of abstract methods (methods without a body) that define a contract for implementing classes.
+Interfaces can also contain constants (variables that are implicitly public, static, and final) and, from Java 8 onwards, default and static methods.
+A class can implement multiple interfaces.
+Interfaces are used to achieve abstraction and to provide a common contract for multiple classes.
+
+An abstract class in Java is a class that may contain abstract methods (methods without a body) and concrete methods (methods with a body).
+Abstract classes can also have instance variables, constructors, and member methods (both abstract and concrete).
+A class can extend only one abstract class.
+Abstract classes are used to provide a common base with shared implementation for a related group of classes.
+
+SSL stands for Secure Sockets Layer, and it is a cryptographic protocol designed to provide secure communication over a computer network. 
+SSL ensures the confidentiality and integrity of data exchanged between a user's web browser and a website. It uses encryption algorithms to protect the data during 
+transmission and prevent unauthorized access or tampering.
+SSL provides a mechanism for authenticating the identity of the server and, optionally, the client. This helps users verify that they are interacting with the 
+intended website and not a malicious actor.
+SSL ensures that the data transmitted between the client and server has not been altered or tampered with during transit.
+
+An SSL certificate is a digital certificate that authenticates the identity of a website and encrypts the information sent to the server using SSL technology. 
+It serves as a trust indicator for users, assuring them that they are communicating with a legitimate and secure website. SSL certificates are issued by trusted 
+third-party entities called Certificate Authorities (CAs).
+
+HTTP, or Hypertext Transfer Protocol, is the foundation of data communication on the World Wide Web. It is an application layer protocol that facilitates the 
+transfer of information between a web server and a web client (typically a web browser). HTTP defines a set of rules and conventions for structuring and transmitting 
+text-based messages.
+HTTP is a stateless protocol, meaning each request from a client to a server is independent and unrelated to any previous requests. The server does not retain 
+information about the client's previous requests.
+
+HTTP (Hypertext Transfer Protocol):
+
+Not Secure: HTTP does not provide any encryption or security measures for the data being transmitted. The information is sent in plain text, making it susceptible 
+to interception and tampering.
+HTTPS (Hypertext Transfer Protocol Secure):
+
+Secure: HTTPS uses encryption protocols, such as TLS (Transport Layer Security) or SSL (Secure Sockets Layer), to secure the communication between the client and the server. 
+This encryption ensures the confidentiality and integrity of the data.
+
+HTTP:
+
+No Authentication: HTTP does not provide a mechanism for authenticating the server, and there is no assurance of the server's identity.
+HTTPS:
+
+Server Authentication: HTTPS uses digital certificates to authenticate the server. This provides users with a level of confidence that they are communicating with the intended 
+and legitimate website.
+
+Let's consider a scenario where you, as a user, want to access your online banking website securely. Here's how SSL certificates come into play:
+
+User Access:
+
+You open your web browser and type in the URL of your bank's website, e.g., https://www.mybank.com.
+SSL Handshake Initiation:
+
+Your browser, recognizing the "https" in the URL, initiates an SSL handshake with the server. This is the process where the client (your browser) and the server establish a secure connection.
+Server Presents SSL Certificate:
+
+The server responds to the SSL handshake request by presenting its SSL certificate. This certificate is issued by a trusted Certificate Authority, such as VeriSign or Let's Encrypt.
+Certificate Verification:
+
+Your browser checks the SSL certificate to ensure it is valid, not expired, and issued by a trusted CA. This is a critical step to establish trust in the authenticity of the website.
+Encryption Key Exchange:
+
+If the certificate is valid, your browser and the server exchange public keys to establish an encrypted communication channel.
+Secure Communication:
+
+Now, any data exchanged between your browser and the server is encrypted and secure. This includes login credentials, personal information, and any other sensitive data.
+(Encryption is done using public key)
+
+Even though HTTP and HTTPS are stateless, web applications often require the ability to maintain user sessions and remember stateful information. To address this, techniques 
+such as cookies, sessions, and tokens are employed. These mechanisms help web applications manage user state across multiple requests, allowing for a more interactive and 
+personalized user experience.
+
+In summary, while HTTPS adds a layer of security to the communication between clients and servers, it does not alter the stateless nature inherited from HTTP. 
+The statelessness 
+of these protocols is a fundamental characteristic that influences the design and behavior of web applications.
+
+REST (Representational State Transfer) and SOAP (Simple Object Access Protocol) are two different architectural styles for designing web services. Both have their advantages 
+and use cases. Here are the key differences between REST and SOAP, and why REST is often preferred over SOAP in certain scenarios:
+
+1. Protocol:
+REST:
+
+Based on standard HTTP methods (GET, POST, PUT, DELETE).
+Can use other protocols like HTTPS for security.
+SOAP:
+
+A protocol that can use different transport protocols (HTTP, SMTP, etc.).
+Often relies on XML for message formatting.
+2. Message Format:
+REST:
+
+Typically uses lightweight formats like JSON or XML for data exchange.
+More human-readable and easier to debug.
+SOAP:
+
+Relies on XML for message format.
+XML can be verbose, making it less readable and heavier.
+3. Statelessness:
+REST:
+
+Stateless communication. Each request from a client to a server is independent.
+No client context stored on the server between requests.
+SOAP:
+
+Can be stateful or stateless, depending on the implementation.
+Supports sessions, which can introduce complexity.
+4. Flexibility:
+REST:
+
+More flexible in terms of data formats (JSON, XML), making it suitable for a variety of clients.
+Well-suited for mobile and web applications.
+SOAP:
+
+Strict in terms of XML structure and message format.
+May be less flexible for certain clients, but offers a standardized way to structure data.
+5. Standards:
+REST:
+
+Follows the principles of RESTful architecture.
+No strict standards, more guidelines.
+SOAP:
+
+Follows specific standards like WS-Security, WS-ReliableMessaging.
+Strict standards define how SOAP services should behave.
+6. Performance:
+REST:
+
+Generally considered more lightweight and efficient.
+Requires less bandwidth and resources.
+SOAP:
+
+Can be more resource-intensive due to XML and additional overhead.
+May have slower performance in certain scenarios.
+7. Ease of Use:
+REST:
+
+Simple and easy to use.
+Quick to implement and understand.
+SOAP:
+
+Can be more complex due to XML-based messaging and standards.
+Requires more effort for implementation.
+8. Usage:
+REST:
+
+Commonly used for web services in the context of web and mobile applications.
+Well-suited for scenarios where simplicity and scalability are key.
+SOAP:
+
+Historically used in enterprise-level applications and scenarios where strict standards and security are critical.
+Why REST is Preferred Over SOAP in Some Cases:
+Simplicity:
+
+REST is simpler and easier to implement than SOAP. Its lightweight nature makes it suitable for modern web and mobile applications.
+Flexibility:
+
+REST is more flexible in terms of data formats (JSON, XML), making it adaptable to different clients, including web browsers and mobile devices.
+Performance:
+
+REST is generally considered more efficient in terms of performance, requiring less bandwidth and resources.
+Statelessness:
+
+The stateless nature of REST simplifies communication and scalability, especially in cloud-based and distributed systems.
+Widespread Adoption:
+
+REST has become the de facto standard for web services, with widespread adoption in modern web development.
+While REST is often preferred for its simplicity and suitability for certain use cases, SOAP may still be appropriate in scenarios where strict standards, 
+security, and reliability are paramount. The choice between REST and SOAP depends on the specific requirements and constraints of a given project.
+
+The Hashtable class implements a hash table, which maps keys to values. Any non-null object can be used as a key or as a value. To successfully store 
+and retrieve objects from a hashtable, the objects used as keys must implement the hashCode method and the equals method. 
+
+Features of Hashtable
+
+It is similar to HashMap, but is synchronized.
+Hashtable stores key/value pair in hash table.
+In Hashtable we specify an object that is used as a key, and the value we want to associate to that key. The key is then hashed, and the resulting hash code is 
+used as the index at which the value is stored within the table.
+The initial default capacity of Hashtable class is 11 whereas loadFactor is 0.75.
+HashMap doesn’t provide any Enumeration, while Hashtable provides not fail-fast Enumeration.
+
+What is HashMap?
+Java HashMap is similar to HashTable, but it is unsynchronized. It allows to store the null keys as well, but there should be only one null key object and 
+there can be any number of null values. This class makes no guarantees as to the order of the map. To use this class and its methods, you need to import 
+java.util.HashMap package or its superclass.
+
+for (Map.Entry<String, Integer> e : map.entrySet())
+            System.out.println("Key: " + e.getKey()
+                               + " Value: " + e.getValue());
+    }
+
+Hashing refers to the process of generating a fixed-size output from an input of variable size using the mathematical formulas known as hash functions. 
+This technique determines an index or location for the storage of an item in a data structure.
+HashMap doesn’t allow duplicate keys but allows duplicate values. That means A single key can’t contain more than 1 value but more than 1 key can contain a single value.
+HashMap allows a null key also but only once and multiple null values.
+This class makes no guarantees as to the order of the map; in particular, it does not guarantee that the order will remain constant over time. It is roughly similar to 
+HashTable but is unsynchronized.
+
+hashmap internally uses hashing function in which keys hashcode is determined using its hashcode() method and on the basis of that hashcode that key values is stored at the
+index of the hashcode . it uses linkedlist to store key value in hash table if value is already present at a particular index the key value is stored next to existing node
+if it have the same key present already then its value is updated.same while retreiving the hashcode of the key is calculated and the value at that index is fetched and if 
+there were more than one elements than the linkedlist is being traversed to return the required value.
+
+ConcurrentHashMap is a thread-safe implementation of the Map interface in Java, which means multiple threads can access it simultaneously without any synchronization issues.
+One of the key features of the ConcurrentHashMap is that it provides fine-grained locking, meaning that it locks only the portion of the map being modified, rather than the 
+entire map. This makes it highly scalable and efficient for concurrent operations.
+
+ConcurrentHashMap class is thread-safe i.e. multiple threads can operate on a single object without any complications.
+At a time any number of threads are applicable for a read operation without locking the ConcurrentHashMap object which is not there in HashMap.
+In ConcurrentHashMap, the Object is divided into a number of segments according to the concurrency level.
+The default concurrency-level of ConcurrentHashMap is 16.
+In ConcurrentHashMap, at a time any number of threads can perform retrieval operation but for updated in the object, the thread must lock the particular segment in which the 
+thread wants to operate. This type of locking mechanism is known as Segment locking or bucket locking. Hence at a time, 16 update operations can be performed by threads.
+Inserting null objects is not possible in ConcurrentHashMap as a key or value.
+ConcurrentHashMap is designed for concurrent access from multiple threads without external synchronization. It supports high concurrency and provides fine-grained locking 
+to allow multiple threads to read and write concurrently.
+
+// Example 1: Filter fruits with length greater than 5
+List<String> result1 = strings.stream()
+        .filter(fruit -> fruit.length() > 5)
+        .collect(Collectors.toList());
+System.out.println(result1);
+
+// Output: [banana, orange]
+
+// Example 2: Map fruits to uppercase
+List<String> result2 = fruits.stream()
+        .map(String::toUpperCase)
+        .collect(Collectors.toList());
+System.out.println(result2);
+
+// Output: [APPLE, BANANA, ORANGE, GRAPE, PEAR]
+
+// Example 3: Sort numbers in ascending order
+List<Integer> result3 = numbers.stream()
+        .sorted()
+        .collect(Collectors.toList());
+System.out.println(result3);
+
+// Output: [1, 2, 3, 5, 8]
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+
+// Example 4: Calculate the sum of numbers
+int sum = numbers.stream()
+        .reduce(0, Integer::sum);
+System.out.println("Sum: " + sum);
+
+// Output: Sum: 15
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+int result = numbers
+  .stream()
+  .reduce(0, (subtotal, element) -> subtotal + element);
+assertThat(result).isEqualTo(21);
+Copy
+In this case, the Integer value 0 is the identity. It stores the initial value of the reduction operation and also the default result when the stream 
+of Integer values is empty.
+
+
+So, you have made some changes to your code base in the Course Module and you push it to Git and the code goes to Jenkins and Jenkins picks up the code, 
+creates a build and deploys it into the server and your application went live and you have tested your changes and you have seen the application is working 
+as the client requirements. And the next morning, you got to know from the testing team that you have pushed some changes, and that basically broke the application. 
+And whenever you asked them you got to know that the new feature is working fine but something is broken with the customer module. For example, the customers are not 
+able to log into the application. So you got confused because you make changes in the Course Module but the effect is showing on the Customer module. But why so?  
+Because the entire application is getting zipped together and getting deployed together on the server. So there are two problems over here
+
+Any changes in the code lead you to test the entire application.
+Developers may not have knowledge of all the modules and that’s making it harder to get started with any module and also fix any issues.
+So basically the thing is that a developer who is working on one module might not have an idea of other modules. That’s why if you are working on a monolithic application 
+in your company it might be very hard to get started with the application.
+
+The problem is here you can see in the above image we are having traffic in the Customer Module Only but right now just because the customer module is heavy we are ended 
+up deploying the code into three different servers because the customer module is not independently deployable. So the point is we are only getting the load in the Customer 
+Module but why deploy the Employee Module, Course Module, and Address Module into different servers? This is unnecessary and the cost of the server is not that cheap. 
+It’s a complete waste of both money and resource. 
+
+So following are the advantages of microservice –
+
+Independently Deployable
+Each app can be tested separately
+Code changes in one application/service do need an entire application testing
+Dev working on one service shouldn’t require the entire application knowledge
+
+@EnableEurekaServer
+
+server:
+  port: 8761
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+
+@EnableDiscoveryClient or @EnableEurekaClient.
+spring:
+  application:
+    name: spring-cloud-eureka-client
+server:
+  port: 0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
+
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+eureka.instance.hostname =UAT-ROLE-AUTH-MANAGER
+
+The @LoadBalanced annotation is used in Spring Cloud to create a RestTemplate bean that is aware of service discovery. 
+When you annotate a RestTemplate bean with @LoadBalanced, it enables the client-side load balancing feature provided by Spring Cloud.
+When making a request to a service using a RestTemplate annotated with @LoadBalanced, the client-side load balancer intercepts the request. It dynamically resolves the 
+service name to an actual network location and forwards the request to one of the available instances.
+
+Trace Id: The Sleuth adds the Trace Id. It remains the same in all services for a given request.
+Span Id: The Sleuth also adds the Span Id. It remains the same in a unit of work but different for different services for a given request.
+
+yield()	join()	sleep()
+Purpose	If a thread wants to pass its execution to give chance to remaining threads of the same priority then we should go for yield()	
+If a thread wants to wait until completing of some other thread then we should go for join()	
+If a thread does not want to perform any operation for a particular amount of time, then it goes for sleep()
+
+public Executor taskExecutor() Method:
+
+This method is responsible for creating and configuring the ThreadPoolTaskExecutor bean.
+ThreadPoolTaskExecutor is a Spring-specific implementation of the Executor interface that provides control over the configuration of a thread pool.
+ThreadPoolTaskExecutor Configuration:
+
+executor.setQueueCapacity(100): Sets the maximum number of tasks that can be queued and are waiting for execution. If the queue is full, additional tasks may be rejected 
+based on the rejection policy.
+executor.setMaxPoolSize(2): Sets the maximum number of threads that the pool can have.
+executor.setCorePoolSize(2): Sets the core number of threads in the pool. These are the threads kept alive even when idle.
+executor.setThreadNamePrefix("poolThread-"): Sets a prefix for the names of the threads created by the pool. Threads will be named like "poolThread-1", "poolThread-2", and 
+so on.
+executor.initialize(): Initializes the ThreadPoolTaskExecutor with the configured settings.
+
+
+Selection sort is a simple and efficient sorting algorithm that works by repeatedly selecting the smallest (or largest) element from the unsorted portion of the list and moving 
+it to the sorted portion of the list.  
+
+@PostConstruct
+	public void selection() {
+		
+		int arr[]= {52,85,21,45,96,15,3,5,87};
+		
+		for(int i=0;i<arr.length-1;i++) {
+			
+			int min_idx=i;
+			for(int j=i+1;j<arr.length;j++) {
+				if(arr[j]<arr[min_idx]) {
+					min_idx=j;
+				}
+			}
+			int temp=arr[min_idx];
+			arr[min_idx]=arr[i];
+			arr[i]=temp;
+		}
+		
+		for(int i=0;i<arr.length;i++) {
+			System.out.print(arr[i]+" ");
+		}
+		System.out.println();
+		
+	}
+Complexity Analysis of Selection Sort
+Time Complexity: The time complexity of Selection Sort is O(N2) as there are two nested loops:
+
+One loop to select an element of Array one by one = O(N)
+Another loop to compare that element with every other Array element = O(N)
+Therefore overall complexity = O(N) * O(N) = O(N*N) = O(N2)
+
+Auxiliary Space: O(1) as the only extra memory used is for temporary variables while swapping two values in Array. The selection sort never makes more than O(N) swaps and can be useful 
+when memory writing is costly. 
+
+Bubble Sort is the simplest sorting algorithm that works by repeatedly swapping the adjacent elements if they are in the wrong order. This algorithm is not suitable for large 
+data sets as its average and worst-case time complexity is quite high.
+
+Bubble Sort Algorithm
+In Bubble Sort algorithm, 
+
+traverse from left and compare adjacent elements and the higher one is placed at right side. 
+In this way, the largest element is moved to the rightmost end at first. 
+This process is then continued to find the second largest and place it and so on until the data is sorted.
+
+@PostConstruct
+	public void bubble() {
+		
+		int arr[]= {52,85,21,45,96,15,3,5,87};
+		
+		
+		for(int i=0;i<arr.length-1;i++) {
+			for(int j=0;j<arr.length-i-1;j++) {
+				if(arr[j]>arr[j+1]) {
+					int temp=arr[j];
+					arr[j]=arr[j+1];
+					arr[j+1]=temp;
+				}
+				
+			}
+			
+		}
+		
+		for(int i=0;i<arr.length;i++) {
+			System.out.print(arr[i]+" ");
+		}
+		System.out.println();
+		
+	}
+
+Merge sort is defined as a sorting algorithm that works by dividing an array into smaller subarrays, sorting each subarray, and then merging the sorted subarrays back together 
+to form the final sorted array.
+
+void merge(int[] arr,int l,int mid,int r) {
+		
+		int k=l;
+		int n=mid-l+1;
+		int m=r-mid;
+		int[] left=new int[n];
+		int[] right=new int[m];
+		
+		for(int i=0;i<n;i++) {
+		left[i]=arr[l+i];	
+		}
+		for(int j=0;j<m;j++) {
+			right[j]=arr[mid+1+j];
+		}
+		
+		int i=0,j=0;
+		while(i<n && j<m) {
+			if(left[i]<=right[j]) {
+				arr[k]=left[i];
+				i++;
+			}else {
+				arr[k]=right[j];
+				j++;
+			}
+			k++;
+		}
+		while(i<n) {
+			arr[k]=left[i];
+			i++;k++;
+		}
+		while(j<m) {
+			arr[k]=right[j];
+			j++;k++;
+		}
+		
+	}
+	
+	void sortArr(int[] arr,int l,int r) {
+		
+		 if(l<r) {
+			 int mid=l+(r-l)/2;
+			 
+			 sortArr(arr,l,mid);
+			 sortArr(arr,mid+1,r);
+			 
+			 merge(arr,l,mid,r);
+		 }
+		
+		
+	}
+	@PostConstruct
+	public void merge() {
+		
+		int arr[]= {52,85,21,45,96,15,3,5,87};
+		
+		sortArr(arr,0,arr.length-1);
+		
+		 
+		
+		for(int i=0;i<arr.length;i++) {
+			System.out.print(arr[i]+" ");
+		}
+		System.out.println();
+		
+	}
+
+Time Complexity: O(N log(N)),  Merge Sort is a recursive algorithm and time complexity can be expressed as following recurrence relation. 
+
+T(n) = 2T(n/2) + θ(n)
+
+The above recurrence can be solved either using the Recurrence Tree method or the Master method. It falls in case II of the Master Method and the solution of the recurrence is
+ θ(Nlog(N)). The time complexity of Merge Sort isθ(Nlog(N)) in all 3 cases (worst, average, and best) as merge sort always divides the array into two halves and takes linear 
+time to merge two halves.
+
+Auxiliary Space: O(N), In merge sort all elements are copied into an auxiliary array. So N auxiliary space is required for merge sort
+
+#Insertion sort -
+we start by making the second element of array as the key
+
+//    	int[] a= {13,5,387,23,5,2,7,87,54};
+//key=12 j=0 a[1]=12 j=-1 a[0]=11
+    	
+    	
+        int a[] = { 12, 11, 13, 5, 6 };
+    	for(int i=1;i<a.length;i++) {
+    		int key=a[i];
+    		int j=i-1;
+    		while(j>=0 && key<a[j]) {
+    			a[j+1]=a[j];
+    			j=j-1;
+    		}
+    		a[j+1]=key;
+    		
+    	}
+
+
+*find peak element in array which is greater than its neighbours.
+public void fun() {
+		
+		int arr[]= {52,85,21,45,96,15,3,5,87};
+		
+		int n=arr.length;
+		for(int i=1;i<n-1;i++) {
+			if(arr[i]>arr[i-1] && arr[i]>arr[i+1]) {
+				System.out.println(arr[i]);
+				break;
+			}
+		}
+		
+	}
+
+*Min and max element in array
+public void fun() {
+		
+		int arr[]= {52,85,21,45,96,15,3,5,87};
+		
+		int n=arr.length;
+		int largest=Integer.MIN_VALUE;
+		int smallest=Integer.MAX_VALUE;
+		for(int i=0;i<n;i++) {
+			if(arr[i]>=largest) {
+				largest=arr[i];
+			}
+			if(arr[i]<=smallest) {
+				smallest=arr[i];
+			}
+		}
+		System.out.println("Largest - "+largest+" Smallest - "+smallest);
+		
+	}
+
+* reverse array
+public void fun() {
+		
+		int arr[]= {52,85,21,45,96,15,3,5,87};
+		
+		int start=0;
+		int end=arr.length-1;
+		while(start<end) {
+			int temp=arr[start];
+			arr[start]=arr[end];
+			arr[end]=temp;
+			start++;
+			end--;
+		}
+		for(int i=0;i<arr.length;i++) {
+		System.out.print(arr[i]+" ");
+		}
+	}
+
+
+# To put it straight – you don’t have to do anything explicitly to make an object eligible for garbage collection. When an object is no longer used in your application code, the heap space used by it can be reclaimed. Look at the following Java code:
+
+public Integer run() {
+  Integer variableOne = 10;
+  Integer variableTwo = 20;
+  return variableOne + variableTwo;
+}
+In the run() method we explicitly create two variables. They are first put on the heap, in the young generation heap. Once the method finishes its execution they are no longer needed and they start being eligible for garbage collection. When a young generation garbage collection happens the memory used by those variables may be reclaimed. If that happens the previously occupied memory will be visible as free.
+
+#Some key purposes of Java Heap Memory are:
+
+Object Allocation: All objects created during program execution, including instances of classes, arrays, and collections, are allocated memory in the heap.
+
+Automatic Memory Management: Java uses automatic memory management through a process known as garbage collection. The JVM automatically identifies and deallocates objects that are no longer reachable, freeing up memory space for new object allocations.
+
+Memory Efficiency: Heap memory allows for flexible memory allocation, enabling the JVM to manage memory efficiently and avoid manual memory management pitfalls like memory leaks.
+
+Shared Memory: The heap is a shared memory area accessible to all threads in a Java application. It allows multiple threads to interact and share data through objects stored in the heap.
+
+# The ideal approach is to start with a conservative initial heap size and monitor the application’s memory usage and behavior. If the heap size is too small, frequent garbage collections and OutOfMemoryErrors may occur. In contrast, if it is too large, the application might experience longer garbage collection pauses and waste valuable memory.
+
+# When the heap memory in Java becomes full, it indicates that the Java Virtual Machine (JVM) can no longer allocate additional objects, and there is no more free space available to accommodate new requests for memory allocation. When the heap is exhausted, the JVM cannot create new objects, and attempting to do so results in an OutOfMemoryError.
+
+Here’s what happens when the heap memory is full:
+
+OutOfMemoryError
+
+When the heap becomes full and the JVM cannot allocate more memory for new objects, it throws an OutOfMemoryError. This error is an indication that the application has exhausted its allocated heap space and cannot fulfill the memory requirements of the running code.
+
+#JDK -
+provide environment to develop and run the java program.
+it is package that includes-
+development tool- to provide an environment to develop the program.
+JRE-to execute the program.
+compiler-javac
+archiver-jar
+docs generator-javadoc
+interpreter/loader
+
+#JRE-
+it is the installation package that provides environment to run only the java program.
+it consists of deployment technologies.
+ui toolkits,integration libraries,base libraries,JVM
+after we get .class file,the next things happen at runtime-
+classloader loads all the classes need to execute the program.
+JVM sends code to byte code verifier to check the format of code.
+
+#JVM with the help of interpreter converts .class ie byte code to machine code.
+
+
+
+#Composition:
+
+Composition is a "has-a" relationship, where a class contains another class as a member.
+Instead of inheriting behavior, a class with composition contains instances of other classes, delegating some of its responsibilities to these contained objects.
+Composition allows for greater flexibility and loose coupling between classes, as the behavior of the containing class can be changed by replacing the composed objects with different ones at runtime.
+Unlike inheritance, composition can involve multiple classes, allowing for more complex object structures.
+Inheritance creates tight coupling between classes, as changes in the superclass can affect subclasses. Composition promotes loose coupling, as classes are independent of the implementation details of the objects they contain.
+Inheritance can lead to deep class hierarchies, which can be difficult to understand and maintain. Composition allows for more manageable and modular code by breaking down functionality into smaller, more focused classes.
+
+#In Java, the Exchanger class is a synchronization point at which two threads can exchange objects. Each thread presents some object on entry to the exchange method, matches with the other thread, and receives its partner's object on return. Exchangers may be useful in applications such as genetic algorithms and pipeline designs.
+scenario when one thread processes some bad data and other thread inserts it into some table then we can use such approach.
+
+The Java Memory Model (JMM) defines how threads interact through memory when accessing shared variables. It ensures that the behavior of Java programs is predictable and reliable in a multi-threaded environment by specifying the rules and guarantees around visibility, atomicity, and ordering of memory operations.
+
+Key concepts of the Java Memory Model include:
+
+Shared Memory: All Java threads have access to shared memory, allowing them to communicate by reading and writing to shared variables.
+
+Visibility: Changes made by one thread to shared variables must be visible to other threads. However, due to optimizations like thread caching and compiler reordering, changes made by one thread may not immediately become visible to others.
+
+Atomicity: Certain operations, such as reads and writes of primitive variables (except long and double), are atomic, meaning they are performed entirely and not subject to interference from other threads. Operations on long and double variables are only atomic if they are declared as volatile.
+
+Ordering: The JMM defines rules around the ordering of memory operations. For example, if one thread writes a value to a variable and then releases a lock, another thread acquiring the same lock is guaranteed to see the value written by the first thread.
+
+Synchronization: Java provides synchronization mechanisms like synchronized blocks and volatile variables to control the visibility and ordering of memory operations between threads. These mechanisms establish happens-before relationships, which ensure that certain memory operations are ordered as desired.
+
+Happens-Before Relationship: This relationship is a fundamental concept in the Java Memory Model. It ensures that the memory operations that occur before a synchronization action in one thread are visible to other threads after they perform a corresponding synchronization action. This guarantees consistent and predictable behavior in concurrent programs.
+
+Understanding the Java Memory Model is crucial for writing correct and efficient multi-threaded Java programs. It helps developers reason about the behavior of their code in concurrent scenarios and ensures that the program behaves as intended across different execution environments.
+
+Implementing caching in Spring is quite straightforward thanks to its caching abstraction support. Spring provides support for several caching providers like EhCache, Redis, Caffeine, etc., and allows you to easily integrate caching into your Spring application.
+
+Here's a basic guide on how to implement caching in Spring:
+
+Add Cache Dependencies:
+Make sure you have the necessary dependencies in your pom.xml or build.gradle file for the caching provider you want to use. For example, if you're using EhCache, you'd include the EhCache dependencies.
+
+Enable Caching in Spring Configuration:
+In your Spring configuration file (e.g., applicationContext.xml or a Java config class), enable caching by adding the @EnableCaching annotation to your configuration class.
+
+java
+Copy code
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableCaching
+public class AppConfig {
+    // Other configurations...
+}
+Annotate Methods to Cache:
+Identify the methods that you want to cache the results of and annotate them with Spring's caching annotations. The most commonly used annotations are @Cacheable, @CachePut, and @CacheEvict.
+
+java
+Copy code
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+@Service
+public class MyService {
+
+    @Cacheable("myCache") // Cache results of this method with key "myCache"
+    public String expensiveOperation(String key) {
+        // Perform expensive operation here
+        return "Result";
+    }
+}
+Configure Cache Manager:
+If you're using a specific caching provider, you may need to configure the cache manager bean in your Spring configuration. Spring Boot automatically configures a cache manager for you based on the dependencies you include.
+
+Optional: Configure Cache Settings:
+Depending on your requirements, you may want to configure cache settings such as TTL (Time-To-Live), maximum cache size, etc.
+
+Use Caching in Your Application:
+Once configured, you can start using caching in your application by calling the annotated methods. The results will be cached based on the caching annotations and cache manager configuration.
+
+That's it! With these steps, you can easily implement caching in your Spring application. Make sure to choose the appropriate caching provider and configure it according to your application's requirements.
+
+ @Cacheable
+The simplest way to enable caching behavior for a method is to demarcate it with @Cacheable, and parameterize it with the name of the cache where the results would be stored:
+
+@Cacheable("addresses")
+public String getAddress(Customer customer) {...}
+Copy
+The getAddress() call will first check the cache addresses before actually invoking the method and then caching the result.
+
+While in most cases one cache is enough, the Spring framework also supports multiple caches to be passed as parameters:
+
+@Cacheable({"addresses", "directory"})
+public String getAddress(Customer customer) {...}
+Copy
+In this case, if any of the caches contain the required result, the result is returned and the method is not invoked.
+
+@CacheEvict 
+Now, what would be the problem with making all methods @Cacheable?
+
+The problem is size. We don’t want to populate the cache with values that we don’t need often. Caches can grow quite large, and quite fast, and we could be holding on to a lot of stale or unused data.
+
+We can use the @CacheEvict annotation to indicate the removal of one or more/all values so that fresh values can be loaded into the cache again:
+
+@CacheEvict(value="addresses", allEntries=true)
+public String getAddress(Customer customer) {...}
+Copy
+Here we’re using the additional parameter allEntries in conjunction with the cache to be emptied; this will clear all the entries in the cache addresses and prepare it for new data.
+
+@CachePut
+While @CacheEvict reduces the overhead of looking up entries in a large cache by removing stale and unused entries, we want to avoid evicting too much data out of the cache.
+
+Instead, we selectively update the entries whenever we alter them.
+
+With the @CachePut annotation, we can update the content of the cache without interfering with the method execution. That is, the method will always be executed and the result cached:
+
+@CachePut(value="addresses")
+public String getAddress(Customer customer) {...}
+Copy
+The difference between @Cacheable and @CachePut is that @Cacheable will skip running the method, whereas @CachePut will actually run the method and then put its results in the cache.
+
+#what if pplication works fine in dev and slow in production.
+check the logs and check the workflow of the application if any exception is occuring at the production
+checking configuration that must be included in dev but missed in production 
+check the databse queries and optimize them.
+implement the logging tool to check the cpu utilization , memory management,process and time taken by the process etc etc
+and if im implementing some other 3rd party services ill check if their production environment is working fine or not.
+
+When your application runs fine in a development environment but experiences performance issues in production, it can be challenging to diagnose and resolve the underlying causes. Here are some steps you can take to identify and address the performance issues:
+
+Performance Monitoring:
+Set up performance monitoring tools in your production environment to collect metrics such as CPU usage, memory usage, disk I/O, network I/O, response times, and throughput. Tools like Prometheus, Grafana, New Relic, or Datadog can help you monitor the health and performance of your application and infrastructure.
+
+Identify Bottlenecks:
+Analyze the performance metrics collected from your monitoring tools to identify potential bottlenecks in your application. Look for areas where resource utilization is high or response times are slow. Common bottlenecks include database queries, network latency, CPU-bound operations, and inefficient algorithms.
+
+Database Optimization:
+If your application relies heavily on database queries, optimize your database queries and schema design to improve performance. Use database indexes, query optimization techniques, and database profiling tools to identify and optimize slow queries. Consider caching frequently accessed data in memory or using a distributed caching solution to reduce database load.
+
+Code Profiling:
+Use a code profiling tool to identify performance bottlenecks within your application code. Profile your application under load in a production-like environment to identify methods or components that consume the most CPU time or have the highest latency. Look for opportunities to optimize code, reduce unnecessary computations, and eliminate performance bottlenecks.
+
+Concurrency and Threading:
+Evaluate the concurrency and threading model of your application to ensure it can handle concurrent requests efficiently. Consider using asynchronous processing, thread pooling, or non-blocking I/O to improve scalability and responsiveness. Be mindful of thread contention, deadlocks, and resource contention issues that can degrade performance in a multi-threaded environment.
+
+Infrastructure Optimization:
+Review your production infrastructure configuration and resource allocation to ensure it can handle the expected workload and traffic. Scale up or scale out your infrastructure by adding more CPU, memory, or storage resources as needed. Consider using load balancers, auto-scaling groups, and CDN (Content Delivery Network) to distribute traffic and improve reliability and performance.
+
+Network and Latency:
+Investigate network latency and connectivity issues that may affect the performance of your application. Use network monitoring tools to measure latency between different components of your application and identify potential network bottlenecks. Consider optimizing network configurations, using content caching, or deploying your application closer to your users to reduce latency.
+
+Continuous Optimization:
+Performance optimization is an ongoing process, so continue to monitor and optimize your application regularly. Implement performance tests and benchmarks to measure the impact of optimizations and ensure that performance improvements are effective. Use A/B testing and canary deployments to validate performance changes in a controlled manner before rolling them out to production.
+
+By following these steps and systematically diagnosing and addressing performance issues, you can improve the performance and scalability of your application in a production environment.
+
+#strategies to optimize the springboot performance on production
+implement caching for frequently accesed data.
+optimize database queries to reduce the database load.
+use asynchroous methods for sending mails etc.
+load balancer if traffic is high.
+optimize the time complexity of code.
+webflux to handle large no of concurrent connections.
+
+how to acheive inter service commuication.
+using resttemplate for normal communication.
+using feign client when communicating through multiple services.
+using asynchronous communication like kafka 
+
+Feign supports client-side load balancing, which distributes requests among multiple instances of a service. It helps improve system reliability, scalability, and fault tolerance by evenly distributing the workload.
+
+WebFlux is built on top of the Reactive Streams API, which defines a standard for asynchronous stream processing with non-blocking backpressure. This enables developers to handle large volumes of data while ensuring resource efficiency and avoiding backpressure-related issues.
+
+multiple types of bean can be handled by using the qualifier annotation which help us to determine which bean to be used by giving the value inside parenthesis inside double quotes.
+
+#Best practices for handling the transaction in spring 
+using @Transactional annotation if something goes wrong it will rollback the transaction.
+keep transaction at the service layer as it is the sweet spot for interacting with database and business logic so transaction can be maintained efficiently.
+
+how springboot manages to choose which web server to use.
+it access the class dependency of added server i.e. tomcat,jetty if no server found then default tomcat is used which is included in springboot-starter-web.
+
+Spring Cloud is a set of tools and frameworks within the Spring ecosystem that provides solutions for building and deploying cloud-native applications. It simplifies the development of distributed systems and microservices architectures by offering a range of features and patterns for common challenges in cloud environments.
+
+Here are some key components and uses of Spring Cloud:
+
+Service Discovery: Spring Cloud provides tools like Netflix Eureka and Consul for service registration and discovery. This allows services to dynamically locate and communicate with each other without hardcoding service endpoints, enabling better scalability and fault tolerance.
+
+Load Balancing: Spring Cloud integrates with client-side load balancers like Ribbon, allowing services to distribute incoming requests across multiple instances for improved performance and reliability.
+
+Circuit Breakers: Spring Cloud integrates with circuit breaker libraries like Netflix Hystrix and resilience4j, which help prevent cascading failures in distributed systems by automatically failing fast and providing fallback mechanisms when downstream services are unavailable or experiencing issues.
+
+API Gateway: Spring Cloud Gateway and Netflix Zuul provide API gateway functionality, allowing developers to route and filter requests to backend services, implement authentication and authorization, and apply policies such as rate limiting and content transformation.
+
+Configuration Management: Spring Cloud Config centralizes configuration management for distributed systems, allowing developers to externalize configuration properties from application code and manage them dynamically across different environments.
+
+Distributed Tracing: Spring Cloud Sleuth and Zipkin provide distributed tracing capabilities, allowing developers to track and visualize the flow of requests across multiple services in a distributed system, making it easier to diagnose and debug issues.
+
+Service Mesh: Spring Cloud integrates with Istio, a popular service mesh framework, to provide advanced features like traffic management, security, and observability for microservices running in Kubernetes or other container orchestration platforms.
+
+Stream Processing: Spring Cloud Stream provides a framework for building event-driven microservices using messaging middleware like Apache Kafka or RabbitMQ. It simplifies the development of event-driven architectures by providing abstractions for producing and consuming messages.
+
+Security: Spring Cloud Security provides integration with Spring Security and OAuth 2.0, allowing developers to secure microservices and APIs using standard authentication and authorization mechanisms.
+
+Overall, Spring Cloud simplifies the development, deployment, and management of cloud-native applications by providing a comprehensive set of tools and frameworks for common challenges in distributed systems and microservices architectures. It enables developers to build scalable, resilient, and secure applications that can leverage the benefits of cloud computing environments effectively.
+
+Spring Boot Actuator is a powerful set of tools that provides production-ready features to monitor and manage Spring Boot applications. It offers insights into the internals of your application at runtime, enabling you to monitor metrics, gather diagnostic information, and manage the application's health and configuration. Let's delve into its key features:
+
+Health Indicators: Actuator provides a /health endpoint, which offers insights into the health of the application and its dependencies. You can define custom health indicators to check the status of various components (e.g., databases, caches, messaging queues) and customize the health status logic.
+
+Metrics Gathering: Actuator collects and exposes various metrics about the application's internals, such as JVM metrics (memory usage, garbage collection), HTTP request metrics (throughput, response times), and custom metrics. It supports various metrics backends like Prometheus, Graphite, and InfluxDB for storage and visualization.
+
+Environment Information: The /env endpoint provides information about the application's environment, including system properties, environment variables, and application properties. This can be useful for debugging and troubleshooting configuration-related issues.
+
+Configuration Inspection: Actuator offers a /configprops endpoint to expose details about the application's configuration properties, including their source and current values. This helps in understanding how configuration properties are loaded and overridden.
+
+Bean Inspection: The /beans endpoint provides a list of all beans managed by the Spring application context, along with their dependencies and dependencies' dependencies. This is useful for understanding the bean wiring and diagnosing dependency injection issues.
+
+Thread Dump and Stack Trace: Actuator allows you to capture and download thread dumps (/threaddump) and stack traces (/dump) of the application, which can be invaluable for diagnosing performance bottlenecks and deadlock situations.
+
+Endpoint Customization: Actuator endpoints can be customized and secured based on your requirements. You can choose which endpoints to expose, configure their paths, and secure them with authentication and authorization mechanisms.
+
+Integration with Monitoring Systems: Actuator seamlessly integrates with monitoring and alerting systems like Prometheus, Grafana, and Spring Boot Admin. This allows you to collect, visualize, and alert on application metrics and health status effectively.
+
+Audit Logging: Actuator provides an audit logging endpoint (/auditevents) to expose information about security-related events in the application, such as login attempts, access-denied events, and authentication failures.
+
+Application Info: Actuator includes endpoints (/info and /info/{key}) to expose arbitrary application information, such as version, description, and custom metadata. This can be useful for displaying application metadata in monitoring dashboards or administrative consoles.
+
+Overall, Spring Boot Actuator offers a comprehensive suite of features for monitoring, managing, and troubleshooting Spring Boot applications in production environments. By leveraging Actuator endpoints, developers and operations teams can gain valuable insights into application health, performance, and configuration, facilitating proactive monitoring, efficient debugging, and effective incident response.
+
+class A
+{
+public void m1()
+}
+class B extends class A
+{
+public void m1()
+}
+A a=new A(); // a class method called
+a.m1();
+
+B b=new A():// reference of super classs to child class is not acceptable give compile time error;
+b.m1();
+
+A a=new B():// method of class b will be executed.
+a.m1();
+
+class A {
+    public void m1() {
+        System.out.println("Inside A's m1 method");
+    }
+}
+
+class B extends A {
+    @Override
+    public void m1() {
+        // Call superclass method using super keyword
+        super.m1();
+        System.out.println("Inside B's m1 method");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        B b = new B();
+        b.m1();
+    }
+}
+
+Inside A's m1 method
+Inside B's m1 method
+
+it is possible to super class method in overriden base class method. 
+
+
+If super() is called after a System.out.println statement in the overridden method m1() of class B, it wouldn't compile. The reason is that a call to super() must be the first statement in the constructor of a subclass if it's used, and it can only be used within a constructor to call the superclass's constructor.
+
+super must be the first statement in a constructor: When calling a superclass constructor, the super() statement must be the first statement in the constructor of the subclass.
+
+super is not required to call a superclass method: While it is possible to use the super keyword to call a method in the parent class, it is not required. If a method is not overridden in the subclass, then calling it without the super keyword will invoke the parent class’s implementation.
+
+No, it is not necessary that super must be the first statement when calling a parent class method from a subclass method in Java. In fact, you can place the super call anywhere within the subclass method, but it's typically recommended to call super as the first statement for clarity and to ensure that superclass initialization or behavior occurs before any subclass-specific logic.
+
+class SuperClass {
+    void method() {
+        System.out.println("SuperClass method");
+    }
+}
+
+class SubClass extends SuperClass {
+    @Override
+    void method() {
+        // Some subclass-specific logic before calling superclass method
+        System.out.println("SubClass specific logic");
+        
+        // Call superclass method
+        super.method(); // calling superclass method
+        
+        // Some subclass-specific logic after calling superclass method
+        System.out.println("More SubClass specific logic");
+    }
+}
+
+When you create an instance of a subclass, the superclass constructor is invoked first to initialize the superclass part of the object. By calling super as the first statement in the subclass constructor, you ensure that the superclass initialization happens before any subclass-specific initialization.
+
+if im handling exception in one method and calling other method from that method surrounded with try catch and the method which im going to call has method declaration with throws keyword then will the method from it is called will handle the exception.
+public class Main {
+    public static void main(String[] args) {
+        try {
+            methodA(); // methodA throws IOException
+        } catch (IOException e) {
+            System.out.println("Caught IOException in main method: " + e.getMessage());
+        }
+    }
+
+    public static void methodA() throws IOException {
+        methodB(); // methodB throws IOException
+    }
+
+    public static void methodB() throws IOException {
+        // This method declares that it throws IOException
+        // but it does not handle it here
+        throw new IOException("Exception thrown from methodB");
+    }
+}
+
+In this example, methodB() declares that it throws an IOException, but it doesn't handle it. Instead, it throws the exception up to its caller, methodA(). Similarly, methodA() also declares that it throws an IOException but doesn't handle it; it simply calls methodB(). The main method catches the IOException thrown by methodA().
+
+So, in summary, if a method declares that it throws an exception using the throws keyword, the responsibility of handling that exception lies with its caller. If the caller doesn't handle the exception, it will propagate up the call stack until it reaches a method that handles it or until the program terminates.
+
+sort array in descending order 
+1.Arrays.sort(array,Collections.reverseOrder())
+2. sorting array and then reversing its element.
+
+String s="ab12pq34";
+        int sum=0;
+        for(int i=0;i<s.length();i++){
+            if(Character.isDigit(s.charAt(i))){
+                sum+=Character.getNumericValue(s.charAt(i));
+            }
+        }
+        System.out.println(sum);
+output - 10
+
+A String in Java that is specified as immutable, as the content shared storage in a single pool to minimize creating a copy of the same value. String class and all wrapper classes in Java that include Boolean, Character, Byte, Short, Integer, Long, Float, and Double are immutable. A user is free to create immutable classes of their own.
+
+To make a class immutable in Java, you need to follow several guidelines:
+
+Make the class final: This prevents the class from being subclassed, which could potentially introduce mutability.
+
+Make all fields private and final: This ensures that the state of the object cannot be modified after it has been constructed.
+
+Do not provide setter methods: By not providing methods to modify the state of the object after construction, you prevent external code from changing its state.
+
+public final class ImmutableClass {
+    private final int intValue;
+    private final String stringValue;
+
+    public ImmutableClass(int intValue, String stringValue) {
+        this.intValue = intValue;
+        this.stringValue = stringValue;
+    }
+
+    public int getIntValue() {
+        return intValue;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+}
+
+User
+why feign client is preferred when communicating through multiple services
+ChatGPT
+Feign is a declarative web service client developed by Netflix, primarily used in Java-based applications. It's often preferred when communicating through multiple services because of several advantages:
+
+Declarative API: Feign allows you to define web service clients using interfaces and annotations, making the API declarations concise and easy to understand. This abstraction simplifies the code and promotes a clean separation of concerns.
+
+Integration with Service Discovery: Feign seamlessly integrates with service discovery mechanisms like Netflix Eureka or Consul, allowing services to locate and communicate with each other dynamically without hardcoding URLs or dealing with low-level network details.
+
+Load Balancing: Feign supports client-side load balancing, which distributes requests among multiple instances of a service. It helps improve system reliability, scalability, and fault tolerance by evenly distributing the workload.
+
+Error Handling: Feign provides customizable error handling mechanisms, allowing developers to handle different types of errors gracefully. This capability simplifies error handling and enhances the overall robustness of the system.
+
+Interceptors and Request/Response Modification: Feign offers interceptors, which allow developers to intercept and modify requests and responses at runtime. This feature is handy for implementing cross-cutting concerns like logging, authentication, and performance monitoring.
+
+Integration with Circuit Breakers: Feign can be easily integrated with circuit breaker libraries like Hystrix or resilience4j, enabling fault tolerance and resilience in distributed systems. Circuit breakers prevent cascading failures by failing fast when downstream services are unavailable or experiencing issues.
+
+Compatibility with Spring Cloud: Feign is well-integrated with Spring Cloud, a popular framework for building cloud-native applications in the Java ecosystem. This integration simplifies the development of microservices architectures and provides additional features like centralized configuration management and distributed tracing.
+
+Overall, Feign simplifies the development of microservices architectures by providing a high-level abstraction for building web service clients, integrating seamlessly with service discovery and load balancing, and offering robust error handling and interception mechanisms. These features make it a preferred choice for communication between multiple services in modern distributed systems.
+
+###
+
+import java.util.Arrays;
+
+class Main {
+  public static void main(String[] args) {
+    String str1 = "Race";
+    String str2 = "Care";
+    
+    str1 = str1.toLowerCase();
+    str2 = str2.toLowerCase();
+
+    // check if length is same
+    if(str1.length() == str2.length()) {
+
+      // convert strings to char array
+      char[] charArray1 = str1.toCharArray();
+      char[] charArray2 = str2.toCharArray();
+
+      // sort the char array
+      Arrays.sort(charArray1);
+      Arrays.sort(charArray2);
+
+      // if sorted char arrays are same
+      // then the string is anagram
+      boolean result = Arrays.equals(charArray1, charArray2);
+
+      if(result) {
+        System.out.println(str1 + " and " + str2 + " are anagram.");
+      }
+      else {
+        System.out.println(str1 + " and " + str2 + " are not anagram.");
+      }
+    }
+    else {
+      System.out.println(str1 + " and " + str2 + " are not anagram.");
+    }
+  }
+}
+usnh hashmap time complexity O(n) and space complexity O(1)
+
+User
+what is webflux
+ChatGPT
+WebFlux is a reactive programming framework for building web applications in Java. It's part of the Spring Framework ecosystem and provides a non-blocking, event-driven programming model. WebFlux is designed to handle asynchronous, concurrent, and reactive streams of data, making it well-suited for building highly scalable and resilient applications, especially in scenarios where high concurrency and responsiveness are required, such as web APIs, streaming applications, and real-time data processing.
+
+Key features of WebFlux include:
+
+Reactive Streams: WebFlux is built on top of the Reactive Streams API, which defines a standard for asynchronous stream processing with non-blocking backpressure. This enables developers to handle large volumes of data while ensuring resource efficiency and avoiding backpressure-related issues.
+
+Non-blocking I/O: WebFlux leverages non-blocking I/O operations to handle incoming requests and process data asynchronously. This allows the application to handle a large number of concurrent connections with fewer threads, leading to better resource utilization and improved scalability.
+
+Flux and Mono: WebFlux introduces two main types: Flux and Mono. Flux represents a stream of zero to many elements, while Mono represents a stream of zero or one element. These types are used to handle asynchronous data streams and support various operators for manipulating, transforming, and combining streams.
+
+Annotation-based Programming Model: Similar to other components of the Spring Framework, WebFlux provides an annotation-based programming model, allowing developers to define controllers, handlers, and routes using annotations such as @Controller, @RestController, @RequestMapping, and @GetMapping. This makes it easy to develop web applications with minimal configuration and boilerplate code.
+
+Integration with Spring Ecosystem: WebFlux seamlessly integrates with other components of the Spring ecosystem, including Spring Boot, Spring Data, Spring Security, and Spring Cloud. This allows developers to leverage existing Spring features and libraries while building reactive web applications.
+
+Backpressure Handling: WebFlux provides built-in support for handling backpressure, allowing applications to control the rate at which data is consumed from reactive streams. This helps prevent overload situations and ensures optimal resource utilization under heavy load.
+
+Overall, WebFlux enables developers to build high-performance, scalable, and responsive web applications using reactive programming principles. Its support for non-blocking I/O, reactive streams, and annotation-based programming model makes it a powerful framework for developing modern web applications that can handle the demands of today's highly concurrent and data-intensive environments.
+
+User
+how and where to implement webflux in springboot application
+ChatGPT
+Implementing WebFlux in a Spring Boot application involves configuring dependencies, defining routes, and writing handlers. Here's a step-by-step guide on how and where to implement WebFlux in a Spring Boot application:
+
+Add WebFlux Dependency: Start by adding the WebFlux dependency to your pom.xml if you're using Maven or build.gradle if you're using Gradle. Here's an example for Maven:
+
+xml
+Copy code
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+Configure Application Class: Create a main application class annotated with @SpringBootApplication. This class will serve as the entry point of your Spring Boot application. Ensure you include the @EnableWebFlux annotation to enable WebFlux.
+
+java
+Copy code
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.reactive.config.EnableWebFlux;
+
+@SpringBootApplication
+@EnableWebFlux
+public class MyApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+Define Routes and Handlers: Create handler functions to handle incoming requests. Handlers should return Mono or Flux types, depending on whether they return a single result or a stream of results. Define routes using RouterFunction or @RequestMapping annotations.
+
+java
+Copy code
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
+
+@Configuration
+public class MyRouter {
+
+    @Bean
+    public RouterFunction<ServerResponse> route() {
+        return route(GET("/hello"), request -> ok().body(Mono.just("Hello, WebFlux!"), String.class));
+    }
+}
+Controller Alternative: Alternatively, you can use annotated controllers with @RestController and @RequestMapping annotations, just like in a traditional Spring MVC application. WebFlux supports these annotations as well.
+
+java
+Copy code
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
+@RestController
+public class MyController {
+
+    @GetMapping("/hello")
+    public Mono<String> hello() {
+        return Mono.just("Hello, WebFlux!");
+    }
+}
+Run the Application: Finally, you can run your Spring Boot application. Spring Boot will automatically start an embedded Netty or Tomcat server (depending on your configuration) to serve your WebFlux endpoints.
+
+With these steps, you have implemented WebFlux in your Spring Boot application. You can now define more routes and handlers as needed to build your reactive web application.
+
+User
+what is spring cloud and what are its uses
+ChatGPT
+Spring Cloud is a set of tools and frameworks within the Spring ecosystem that provides solutions for building and deploying cloud-native applications. It simplifies the development of distributed systems and microservices architectures by offering a range of features and patterns for common challenges in cloud environments.
+
+Here are some key components and uses of Spring Cloud:
+
+Service Discovery: Spring Cloud provides tools like Netflix Eureka and Consul for service registration and discovery. This allows services to dynamically locate and communicate with each other without hardcoding service endpoints, enabling better scalability and fault tolerance.
+
+Load Balancing: Spring Cloud integrates with client-side load balancers like Ribbon, allowing services to distribute incoming requests across multiple instances for improved performance and reliability.
+
+Circuit Breakers: Spring Cloud integrates with circuit breaker libraries like Netflix Hystrix and resilience4j, which help prevent cascading failures in distributed systems by automatically failing fast and providing fallback mechanisms when downstream services are unavailable or experiencing issues.
+
+API Gateway: Spring Cloud Gateway and Netflix Zuul provide API gateway functionality, allowing developers to route and filter requests to backend services, implement authentication and authorization, and apply policies such as rate limiting and content transformation.
+
+Configuration Management: Spring Cloud Config centralizes configuration management for distributed systems, allowing developers to externalize configuration properties from application code and manage them dynamically across different environments.
+
+Distributed Tracing: Spring Cloud Sleuth and Zipkin provide distributed tracing capabilities, allowing developers to track and visualize the flow of requests across multiple services in a distributed system, making it easier to diagnose and debug issues.
+
+Service Mesh: Spring Cloud integrates with Istio, a popular service mesh framework, to provide advanced features like traffic management, security, and observability for microservices running in Kubernetes or other container orchestration platforms.
+
+Stream Processing: Spring Cloud Stream provides a framework for building event-driven microservices using messaging middleware like Apache Kafka or RabbitMQ. It simplifies the development of event-driven architectures by providing abstractions for producing and consuming messages.
+
+Security: Spring Cloud Security provides integration with Spring Security and OAuth 2.0, allowing developers to secure microservices and APIs using standard authentication and authorization mechanisms.
+
+Overall, Spring Cloud simplifies the development, deployment, and management of cloud-native applications by providing a comprehensive set of tools and frameworks for common challenges in distributed systems and microservices architectures. It enables developers to build scalable, resilient, and secure applications that can leverage the benefits of cloud computing environments effectively.
+
+User
+spring boot actuator in depth
+ChatGPT
+Spring Boot Actuator is a powerful set of tools that provides production-ready features to monitor and manage Spring Boot applications. It offers insights into the internals of your application at runtime, enabling you to monitor metrics, gather diagnostic information, and manage the application's health and configuration. Let's delve into its key features:
+
+Health Indicators: Actuator provides a /health endpoint, which offers insights into the health of the application and its dependencies. You can define custom health indicators to check the status of various components (e.g., databases, caches, messaging queues) and customize the health status logic.
+
+Metrics Gathering: Actuator collects and exposes various metrics about the application's internals, such as JVM metrics (memory usage, garbage collection), HTTP request metrics (throughput, response times), and custom metrics. It supports various metrics backends like Prometheus, Graphite, and InfluxDB for storage and visualization.
+
+Environment Information: The /env endpoint provides information about the application's environment, including system properties, environment variables, and application properties. This can be useful for debugging and troubleshooting configuration-related issues.
+
+Configuration Inspection: Actuator offers a /configprops endpoint to expose details about the application's configuration properties, including their source and current values. This helps in understanding how configuration properties are loaded and overridden.
+
+Bean Inspection: The /beans endpoint provides a list of all beans managed by the Spring application context, along with their dependencies and dependencies' dependencies. This is useful for understanding the bean wiring and diagnosing dependency injection issues.
+
+Thread Dump and Stack Trace: Actuator allows you to capture and download thread dumps (/threaddump) and stack traces (/dump) of the application, which can be invaluable for diagnosing performance bottlenecks and deadlock situations.
+
+Endpoint Customization: Actuator endpoints can be customized and secured based on your requirements. You can choose which endpoints to expose, configure their paths, and secure them with authentication and authorization mechanisms.
+
+Integration with Monitoring Systems: Actuator seamlessly integrates with monitoring and alerting systems like Prometheus, Grafana, and Spring Boot Admin. This allows you to collect, visualize, and alert on application metrics and health status effectively.
+
+Audit Logging: Actuator provides an audit logging endpoint (/auditevents) to expose information about security-related events in the application, such as login attempts, access-denied events, and authentication failures.
+
+Application Info: Actuator includes endpoints (/info and /info/{key}) to expose arbitrary application information, such as version, description, and custom metadata. This can be useful for displaying application metadata in monitoring dashboards or administrative consoles.
+
+Overall, Spring Boot Actuator offers a comprehensive suite of features for monitoring, managing, and troubleshooting Spring Boot applications in production environments. By leveraging Actuator endpoints, developers and operations teams can gain valuable insights into application health, performance, and configuration, facilitating proactive monitoring, efficient debugging, and effective incident response.
+
+
+User
+class A
+{
+public void m1()
+}
+class B extends class A
+{
+public void m1()
+}
+A a=new A();
+a.m1();
+
+B b=new A():
+b.m1();
+
+A a=new B():
+a.m1();
+output of all above 3 cases
+
+2 / 2
+
+ChatGPT
+Let's analyze each case:
+
+java
+Copy code
+A a = new A();
+a.m1();
+Here, an instance of class A is created using the new keyword. Then, the method m1() is called on this instance. However, the method m1() in class A is not defined properly. Since there is no body for the method m1(), this code will result in a compilation error.
+
+java
+Copy code
+B b = new A();
+b.m1();
+In this case, you're trying to create an instance of class A and assign it to a variable of type B, which is not allowed. Also, the method m1() is not overridden in class B, so even if the assignment were valid, it would still call the method from class A. This code will result in a compilation error due to incompatible types.
+
+java
+Copy code
+A a = new B();
+a.m1();
+Here, an instance of class B is created using the new keyword and assigned to a variable of type A. Since the method m1() is not overridden in class B, the method m1() from class A will be called. However, as mentioned earlier, the method m1() in class A is not defined properly. So, this code will also result in a compilation error.
+
+In summary, all three cases will result in compilation errors due to the incomplete method definition in class A. Additionally, the second case will also result in a compilation error due to incompatible types.
+
+User
+method is class b is overrirden and consider for time being the syntax as correct now tell the output
+ChatGPT
+If we consider the syntax as correct and assume that the m1() method in class B overrides the m1() method in class A, the output for each case would depend on the behavior of the overridden method. Let's analyze each case again:
+
+java
+Copy code
+A a = new A();
+a.m1();
+Since we are creating an instance of class A and calling the m1() method on it, and assuming that the method is correctly implemented in class A, it would execute the method m1() as defined in class A.
+
+java
+Copy code
+B b = new A();
+b.m1();
+Even though we are trying to create an instance of class A and assign it to a variable of type B, which is not allowed, let's assume it's allowed for now. Since the m1() method is overridden in class B, the behavior would depend on the instance type, which is A. So, it would execute the method m1() as defined in class A.
+
+java
+Copy code
+A a = new B();
+a.m1();
+Here, we are creating an instance of class B and assigning it to a variable of type A. Since the m1() method is overridden in class B, the behavior would depend on the instance type, which is B. So, it would execute the method m1() as defined in class B.
+
+Assuming that the m1() method is properly implemented in class A and overridden in class B, the output of the first and third cases would depend on the implementation of m1() in class A and B, respectively. The second case would still result in a compilation error due to incompatible types, but if we assume it's allowed, it would also depend on the implementation of m1() in class A.
+
+User
+can we call the super class method in overriden base class
+ChatGPT
+Yes, you can call the superclass method from an overridden method in the subclass by using the super keyword. This allows you to invoke the superclass's implementation of the method within the overridden method in the subclass.
+
+Here's an example demonstrating how to call the superclass method from an overridden method in the subclass:
+
+java
+Copy code
+class A {
+    public void m1() {
+        System.out.println("Inside A's m1 method");
+    }
+}
+
+class B extends A {
+    @Override
+    public void m1() {
+        // Call superclass method using super keyword
+        super.m1();
+        System.out.println("Inside B's m1 method");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        B b = new B();
+        b.m1();
+    }
+}
+In this example, B is a subclass of A, and m1() is overridden in B. Within B's m1() method, the super.m1() statement invokes the m1() method of class A, and then the rest of the code in B's m1() method is executed. When you run this program, it will output:
+
+css
+Copy code
+Inside A's m1 method
+Inside B's m1 method
+So, calling the superclass method from an overridden method in the subclass allows you to extend the functionality of the superclass method rather than completely replacing it.
+
+User
+what id super() in class b is written after sop statement
+ChatGPT
+If super() is called after a System.out.println statement in the overridden method m1() of class B, it wouldn't compile. The reason is that a call to super() must be the first statement in the constructor of a subclass if it's used, and it can only be used within a constructor to call the superclass's constructor.
+
+Here's an example to illustrate:
+
+java
+Copy code
+class A {
+    public void m1() {
+        System.out.println("Inside A's m1 method");
+    }
+}
+
+class B extends A {
+    @Override
+    public void m1() {
+        System.out.println("Inside B's m1 method");
+        super(); // Compilation error: Call to super must be first statement in constructor
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        B b = new B();
+        b.m1();
+    }
+}
+In this example, if you try to call super() after the System.out.println statement in class B's m1() method, it will result in a compilation error because the call to super() is not in a constructor, and it's not the first statement in the method. The super() call is only valid in a constructor and must be the first statement in the constructor if used.
+
+User
+where super should be called in case of constructor and method in java
+ChatGPT
+In Java, super keyword is used to refer to the superclass (parent class) of the current class. Its usage varies between constructors and methods:
+
+Constructor:
+Calling Superclass Constructor: In a subclass constructor, super() is used to call the constructor of the superclass. It must be the first statement in the subclass constructor, and if not explicitly provided, Java implicitly inserts a call to the no-argument constructor of the superclass.
+
+java
+Copy code
+class SubClass extends SuperClass {
+    SubClass() {
+        super(); // calling superclass constructor
+    }
+}
+Calling Parameterized Superclass Constructor: If the superclass constructor requires arguments, you can explicitly call a specific superclass constructor using super(args).
+
+java
+Copy code
+class SubClass extends SuperClass {
+    SubClass(int arg) {
+        super(arg); // calling superclass constructor with arguments
+    }
+}
+Method:
+In a subclass method, super is used to explicitly call a method from the superclass, particularly when the method is overridden in the subclass and you want to invoke the superclass implementation.
+
+java
+Copy code
+class SuperClass {
+    void method() {
+        System.out.println("SuperClass method");
+    }
+}
+
+class SubClass extends SuperClass {
+    @Override
+    void method() {
+        super.method(); // calling superclass method
+        System.out.println("SubClass method");
+    }
+}
+In this example, super.method() is used to call the method() from the superclass within the overridden method() in the subclass. It allows you to execute the superclass's method implementation before adding additional behavior specific to the subclass.
+
+User
+is it neccessary that super must be the first statement when calling parent class method from base class 
+ChatGPT
+No, it is not necessary that super must be the first statement when calling a parent class method from a subclass method in Java. In fact, you can place the super call anywhere within the subclass method, but it's typically recommended to call super as the first statement for clarity and to ensure that superclass initialization or behavior occurs before any subclass-specific logic.
+
+Here's an example demonstrating the usage of super within a subclass method:
+
+java
+Copy code
+class SuperClass {
+    void method() {
+        System.out.println("SuperClass method");
+    }
+}
+
+class SubClass extends SuperClass {
+    @Override
+    void method() {
+        // Some subclass-specific logic before calling superclass method
+        System.out.println("SubClass specific logic");
+        
+        // Call superclass method
+        super.method(); // calling superclass method
+        
+        // Some subclass-specific logic after calling superclass method
+        System.out.println("More SubClass specific logic");
+    }
+}
+In this example, the super.method() call is placed after some subclass-specific logic and before more subclass-specific logic. This is valid in Java, and it allows you to control the sequence of operations within the subclass method. However, it's important to ensure that the superclass method is called appropriately to maintain the expected behavior of the class hierarchy.
+
+User
+why it is recommended that super should be the first statement when calling parent class constructor
+ChatGPT
+It's recommended that super should be the first statement when calling a parent class constructor in Java for several reasons:
+
+Superclass Initialization: When you create an instance of a subclass, the superclass constructor is invoked first to initialize the superclass part of the object. By calling super as the first statement in the subclass constructor, you ensure that the superclass initialization happens before any subclass-specific initialization.
+
+Avoid Compiler Error: If super() is not explicitly called within a subclass constructor, the compiler implicitly inserts a call to the no-argument constructor of the superclass. However, if the superclass doesn't have a no-argument constructor and only has constructors with arguments, you'll get a compilation error unless you explicitly call one of the superclass constructors using super(args).
+
+Clarity and Readability: Placing super as the first statement in the subclass constructor makes the code more readable and understandable to other developers. It clearly indicates the intention to initialize the superclass before performing any subclass-specific initialization.
+
+Consistency: Following the convention of calling super as the first statement promotes consistency and helps maintain a uniform coding style across classes and projects. It makes the codebase easier to understand and maintain.
+
+Prevent Potential Bugs: Calling super later in the constructor might lead to subtle bugs, especially if the superclass constructor relies on certain initialization that should have happened earlier. Placing super as the first statement reduces the risk of such bugs.
+
+Overall, while it's technically possible to call super at other points in the constructor, following the convention of placing it as the first statement ensures proper superclass initialization, improves code readability, and reduces the likelihood of errors.
+
+User
+if im handling exception in one method and calling other method from that method surrounded with try catch and the method which im going to call has method declaration with throws keyword then will the method from it is called will handle the exception
+ChatGPT
+No, if a method calls another method that declares a checked exception using the throws keyword, and the calling method catches that exception using a try-catch block, the called method's exception will not be handled by the calling method's try-catch block.
+
+When a method declares that it throws a checked exception, it means that it does not handle the exception itself and instead delegates the responsibility of handling it to its caller. Therefore, if the calling method does not re-throw the exception or handle it in its own try-catch block, the exception will propagate up the call stack until it is either caught or the program terminates.
+
+Here's an example to illustrate this:
+
+java
+Copy code
+public class Main {
+    public static void main(String[] args) {
+        try {
+            methodA(); // methodA throws IOException
+        } catch (IOException e) {
+            System.out.println("Caught IOException in main method: " + e.getMessage());
+        }
+    }
+
+    public static void methodA() throws IOException {
+        methodB(); // methodB throws IOException
+    }
+
+    public static void methodB() throws IOException {
+        // This method declares that it throws IOException
+        // but it does not handle it here
+        throw new IOException("Exception thrown from methodB");
+    }
+}
+In this example, methodB() declares that it throws an IOException, but it doesn't handle it. Instead, it throws the exception up to its caller, methodA(). Similarly, methodA() also declares that it throws an IOException but doesn't handle it; it simply calls methodB(). The main method catches the IOException thrown by methodA().
+
+So, in summary, if a method declares that it throws an exception using the throws keyword, the responsibility of handling that exception lies with its caller. If the caller doesn't handle the exception, it will propagate up the call stack until it reaches a method that handles it or until the program terminates.
+
+User
+why strings are immutable in java
+ChatGPT
+Strings are immutable in Java primarily for reasons related to efficiency, thread safety, and security. Here's why:
+
+Efficiency: Since strings are immutable, their values cannot be changed after they are created. This immutability allows Java to optimize string handling by reusing existing string instances instead of creating new ones. When you perform operations like concatenation or substring on strings, Java can reuse existing string instances if the result is the same. This reduces memory usage and improves performance.
+
+Thread Safety: Immutable objects, including strings, are inherently thread-safe because their state cannot be modified after creation. This means that multiple threads can safely access and share string instances without the risk of concurrency issues such as race conditions or inconsistent state.
+
+Security: String immutability helps ensure the security of Java applications, particularly in scenarios where strings are used to represent sensitive data such as passwords or cryptographic keys. Since immutable strings cannot be modified, once created, their values cannot be tampered with or inadvertently changed by malicious code.
+
+Caching and Pooling: Java maintains a string constant pool, which is a pool of unique string literals created by the JVM to conserve memory. Immutable strings allow Java to safely cache and reuse string instances in the constant pool, leading to memory savings and faster string comparisons.
+
+Hashing and Hashcode: Immutable strings are suitable for use as keys in hash-based data structures like HashMaps and HashSets. Since the hash code of a string remains constant throughout its lifetime, it ensures that the string remains properly indexed and retrievable in hash-based collections even if its value is reused or copied.
+
+Simplicity and Predictability: String immutability simplifies programming by providing predictable behavior. Once a string is created, its value remains constant, which reduces the risk of unintended side effects or bugs caused by mutable state changes.
+
+Overall, immutability provides several benefits for strings in Java, including efficiency, thread safety, security, and simplicity. By making strings immutable, Java ensures robustness, reliability, and performance in string handling operations.
+
+User
+how can we make our class as immutable in java
+ChatGPT
+To make a class immutable in Java, you need to follow several guidelines:
+
+Make the class final: This prevents the class from being subclassed, which could potentially introduce mutability.
+
+Make all fields private and final: This ensures that the state of the object cannot be modified after it has been constructed.
+
+Do not provide setter methods: By not providing methods to modify the state of the object after construction, you prevent external code from changing its state.
+
+If the class has mutable fields, ensure they are defensively copied: If your class contains mutable objects, you should defensively copy them in the constructor to prevent external modification of the original objects.
+
+Ensure any methods that return mutable objects return defensively copied instances: If your class has methods that return mutable objects, ensure that these objects are defensively copied before being returned to prevent external code from modifying the internal state.
+
+Here's an example of an immutable class in Java:
+
+java
+Copy code
+public final class ImmutableClass {
+    private final int intValue;
+    private final String stringValue;
+
+    public ImmutableClass(int intValue, String stringValue) {
+        this.intValue = intValue;
+        this.stringValue = stringValue;
+    }
+
+    public int getIntValue() {
+        return intValue;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+}
+In this example:
+
+The class is declared final to prevent subclassing.
+All fields are declared private and final to prevent modification after construction.
+There are no setter methods, so the state of the object cannot be modified after construction.
+The constructor initializes all fields, and there are no methods to modify the state of the object after construction.
+Since String is immutable in Java, there's no need to defensively copy it.
+int is a primitive type, so it is inherently immutable.
+By following these guidelines, you can ensure that your class is immutable, meaning that once an object of the class is created, its state cannot be changed. This provides several benefits, including thread safety, simpler code, and easier reasoning about program behavior.
+
+User
+is Integer class immutable in java 
+ChatGPT
+Yes, the Integer class in Java is immutable. Immutable means that once an Integer object is created, its value cannot be changed. Here are some reasons why Integer is immutable:
+
+Value Cannot Be Modified: Once an Integer object is created with a specific value, that value cannot be changed. There are no setter methods in the Integer class to modify its value after instantiation.
+
+Fields are Final: The internal representation of Integer objects uses a private final field to store the integer value. This field cannot be modified after initialization.
+
+Thread Safety: Immutability ensures thread safety because multiple threads can safely access and share Integer objects without the risk of concurrent modification. Since the value cannot change, there are no synchronization issues.
+
+Cache for Common Values: In Java, Integer objects with values in the range of -128 to 127 are cached and reused. This means that when you create an Integer object with a value in this range, you may get a reference to an existing object rather than a new one being created. This caching behavior is possible because Integer objects are immutable.
+
+Here's an example demonstrating the immutability of the Integer class:
+
+Integer num1 = 5;
+Integer num2 = num1; // Assigning reference to num2
+
+System.out.println("Before modification:");
+System.out.println("num1: " + num1); // Output: 5
+System.out.println("num2: " + num2); // Output: 5
+
+// Attempting to modify the value of num1
+// This will actually create a new Integer object with the value 10
+num1 = 10;
+
+System.out.println("After modification:");
+System.out.println("num1: " + num1); // Output: 10
+System.out.println("num2: " + num2); // Output: 5 (unchanged)
+
+In this example, even though num1 and num2 initially refer to the same Integer object with the value 5, modifying num1 to 10 creates a new Integer object with the value 10, leaving num2 unchanged. This behavior demonstrates that Integer objects are immutable in Java.
+
+
+Storing passwords in a String object, even if they are purely numeric, is recommended for security reasons. Here's why:
+
+Immutability of Strings: Strings in Java are immutable, meaning their values cannot be changed after they are created. When you store a password in a String, it cannot be modified in memory. This helps prevent accidental modifications or tampering with the password data.
+
+String Pool: In Java, string literals are stored in a string pool, which is a pool of unique string instances. When you create a string literal or use the String.intern() method, Java checks if the string already exists in the pool. If it does, a reference to the existing string is returned. This can reduce memory usage and improve performance.
+
+Garbage Collection: Strings in Java are eligible for garbage collection when there are no references to them. If a password is stored in a String object and is no longer needed, it can be garbage collected like any other object. This helps prevent memory leaks and improves resource management.
+
+Clearing Passwords: When you're done using a password, you can set the reference to null to indicate that it's no longer needed. This allows the password string to be garbage collected and helps ensure that it's not inadvertently accessed or leaked later in the program.
+
+Security Best Practices: Storing passwords as strings follows security best practices recommended by security experts and frameworks like OWASP (Open Web Application Security Project). It ensures that sensitive information like passwords is handled securely and minimizes the risk of exposure or leakage.
+
+String s="abc" creates the object in string pool
+String abc=new String() will create the object in heap memory
+
+Errors are usually caused by serious problems that are outside the control of the program, such as running out of memory or a system crash. Errors are represented by the Error class and its subclasses. Some common examples of errors in Java include:
+
+OutOfMemoryError: Thrown when the Java Virtual Machine (JVM) runs out of memory.
+StackOverflowError: Thrown when the call stack overflows due to too many method invocations.
+NoClassDefFoundError: Thrown when a required class cannot be found.
+Since errors are generally caused by problems that cannot be recovered from, it’s usually not appropriate for a program to catch errors. Instead, the best course of action is usually to log the error and exit the program.
+
+Since exceptions can be caught and handled within a program, it’s common to include code to catch and handle exceptions in Java programs. By handling exceptions, you can provide more informative error messages to users and prevent the program from crashing.
+
+In summary, errors and exceptions represent different types of problems that can occur during program execution. Errors are usually caused by serious problems that cannot be recovered from, while exceptions are used to handle recoverable errors within a program.
+
+errors are triggered by the platform not by us.
+
+The Spring application you described may encounter a circular dependency issue during startup. Circular dependencies occur when two or more beans depend on each other directly or indirectly.
+
+In your scenario, class A depends on class B (through autowiring), and class B depends on class A. This creates a circular dependency between the two classes.
+
+To resolve circular dependencies in Spring, you can use constructor injection or @Lazy annotation to delay bean initialization. Here's how you can modify your code to avoid the circular dependency:
+
+@Component
+class A {
+    private final B b;
+
+    @Autowired
+    public A(B b) {
+        this.b = b;
+    }
+}
+
+@Service
+class B {
+    private final A a;
+
+    @Autowired
+    public B(A a) {
+        this.a = a;
+    }
+}
+
+By using constructor injection, Spring will resolve the circular dependency during bean initialization. However, if the circular dependency cannot be resolved through constructor injection, you may need to refactor your code to eliminate the circular dependency or use other techniques like @Lazy or @PostConstruct to handle it.
+
+In Spring Framework, the default scope for beans, including those annotated with @RestController, is "singleton".
+
+This means that by default, Spring will create and manage only one instance of the bean throughout the application context. This single instance will be shared among all users and requests.
+
+In the context of a @RestController, this means that the same instance of the controller will handle requests from multiple users simultaneously. This is generally safe as long as the controller's methods are stateless and do not maintain any user-specific state between requests.
+
+However, if your controller needs to maintain per-user state or if you need a new instance of the controller for each request, you may want to change the scope of the bean. You can do this by annotating the controller class with @Scope("request"), which will create a new instance of the controller for each HTTP request.
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@Scope("request")
+public class MyRestController {
+
+    @GetMapping("/hello")
+    public String sayHello() {
+        return "Hello, World!";
+    }
+
+}
+
+In this example, MyRestController is annotated with @Scope("request"), so Spring will create a new instance of the controller for each HTTP request, ensuring that each user gets its own instance.
+
+In this example, the MyEntity class is an entity class annotated with @Entity, indicating that it should be mapped to a database table. However, it doesn't have an @Id annotation to specify the primary key field. When you try to persist instances of MyEntity using Hibernate or another ORM framework, you may encounter errors or unexpected behavior due to the absence of a primary key.
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class MyEntity {
+
+    // You can omit the @Id annotation to create a model class without a primary key
+    // If you want, you can still specify other JPA annotations for other fields
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Generated primary key
+
+    private String name;
+
+    // Constructors, getters, setters, etc.
+}
+
+In this example:
+
+The MyEntity class is annotated with @Entity to indicate that it's a JPA entity.
+The id field is annotated with @GeneratedValue to specify that the primary key value will be automatically generated by the database. This annotation is optional, but if you omit it, you won't be able to persist instances of MyEntity.
+There's no @Id annotation explicitly specified for the id field. However, since it's annotated with @GeneratedValue, it will be treated as the primary key by default.
+
+condition annotations help us to create bean or configurations only if certain conditions are met.ex @ConditionalOnClass which creates a bean only if the class is 
+present. this makes our application flexible and adaptable to different environments without changing the code enhancing its modularity and efficiency.
+
+Vertical Scaling: When new resources are added to the existing system to meet the expectation, it is known as vertical scaling. 
+
+Consider a rack of servers and resources that comprises the existing system. (as shown in the figure). Now when the existing system fails to meet the expected needs, and the expected needs can be met by just adding resources, this is considered vertical scaling. Vertical scaling is based on the idea of adding more power(CPU, RAM) to existing systems, basically adding more resources.
+Vertical scaling is not only easy but also cheaper than Horizontal Scaling. It also requires less time to be fixed. 
+ 
+Horizontal Scaling: When new server racks are added to the existing system to meet the higher expectation, it is known as horizontal scaling. 
+Consider a rack of servers and resources that comprises the existing system. (as shown in the figure). Now when the existing system fails to meet the expected needs, and the expected needs cannot be met by just adding resources, we need to add completely new servers. This is considered horizontal scaling. Horizontal scaling is based on the idea of adding more machines to our pool of resources. Horizontal scaling is difficult and also costlier than Vertical Scaling. It also requires more time to be fixed. 
+
+Differences between Horizontal and Vertical Scaling are as follows:
+
+Horizontal Scaling	Vertical Scaling
+When new server racks are added to the existing system to meet the higher expectation, it is known as horizontal scaling.	When new resources are added in the existing system to meet the expectation, it is known as vertical scaling
+It expands the size of the existing system horizontally.	It expands the size of the existing system vertically.
+It is easier to upgrade.	It is harder to upgrade and may involve downtime.
+It is difficult to implement	It is easy to implement
+It is costlier, as new server racks comprise a lot of resources	It is cheaper as we need to just add new resources
+It takes more time to be done	It takes less time to be done
+High resilience and fault tolerance	Single point of failure
+Examples of databases that can be easily scaled- Cassandra, MongoDB, Google Cloud Spanner	Examples  of databases that can be easily scaled- MySQL, Amazon RDS
+
+horizontal          vertical
+1 2 3 4 5           1-bigger 1
+
+load balancing      n/a
+required
+
+resilient           single point of failure
+
+data transferred    inter process communication.fast
+via network calls.
+slow.
+
+data inconsiistency  consistent
+as travel from 
+different servers
+
+scales well as      hardware limit.
+users increases.
+
+Variable Arguments (Varargs) in Java is a method that takes a variable number of arguments. Variable Arguments in Java simplifies the creation of methods that need to take a variable number of arguments.
+
+ From JDK 5 onwards, we can declare a method with a variable number of arguments. Such types of methods are called Varargs methods. The varargs feature offers a simpler, better option.
+
+public static void fun(int ... a) 
+{
+   // method body
+} 
+This syntax tells the compiler that fun( ) can be called with zero or more arguments. As a result, here, a is implicitly declared as an array of type int[].
+
+Internally, the Varargs method is implemented by using the single dimensions arrays concept.
+
+class Test1 {
+    // A method that takes variable 
+    // number of integer arguments.
+    static void fun(int... a)
+    {
+        System.out.println("Number of arguments: "
+                           + a.length);
+ 
+        // using for each loop to display contents of a
+        for (int i : a)
+            System.out.print(i + " ");
+        System.out.println();
+    }
+ 
+    // Driver code
+    public static void main(String args[])
+    {
+        // Calling the varargs method with 
+        // different number of parameters
+       
+        // one parameter
+        fun(100); 
+           
+          // four parameters
+        fun(1, 2, 3, 4); 
+         
+          // no parameter
+          fun(); 
+    }
+}
+
+Output
+Number of arguments: 1
+100 
+Number of arguments: 4
+1 2 3 4 
+Number of arguments: 0
+
+main(String... args) and main (String[] args) are effectively the same thing: What you're getting is a String array. The varargs is just syntactic sugar for the caller.
+
+I guess as you never call main() from code, it wasn't retrofitted when varargs were introduced.
+
+Edit: Actually, scratch that last sentence. main(String... args) is perfectly valid syntax, of course. The two styles are completely interchangeable. This works just fine:
+
+public class Test {
+
+    public static void main(String... args) {
+        System.out.println("Hello World");
+    }
+
+}
+it will work completely fine if using variale length args in java main method.
+
+Public static void main-
+1. Public 
+It is an Access modifier, which specifies from where and who can access the method. Making the main() method public makes it globally available. It is made public so that JVM can invoke it from outside the class as it is not present in the current class.
+
+2. Static
+It is a keyword that is when associated with a method, making it a class-related method. The main() method is static so that JVM can invoke it without instantiating the class. This also saves the unnecessary wastage of memory which would have been used by the object declared only for calling the main() method by the JVM.
+
+It is a keyword and is used to specify that a method doesn’t return anything. As the main() method doesn’t return anything, its return type is void. As soon as the main() method terminates, the Java program terminates too. Hence, it doesn’t make any sense to return from the main() method as JVM can’t do anything with its return value of it.
+
+4. main 
+It is the name of the Java main method. It is the identifier that the JVM looks for as the starting point of the Java program. It’s not a keyword.
+
+5. String[] args 
+It stores Java command-line arguments and is an array of type java.lang.String class. Here, the name of the String array is args but it is not fixed and the user can use any name in place of it. 
+
+Flexibility: Command-line arguments are typically passed as strings, as they can represent various types of data (e.g., text, numbers, filenames). Using String[] allows developers to handle command-line arguments in a flexible and generic manner, without imposing specific data types.
+
+Parsing Flexibility: Since command-line arguments are passed as strings, developers have the flexibility to parse and convert them into different data types (e.g., integers, floating-point numbers, dates) as needed within the main method or other parts of the application.
+
+#int i=9;
+int i1=09;
+it will give compile time error ie literal i1 is out of index;
+However, the second line int i1 = 09; will result in a compilation error because 09 is treated as an octal integer literal. In octal representation, the digits can only be from 0 to 7. Since 9 is not a valid digit in octal representation, the compiler will raise an error.
+
+	int i=9;
+    	int i1=07;
+    	
+    	System.out.println(i);
+    	System.out.println(i1);
+	output 9
+	       7
+
+what happens if you override the hashcode method of hashmap and return 1 every time from it what would be the time complexity in searching the element
+ChatGPT
+If you override the hashCode() method of HashMap to always return 1, it will cause all elements to be hashed to the same bucket, effectively making the HashMap behave like a linked list. This scenario is known as a hash collision.
+
+Here's what would happen:
+
+Insertion: When you insert elements into the HashMap, they will all be stored in the same bucket because they have the same hash code. Each new element will be added to the end of the linked list.
+
+Search: When you search for an element in the HashMap, it will have to iterate through the linked list in the corresponding bucket to find the element. In the worst case, where all elements are stored in the same bucket, the time complexity of searching for an element will be O(n), where n is the number of elements in the HashMap.
+
+Performance Degradation: Since the time complexity of searching for an element in a HashMap with hash collisions is O(n), the performance of the HashMap will degrade significantly as the number of elements increases. This defeats the purpose of using a HashMap, which is designed for fast lookups with an average time complexity of O(1) under normal circumstances.
+
+Space Complexity: Although the space complexity of the HashMap remains O(n), where n is the number of elements, because all elements will be stored in the same bucket, the worst-case scenario can lead to a large number of elements in a single bucket, potentially causing memory issues.
+
+Overall, overriding the hashCode() method of HashMap to always return the same value effectively eliminates the benefits of using a hash-based data structure, resulting in poor performance and defeating the purpose of using a HashMap in the first place.
+
+Rehashing is a process used in hash-based data structures, such as hash tables or hash maps, to resize the underlying storage and reorganize the elements when the load factor exceeds a certain threshold. The purpose of rehashing is to maintain efficient performance characteristics, such as constant-time average lookup, insertion, and deletion operations, even as the number of elements stored in the data structure grows.
+
+Here's how rehashing typically works:
+
+Load Factor: The load factor is a measure of how full the hash table is. It is calculated as the ratio of the number of elements stored in the hash table to the total number of buckets (or slots) in the table. When the load factor exceeds a certain threshold (often set to around 0.75), rehashing is triggered.
+
+Resizing: When rehashing is triggered, the size of the hash table is typically increased by a certain factor, such as doubling the number of buckets. This increases the capacity of the hash table and reduces the load factor.
+
+Rehashing: After resizing the hash table, all elements from the old hash table are reinserted into the new, larger hash table. The reinsertion process involves recalculating the hash codes of each element based on the new table size and placing them into their corresponding buckets.
+
+Hash Code Recalculation: Since the size of the hash table has changed during resizing, the hash codes of the elements need to be recalculated to distribute them evenly across the new table. This may involve applying a new hash function or modifying the existing one to accommodate the new table size.
+
+Time Complexity: Rehashing typically has a time complexity of O(n), where n is the number of elements in the hash table. This is because all elements need to be rehashed and inserted into the new table. However, because rehashing is not performed frequently and occurs only when the load factor exceeds a threshold, the amortized time complexity of insertions, deletions, and lookups remains O(1) on average.
+
+Rehashing is an essential mechanism for maintaining the efficiency and performance of hash-based data structures as the number of elements grows, ensuring that operations remain fast and consistent over time.
+
+In Java, StringBuilder objects are mutable, meaning their contents can be modified after creation. Therefore, using StringBuilder objects as keys in hash-based data structures like HashMap or HashSet is generally not recommended.
+
+Immutability Requirement: Hash-based data structures rely on the immutability of keys to ensure their integrity. If a key is mutable and its contents change after being used as a key in the data structure, the hash code of the key may change, leading to unpredictable behavior.
+
+In Java, you cannot use primitive types directly as keys in hash-based data structures like HashMap or HashSet. However, you can use the corresponding wrapper classes for primitive types (e.g., Integer for int, Long for long, Double for double, etc.) as keys.as collection only objects.
+
+In Java, primitive types cannot be directly used as keys in maps (such as HashMap, TreeMap, etc.) because these data structures require keys to be objects. This limitation arises from the fact that Java collections, including maps, are designed to store and manipulate objects rather than primitive types.
+
+No, Map<String, int> is not a valid declaration in Java. In Java, generic types must be reference types, so primitive types like int cannot be used directly as type arguments in generics.
+
+To use a primitive type as a value type in a map, you need to use its corresponding wrapper class. In the case of int, you would use Integer. Therefore, the correct declaration would be Map<String, Integer>.
+
+Fail-Fast: The "fail-fast" approach is characterized by detecting and throwing a ConcurrentModificationException whenever a collection is modified while it is being iterated over. This behavior ensures that the integrity of the collection is maintained and that any potential concurrent modifications are detected and reported immediately. Fail-fast iterators do not allow modifications to the underlying collection while iteration is in progress, thus preventing potential data corruption or inconsistent behavior.
+
+Example: ArrayList, HashMap, and HashSet in Java typically use fail-fast iterators.
+
+Fail-Safe: The "fail-safe" approach, on the other hand, involves making a copy of the data structure (or a part of it) before iterating over it. This copy is then used for iteration, allowing modifications to the original data structure without affecting the ongoing iteration. Fail-safe iterators are designed to provide safety and consistency in scenarios where concurrent modifications are expected, albeit at the expense of potentially stale data or non-deterministic behavior.
+
+Example: ConcurrentHashMap and CopyOnWriteArrayList in Java use fail-safe iterators.
+
+	for comparing 
+	double d=12.43;
+    	double f=34.32;
+    	System.out.println(d==f);
+	output- false
+
+Double d=12.43;
+    	Double f=12.43;
+    	System.out.println(d==f);
+	false
+
+double d=12.43;
+    	double f=12.43;
+    	System.out.println(d==f);
+	true
+
+Double d=12.43;
+    	Double f=12.43;
+    	System.out.println(d.equals(f));
+	output-true
+
+Stack Memory:
+
+Stack memory is used for storing method frames, which include local variables, method parameters, and return addresses.
+Each thread in a Java application has its own stack memory.
+The lifetime of stack memory is tied to the lifetime of the thread that it belongs to. When a thread is created, its stack memory is allocated, and when the thread terminates, its stack memory is deallocated.
+Stack memory is typically smaller in size compared to heap memory and has a fixed size determined by the JVM.
+
+Heap Memory:
+
+Heap memory is used for dynamic memory allocation, such as objects created using the new keyword.
+All objects in Java are allocated on the heap.
+The lifetime of heap memory is managed by the Java Garbage Collector (GC). Objects remain in the heap memory until they are no longer referenced by any part of the program.
+The GC periodically runs to reclaim memory occupied by unreachable objects, freeing up space for new allocations.
+The lifetime of objects in heap memory varies depending on factors such as the object's scope, whether it's reachable, and the memory management strategy employed by the JVM.
+In summary, stack memory lives as long as the thread it belongs to is alive, while heap memory lives until the objects allocated on it are no longer referenced and are reclaimed by the garbage collector.
+
+Yes, you can create custom marker interfaces in Java. A marker interface is an interface with no methods; it's used to mark classes that implement it for some specific purpose or behavior.
+
+Here's an example of how you can create a custom marker interface:
+
+java
+Copy code
+// Custom marker interface
+interface MyMarkerInterface {
+    // This interface has no methods
+}
+
+// Class implementing the marker interface
+class MyClass implements MyMarkerInterface {
+    // Implementation details...
+}
+In this example:
+
+MyMarkerInterface is a custom marker interface with no methods.
+MyClass implements MyMarkerInterface, indicating that it possesses the specific characteristic or behavior associated with the marker interface.
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Emp> list = ...; // Assuming list is initialized with Emp objects
+        
+        List<Emp> filteredList = list.stream()
+                                    .filter(e -> e.getManagerId() == 200)
+                                    .collect(Collectors.toList());
+
+        System.out.println(filteredList);
+    }
+}
+
+The output will be a list of Emp objects whose managerId is 200. If no such objects exist in the original list, the filteredList will be empty.
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Emp> list = ...; // Assuming list is initialized with Emp objects
+        
+        Optional<List<Emp>> optionalFilteredList = list.stream()
+                                                      .filter(e -> e.getManagerId() == 200)
+                                                      .collect(Collectors.toList());
+
+        if (optionalFilteredList.isPresent()) {
+            List<Emp> filteredList = optionalFilteredList.get();
+            System.out.println(filteredList);
+        } else {
+            System.out.println("No employees with managerId 200 found.");
+        }
+    }
+}
+
+remove occurence of character appearing more than once to 1
+
+String s="aaabhdtesaabss";
+    	Map<Character,Integer> map=new HashMap<Character,Integer>();
+    	
+    	for(int i=0;i<s.length();i++) {
+    		if(map.containsKey(s.charAt(i))) {
+    			map.put(s.charAt(i),map.get(s.charAt(i))+1);
+    		}else {
+    			map.put(s.charAt(i),1);
+    		}
+    		
+    	}
+    	for(Map.Entry<Character,Integer> entrySet:map.entrySet()) {
+    		if(entrySet.getValue()>1) {
+    			map.put(entrySet.getKey(), 1);
+    		}
+    		System.out.println("Key-"+entrySet.getKey()+" value-"+entrySet.getValue());
+    	}
+    	 
+difference between arraylist and linkedlist
+
+Firstly both are the Collection.
+
+Arraylist-uses dynamic array to store the elements.
+Linkedlist-uses doubly linked list to store the elements and each element store the reference to previous and next element in the linkedlist.
+
+Insertion/Deletion
+slower in Arraylist and faster in Linkedlist.
+reading of elements is faster in Arraylist and slower in Linkedlist.
+
+checked exception-when compiler force you to handle at the complietime. FileNotFound exception
+unchecked exception-this is logical exception occurs at the runtime. ArithmeticException
+
+how to prevent sql injection
+1.using parameterized query
+2.using ORM framework - they abstract raw sql query and automatically handle parameter binding and prevent sql injection.
+
+int num=1634;
+    	int temp=num;
+    	int sum=0;
+    	while(temp>0) {
+    		int rem=temp%10;
+    		sum=sum+(rem*rem*rem);
+    		temp=temp/10;
+    		
+    	}
+
+		System.out.println("Sum "+sum+" Num "+num);
+    	if(sum==num) {
+    		System.out.println("Number is a armstrong number");
+    	}else {
+    		System.out.println("Number is not a armstrong number");
+    	}
+
+int num=1234;
+    	int rev=0;
+    	while(num>0) {
+    		int rem=num%10;
+    		rev=(rev*10)+rem;
+    		num=num/10;
+    	}
+    	System.out.println(rev);
+
+int n=31;
+    	boolean flag=true;
+    	for(int i=2;i<=n/2;i++) {
+    		
+    		if(n%i==0) {
+    			flag=false;
+    			break;
+    		}
+    	}
+    	if(flag) {
+    		System.out.println("Prime");
+    	}else {
+    		System.out.println("Not Prime");
+    	}
+
+
+int n=31;
+    	for(int i=2;i<=n;i++) {
+    	if(isPrime(i)) {
+    		System.out.print(i+" ");
+    	}
+    	
+
+private static boolean isPrime(int num) {
+		boolean flag=true; 
+		for(int i=2;i<=num/2;i++) {
+			if(num%i==0) {
+				flag=false;
+				break;
+			}
+		}
+		return flag;
+	}
+
+
+#Springboot starters are a set of convinient dependency descriptors that you can incude in your projects build path for quickly set up the dependencies for specific tasks eg.
+
+starter web
+<dependency>
+	<groupId>org.springframework.boot<groupId>
+	<artifactId>spring-boot-starter-web<artifactId>
+</dependency>
+for working with web technologies lets say designing rest api all the jars are included in spring web required to buid the restful api's.similarly if you want your project database complient , want to interact with database you could add starter jpa.
+
+#how does the springboot support the development of restful services?
+
+it is buil over Spring MVC and it follows mvc patter.
+it uses embedded containers like tomcat,jetty you dont need to externally deploy your service on server.
+it uses Request Mapping -> @GetMapping,@PostMapping,@PutMapping,@DeleteMapping.
+content negotiation-produces and consumes attributes are used for this to specify whether it should take xml or json in request and produces either of json and xml etc.
+@AutoConfiguration.
+
+postman(any client) -> Controller ->Service ->Repository->Database
+
+what is springboot devtools,how does it enhance the development experience?
+Automatic restart
+LiveReload support.
+
+synchronous communication-REST/http,graphql
+asynchronous communication-RabbitMQ,apache kafka
+
+#how to handle databse transactions in a microservice environment.
+
+Saga pattern
+a saga is a sequence of local transactions.each local transaction updates the databse message or event to trigger the next local transaction in the saga.
+types of saga-
+choreography based saga
+orchestration based saga.
+
+if you have only one method declaration inside the interface and you don't annotate it with @FunctionalInterface then it will be automatically treated as functionalinterface.
+
+An Interface in Java programming language is defined as an abstract type used to specify the behavior of a class. An interface in Java is a blueprint of a behavior. A Java interface contains static constants and abstract methods.The interface in Java is a mechanism to achieve abstraction.
+
+ Abstract classes are well-suited for scenarios with "is-a" relationships, shared functionality, and the creation of a structured inheritance hierarchy. On the other hand, interfaces shine when there is no inherent "is-a" relationship, multiple inheritance is required, or you aim to promote a more flexible, reusable, and agile design.
+
+In Java, both abstract classes and interfaces are used to define contracts for classes, but they serve different purposes and have different use cases.
+Use abstract classes when you want to provide a common base implementation for a group of related classes.
+Use interfaces when you want to define a contract for classes without specifying any implementation details.
+Interfaces can only contain method declarations (methods without a body) and constant fields (which are implicitly public, static, and final).
+Use abstract classes when you want to provide a common base implementation for related classes and when you need to define a partial implementation that subclasses can extend.
+Use interfaces when you want to define a contract for unrelated classes or when you need to support multiple inheritance of type.
+
+#for making class as immutable create its member as private and declare only getters and dont provide the setters so that only one time the object is created and its value can;t be updated then.
+
+#immutability is a concept in which we can't modify the value.
+Strings are the classical example of immutability if we assign value=abc and then reassign as abcpqr then a new string is created abcpqr and its reference is stored to that object and not the original one is changed.
+
+Sometimes you will want to create a superclass that only defines a generalized form that will be shared by all of its
+subclasses, leaving it to each subclass to fill in the details. Such a class determines the nature of the methods that
+the subclasses must implement.
+You may have methods that must be overridden by the subclass in order for the subclass to have any meaning.
+In this case, you want some way to ensure that a subclass does, indeed, override all necessary methods. Java’s solution
+to this problem is the abstract method.
+You can require that certain methods be overridden by subclasses by specifying the abstract type modifier.
+
+        abstract type name(parameter-list);
+
+These methods are sometimes referred to as subclass's responsibility because they have no implementation specified in
+the superclass.
+Thus, a subclass must override them—it cannot simply use the version defined in the superclass.
+
+Any class that contains one or more abstract methods must also be declared abstract.
+# There can be no objects of an abstract class.
+# You cannot declare abstract constructors, or abstract static methods.
+# You can declare static methods in abstract class.
+Because there can be no objects for abstract class. If they had allowed to call abstract static methods,
+it would that mean we are calling an empty method (abstract) through classname because it is static.
+Any subclass of an abstract class must either implement all of the abstract methods in the superclass,
+or be declared abstract itself.
+Abstract classes can include as much implementation as they see fit i.e.there can be concrete methods(methods with body)
+in abstract class.
+
+Although abstract classes cannot be used to instantiate objects, they can be used to create object references,
+because Java’s approach to run-time polymorphism is implemented through the use of superclass references.
+
+A public constructor on an abstract class doesn't make any sense because you can't instantiate an abstract class directly 
+(can only instantiate through a derived type that itself is not marked as abstract)
+Check: https://stackoverflow.com/questions/260666/can-an-abstract-class-have-a-constructor
+
+
+Abstract class vs Interface:
+
+Type of methods:
+Interface can have only abstract methods.
+Abstract class can have abstract and non-abstract methods. From Java 8, it can have default and static methods also.
+
+Final Variables:
+Variables declared in a Java interface are by default final.
+An abstract class may contain non-final variables.
+
+Type of variables:
+Abstract class can have final, non-final, static and non-static variables.
+Interface has only static and final variables.
+
+Implementation:
+Abstract class can provide the implementation of interface.
+Interface can’t provide the implementation of abstract class.
+
+Inheritance vs Abstraction:
+A Java interface can be implemented using keyword “implements”
+and abstract class can be extended using keyword “extends”.
+
+Multiple implementation:
+An interface can extend another Java interface only,
+an abstract class can extend another Java class and implement multiple Java interfaces.
+
+Accessibility of Data Members:
+Members of a Java interface are public by default.
+A Java abstract class can have class members like private, protected, etc.
+
+Access Control:
+
+How a member can be accessed is determined by the access modifier attached to its declaration.
+Usually, you will want to restrict access to the data members of a class—allowing access only through methods.
+Also, there will be times when you will want to define methods that are private to a class.
+
+Java’s access modifiers are public, private, and protected. Java also defines a default access level.
+protected applies only when inheritance is involved.
+
+When no access modifier is used, then by default the member of a class is public within its own package,
+but cannot be accessed outside of its package.
+
+            │ Class │ Package │ Subclass │ Subclass │ World
+            │       │         │(same pkg)│(diff pkg)│(diff pkg & not subclass)
+────────────┼───────┼─────────┼──────────┼──────────┼──────────────────────────
+public      │   +   │    +    │    +     │     +    │   +
+────────────┼───────┼─────────┼──────────┼──────────┼──────────────────────────
+protected   │   +   │    +    │    +     │     +    │
+────────────┼───────┼─────────┼──────────┼──────────┼──────────────────────────
+no modifier │   +   │    +    │    +     │          │
+────────────┼───────┼─────────┼──────────┼──────────┼──────────────────────────
+private     │   +   │         │          │          │
+
++ : accessible
+blank : not accessible
+
+package packageOne;
+public class Base
+{
+    protected void display(){
+        System.out.println("in Base");
+    }
+}
+
+package packageTwo;
+public class Derived extends packageOne.Base{
+    public void show(){
+        new Base().display();       // this is not working
+        new Derived().display();    // is working
+        display();//is working
+    }
+}
+
+protected allows access from subclasses and from other classes in the same package.
+We can use child class to use protected member outside the package but only child class object can access it.
+That's why any Derived class instance can access the protected method in Base.
+The other line creates a Base instance (not a Derived instance!!).
+And access to protected methods of that instance is only allowed from objects of the same package.
+
+display();
+-> allowed, because the caller, an instance of Derived has access to protected members and fields of its subclasses,
+even if they're in different packages
+
+
+new Derived().display();
+-> allowed, because you call the method on an instance of Derived and that instance has access to the protected methods
+of its subclasses
+
+new Base().display();
+-> not allowed because the caller's (the this instance) class is not defined in the same package like the Base class,
+so this can't access the protected method. And it doesn't matter - as we see - that the current subclasses a class from
+that package. That backdoor is closed ;)
+
+Remember that any time talks about a subclass having an access to a superclass member, we could be talking about the
+subclass inheriting the member, not simple accessing the member through a reference to an instance of the superclass.
+
+
+class C
+    protected member;
+
+// in a different package
+
+class S extends C
+
+    obj.member; // only allowed if type of obj is S or subclass of S
+
+The motivation is probably as following. If obj is an S, class S has sufficient knowledge of its internals,
+it has the right to manipulate its members, and it can do this safely.
+If obj is not an S, it's probably another subclass S2 of C, which S has no idea of.
+S2 may have not even been born when S is written. For S to manipulate S2's protected internals is quite dangerous.
+If this is allowed, from S2's point of view, it doesn't know who will tamper with its protected internals and how,
+this makes S2 job very hard to reason about its own state.
+
+Now if obj is D, and D extends S, is it dangerous for S to access obj.member? Not really.
+How S uses member is a shared knowledge of S and all its subclasses, including D. S as the superclass has the right to
+define behaviours, and D as the subclass has the obligation to accept and conform.
+
+For easier understanding, the rule should really be simplified to require obj's (static) type to be exactly S.
+After all, it's very unusual and inappropriate for subclass D to appear in S. And even if it happens,
+that the static type of obj is D, our simplified rule can deal with it easily by upcasting: ((S)obj).member
+
+A class is a template for an object, and an object is an instance of a class.
+A class creates a new data type that can be used to create objects.
+
+When you declare an object of a class, you are creating an instance of that class.
+Thus, a class is a logical construct. An object has physical reality. (That is, an object occupies space in memory.)
+
+Objects are characterized by three essential properties: state, identity, and behavior.
+The state of an object is a value from its data type. The identity of an object distinguishes one object from another.
+It is useful to think of an object’s identity as the place where its value is stored in memory.
+The behavior of an object is the effect of data-type operations.
+
+The dot operator links the name of the object with the name of an instance variable.
+Although commonly referred to as the dot operator, the formal specification for Java categorizes the . as a separator.
+The 'new' keyword dynamically allocates(that is, allocates at run time)memory for an object & returns a reference to it.
+This reference is, more or less, the address in memory of the object allocated by new.
+This reference is then stored in the variable.
+Thus, in Java, all class objects must be dynamically allocated.
+
+Box mybox; // declare reference to object
+     mybox = new Box(); // allocate a Box object
+The first line declares mybox as a reference to an object of type Box. At this point, mybox does not yet refer to an
+actual object. The next line allocates an object and assigns a reference to it to mybox. After the second line executes,
+you can use mybox as if it were a Box object. But in reality, mybox simply holds, in essence, the memory address of the
+actual Box object.
+The key to Java’s safety is that you cannot manipulate references as you can actual pointers.
+Thus, you cannot cause an object reference to point to an arbitrary memory location or manipulate it like an integer.
+
+A Closer Look at new:
+classname class-var = new classname ( );
+Here, class-var is a variable of the class type being created. The classname is the name of the class that is being
+instantiated. The class name followed by parentheses specifies the constructor for the class. A constructor defines
+what occurs when an object of a class is created.
+
+You might be wondering why you do not need to use new for such things as integers or characters.
+The answer is that Java’s primitive types are not implemented as objects.
+Rather, they are implemented as “normal” variables.
+This is done in the interest of efficiency.
+
+It is important to understand that new allocates memory for an object during run time.
+
+Box b1 = new Box();
+Box b2 = b1;
+b1 and b2 will both refer to the same object. The assignment of b1 to b2 did not allocate any memory or copy any part
+of the original object. It simply makes b2 refer to the same object as does b1. Thus, any changes made to the object
+through b2 will affect the object to which b1 is referring, since they are the same object.
+When you assign one object reference variable to another object reference variable, you are not creating a copy of the
+object, you are only making a copy of the reference.
+
+int square(int i){
+    return i * i;
+}
+A parameter is a variable defined by a method that receives a value when the method is called. For example,
+in square( int i), i is a parameter. An argument is a value that is passed to a method when it is invoked.
+For example, square(100) passes 100 as an argument. Inside square( ), the parameter i receives that value.
+
+NOTE:
+Bus bus = new Bus();
+lhs(reference i.e. bus) is looked by compiler & rhs (object i.e. new Bus()) is looked by jvm.
+
+The this Keyword:
+Sometimes a method will need to refer to the object that invoked it. To allow this, Java defines the this keyword.
+this can be used inside any method to refer to the current object. That is, this is always a reference to the object on
+which the method was invoked.
+
+final Keyword:
+A field can be declared as final. Doing so prevents its contents from being modified, making it, essentially, a constant.
+This means that you must initialize a final field when it is declared.
+
+It is a common coding convention to choose all uppercase identifiers for final fields:
+     final int FILE_OPEN = 2;
+
+Unfortunately, final guarantees immutability only when instance variables are primitive types, not reference types.
+If an instance variable of a reference type has the final modifier, the value of that instance variable (the reference
+to an object) will never change—it will always refer to the same object—but the value of the object itself can change.
+
+The finalize( ) Method:
+Sometimes an object will need to perform some action when it is destroyed.
+To handle such situations, Java provides a mechanism called finalization. By using finalization,
+you can define specific actions that will occur when an object is just about to be reclaimed by the garbage collector.
+To add a finalizer to a class, you simply define the finalize( ) method. The Java run time calls that method whenever
+it is about to recycle an object of that class. Right before an asset is freed, the Java run time calls the finalize( )
+method on the object.
+
+protected void finalize( ) {
+    // finalization code here
+}
+
+Constructors:
+
+Once defined, the constructor is automatically called when the object is created, before the new operator completes.
+Constructors look a little strange because they have no return type, not even void.
+This is because the implicit return type of a class’ constructor is the class type itself.
+
+In the line
+Box mybox1 = new Box();
+new Box( ) is calling the Box( ) constructor.
+
+
+Inheritance and constructors in Java:
+
+In Java, constructor of base class with no argument gets automatically called in derived class constructor.
+For example, output of following program given below is:
+
+Base Class Constructor Called
+Derived Class Constructor Called
+
+ // filename: Main.java
+class Base {
+  Base() {
+    System.out.println("Base Class Constructor Called ");
+  }
+}
+
+class Derived extends Base {
+  Derived() {
+    System.out.println("Derived Class Constructor Called ");
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    Derived d = new Derived();
+  }
+}
+
+Base Class Constructor Called
+Derived Class Constructor Called
+
+
+Any class will have a default constructor, does not matter if we declare it in the class or not. If we inherit a class,
+then the derived class must call its super class constructor. It is done by default in derived class.
+If it does not have a default constructor in the derived class, the JVM will invoke its default constructor and call
+the super class constructor by default. If we have a parameterised constructor in the derived class still it calls the
+default super class constructor by default. In this case, if the super class does not have a default constructor,
+instead it has a parameterised constructor, then the derived class constructor should call explicitly call the
+parameterised super class constructor.
+
+To inherit a class, you simply incorporate the definition of one class into another by using the extends keyword.
+
+class subclass-name extends superclass-name { // body of class
+}
+You can only specify one superclass for any subclass that you create. Java does not support the inheritance of
+multiple superclasses into a single subclass. You can, as stated, create a hierarchy of inheritance in which a subclass
+becomes a superclass of another subclass. However, no class can be a superclass of itself.
+
+Although a subclass includes all of the members of its superclass, it cannot access those members of the superclass
+that have been declared as private.
+
+A Superclass Variable Can Reference a Subclass Object:
+It is important to understand that it is the type of the reference variable—not the type of the object that it refers
+to—that determines what members can be accessed.
+When a reference to a subclass object is assigned to a superclass reference variable, you will have access only to
+those parts of the object defined by the superclass.
+
+plainbox      =  weightbox;
+(superclass)     (subclass)
+
+SUPERCLASS ref = new SUBCLASS();    // HERE ref can only access methods which are available in SUPERCLASS
+
+Using super:
+Whenever a subclass needs to refer to its immediate superclass, it can do so by use of the keyword super.
+super has two general forms. The first calls the superclass’ constructor.
+The second is used to access a member of the superclass that has been hidden by a member of a subclass.
+
+BoxWeight(double w, double h, double d, double m) {
+    super(w, h, d); // call superclass constructor
+    weight = m;
+}
+
+Here, BoxWeight( ) calls super( ) with the arguments w, h, and d. This causes the Box constructor to be called,
+which initializes width, height, and depth using these values. BoxWeight no longer initializes these values itself.
+It only needs to initialize the value unique to it: weight. This leaves Box free to make these values private if desired.
+
+Thus, super( ) always refers to the superclass immediately above the calling class.
+This is true even in a multileveled hierarchy.
+
+class Box {
+     private double width;
+     private double height;
+     private double depth;
+
+     // construct clone of an object
+
+     Box(Box ob) { // pass object to constructor
+       width = ob.width;
+       height = ob.height;
+       depth = ob.depth;
+     }
+}
+
+class BoxWeight extends Box {
+     double weight; // weight of box
+
+     // construct clone of an object
+
+     BoxWeight(BoxWeight ob) { // pass object to constructor
+        super(ob);
+        weight = ob.weight;
+     }
+}
+
+Notice that super() is passed an object of type BoxWeight—not of type Box.This still invokes the constructor Box(Box ob).
+NOTE: A superclass variable can be used to reference any object derived from that class.
+Thus, we are able to pass a BoxWeight object to the Box constructor.Of course,Box only has knowledge of its own members.
+
+A Second Use for super
+The second form of super acts somewhat like this, except that it always refers to the superclass of the subclass in
+which it is used.
+
+super.member
+
+Here, member can be either a method or an instance variable. This second form of super is most applicable to situations
+in which member names of a subclass hide members by the same name in the superclass.
+
+super( ) always refers to the constructor in the closest superclass. The super( ) in BoxPrice calls the constructor in
+BoxWeight. The super( ) in BoxWeight calls the constructor in Box. In a class hierarchy, if a superclass constructor
+requires parameters, then all subclasses must pass those parameters “up the line.” This is true whether or not a
+subclass needs parameters of its own.
+
+If you think about it, it makes sense that constructors complete their execution in order of derivation.
+Because a superclass has no knowledge of any subclass, any initialization it needs to perform is separate from and
+possibly prerequisite to any initialization performed by the subclass. Therefore, it must complete its execution first.
+
+NOTE: If super( ) is not used in subclass' constructor, then the default or parameterless constructor of each superclass
+will be executed.
+
+
+Using final with Inheritance:
+
+The keyword final has three uses:
+
+# First, it can be used to create the equivalent of a named constant.
+
+# Using final to Prevent Overriding:
+To disallow a method from being overridden, specify final as a modifier at the start of its declaration.
+Methods declared as final cannot be overridden.
+Methods declared as final can sometimes provide a performance enhancement: The compiler is free to inline calls to them
+because it “knows” they will not be overridden by a subclass. When a small final method is called, often the Java
+compiler can copy the bytecode for the subroutine directly inline with the compiled code of the calling method, thus
+eliminating the costly overhead associated with a method call. Inlining is an option only with final methods.
+Normally, Java resolves calls to methods dynamically, at run time. This is called late binding. However, since final
+methods cannot be overridden, a call to one can be resolved at compile time. This is called early binding.
+
+# Using final to Prevent Inheritance:
+Sometimes you will want to prevent a class from being inherited. To do this, precede the class declaration with final.
+NOTE: Declaring a class as final implicitly declares all of its methods as final, too.
+As you might expect, it is illegal to declare a class as both abstract and final since an abstract class is incomplete
+by itself & relies upon its subclasses to provide complete implementations.
+
+# NOTE: Although static methods can be inherited ,there is no point in overriding them in child classes because the
+method in parent class will run always no matter from which object you call it. That is why static interface methods
+cannot be inherited because these method will run from the parent interface and no matter if we were allowed to
+override them, they will always run the method in parent interface.
+That is why static interface method must have a body.
+
+NOTE : Polymorphism does not apply to instance variables.
+
+#performance of string take ex of appending each character to string then what it will do on every iteration is create a new object and copy the previous value to
+new string and then return its refernce to the variable which is very cumbersome so strings are slower in performance(inefficient use of memmory and wastage of memory).it will take the complexity as O(N2).
+In StringBuilder only the one object is made and changes is done to it and no new object is created.StringBuilder are mutuable.
+thredsafe is slower as at a time only one can perform operations while notthreadsafe is faster.
+
+String s="i love programming very much";
+        String[] arr=s.split(" ");
+        StringBuilder sb=new StringBuilder();
+        int len=arr.length-1;
+        while(len>0){
+            sb.append(arr[len]+" ");
+            len--;
+        }
+        sb.append(arr[len]);
+        System.out.println(sb);
+output-much very programming love i
+
+StringBuilder is not thread safe while STringBuffer is thread safe.
+
+String class represents character strings, we can instantiate String in two ways.
+
+String str = "ABC";
+// or 
+String str = new String("ABC");
+String is immutable in Java. So it’s suitable to use in a multi-threaded environment. We can share it across functions because there is no concern of data inconsistency.
+
+When we create a String using double quotes, JVM first looks for the String with the same value in the string pool. If found, it returns the reference of the string object from the pool. Otherwise, it creates the String object in the String pool and returns the reference. JVM saves a lot of memory by using the same String in different threads.
+
+If the new operator is used to create a string, it gets created in the heap memory.
+
+The + operator is overloaded for String. We can use it to concatenate two strings. Although internally it uses StringBuffer to perform this action.
+
+String overrides equals() and hashCode() methods. Two Strings are equal only if they have the same character sequence. The equals() method is case sensitive. If you are looking for case insensitive checks, you should use equalsIgnoreCase() method.
+
+The string uses UTF-16 encoding for the character stream.
+
+String is a final class. All the fields as final except “private int hash”. This field contains the hashCode() function value. The hashcode value is calculated only when the hashCode() method is called for the first time and then cached in this field. Furthermore, the hash is generated using the final fields of String class with some calculations. So every time the hashCode() method is called, it will result in the same output. For the caller, it seems like calculations are happening every time but internally it’s cached in the hash field.
+
+StringBuffer was the only choice for String manipulation until Java 1.4. But, it has one disadvantage that all of its public methods are synchronized. StringBuffer provides Thread safety but at a performance cost. In most of the scenarios, we don’t use String in a multithreaded environment. So Java 1.5 introduced a new class StringBuilder, which is similar to StringBuffer except for thread-safety and synchronization. StringBuffer has some extra methods such as substring, length, capacity, trimToSize, etc. However, these are not required since you have all these present in String too. That’s why these methods were never implemented in the StringBuilder class. StringBuffer was introduced in Java 1.0 whereas StringBuilder class was introduced in Java 1.5 after looking at shortcomings of StringBuffer. If you are in a single-threaded environment or don’t care about thread safety, you should use StringBuilder. Otherwise, use StringBuffer for thread-safe operations.
+
+StringBuilder vs StringBuffer Performance
+I am trying to check the effect on performance because of synchronization with a sample program that performs append() on StringBuffer and StringBuilder object for multiple times.
+
+package com.journaldev.java;
+
+import java.util.GregorianCalendar;
+
+public class TestString {
+
+	public static void main(String[] args) {
+		System.gc();
+		long start=new GregorianCalendar().getTimeInMillis();
+		long startMemory=Runtime.getRuntime().freeMemory();
+		StringBuffer sb = new StringBuffer();
+		//StringBuilder sb = new StringBuilder();
+		for(int i = 0; i<10000000; i++){
+			sb.append(":").append(i);
+		}
+		long end=new GregorianCalendar().getTimeInMillis();
+		long endMemory=Runtime.getRuntime().freeMemory();
+		System.out.println("Time Taken:"+(end-start));
+		System.out.println("Memory used:"+(startMemory-endMemory));
+	}
+}
+I ran the same code for the StringBuffer object also to check the time and memory values. I have executed the code 5 times for each case and then calculated the average values.
+
+Value of i	StringBuffer (Time, Memory)	StringBuilder (Time, Memory)
+10,00,000	808, 149356704	633, 149356704
+1,00,00,000	7448, 147783888	6179, 147783888
+It’s clear that StringBuilder performs better than StringBuffer even in the case of a single-threaded environment. This difference in performance can be caused by synchronization in StringBuffer methods.
+
+String vs StringBuffer vs StringBuilder
+String is immutable whereas StringBuffer and StringBuilder are mutable classes.
+StringBuffer is thread-safe and synchronized whereas StringBuilder is not. That’s why StringBuilder is faster than StringBuffer.
+String concatenation operator (+) internally uses StringBuffer or StringBuilder class.
+For String manipulations in a non-multi threaded environment, we should use StringBuilder else use StringBuffer class.
+
+Since String is immutable in Java, whenever we do String manipulation like concatenation, substring, etc. it generates a new String and discards the older String for garbage collection. These are heavy operations and generate a lot of garbage in heap. So Java has provided StringBuffer and StringBuilder classes that should be used for String manipulation. StringBuffer and StringBuilder are mutable objects in Java. They provide append(), insert(), delete(), and substring() methods for String manipulation.
+
+#in technical terms abstraction is like you define the method and you calling it using dot operator then abstarction is going to take place.
+
+Class A{
+private void display(){
+System.out.println("Hello");
+}
+}
+Class B extends A{
+@Override
+public void display(){
+System.out.println("Hello");
+}
+
+}
+
+No, overriding will not happen in this case.
+
+The method display() in class A is declared as private, which means it is not accessible outside of class A. Since it is not accessible to subclasses, class B cannot override it.
+
+The method display() in class B is a new method entirely, not an overridden version of the display() method in class A.
+
+If you attempt to compile the code provided, you will likely encounter a compilation error in class B stating that it cannot override the method from class A because it is not visible due to its private access modifier.
+
+If you remove the @Override annotation from the method in class B, the method will still compile successfully, but it won't be considered as an override of the method in class A.
+
+Without the @Override annotation, the method in class B will be treated as a regular method and not as an overridden version of the method in class A.
+
+When a method in a subclass has the same name and signature as in its super-class, the subclass is originated from the super-class.
+
+Overriding is when a child class has its method implementation for the method already present in the parent class.
+
+Technically, overriding is a function that requires a subclass or child class to provide a variety of method implementations, that are already provided by one of its superclasses or parent classes, in any object-oriented programming language. 
+
+When a method in a subclass has the same name and signature as in its super-class, the subclass is originated from the super-class. 
+
+One of the ways that Java manages Run Time Polymorphism is by method overriding. 
+
+The object that is used to trigger a method specifies the variant of the process that is executed. If it implements a method with an object from a parent class, the parent class's version will be used. But if the method is triggered with an object from a subclass, the child class's version will be used.
+
+
+
+Example 1:
+Code:
+// here we declare vehicle as a parent class 
+
+ class Vehicle{
+
+// here we create a method as vehicle has engine
+
+// but changing the output as vehicle engine
+
+void engine(){
+
+System.out.println("this is vehicle engine");
+
+}
+
+}
+
+ // here we declare child class 
+
+ // bike is based on vehicle category so its a child class
+
+ // we use extends keyword to call parent class
+
+ class Bike extends Vehicle{
+
+// here we create method as same as in parent class
+
+// but changing the output as bike engine
+
+void engine(){
+
+System.out.println ("this is bike engine");
+
+}
+
+}
+
+ // here we declare child class 
+
+ // car is based on vehicle category so it's a child class
+
+ class Car extends Vehicle{
+
+// here we create method as same as in parent class
+
+// but changing the output as car engine
+
+void engine(){
+
+System.out.println ("this is car engine");
+
+}
+
+}
+
+public class Code Example {
+
+public static void main(String[] arg) {
+
+// here we create object for bike
+
+Bike honda = new Bike ();
+
+honda.engine();// calling engine method
+
+// here we create object for car
+
+Car benz = new Car ();
+
+benz.engine ();  //calling engine method
+
+}
+
+}
+
+Output:
+this is bike engine
+
+this is car engine
+
+In the above code, void engine() within Vehicle class is called overridden method. The void engine() method within Bike Class and Car Class is called the overriding method.
+
+OverridinginJavaEx1_1
+
+OverridinginJavaEx1_2
+
+OverridinginJavaEx1_3
+
+Why Is Overriding in Java Useful?
+As previously mentioned, overridden methods allow Java to accept polymorphism at runtime. Overridden methods are also another way Java embraces polymorphism's "one application, many methods" aspect.
+
+The most effective object-oriented programming brings to bear on code reuse and robustness is Dynamic Process Execution. The ability to use existing code libraries to call methods on new class instances without re-compiling, while preserving a clean abstract interface, is an incredibly powerful weapon.
+
+ Overridden methods allow one to call methods from any derived class object without identifying the form of the modified super-class.
+
+When Is It Ideal to Apply Overriding in Java?
+Identifying the parent classes and child classes form a hierarchy that passes from lesser to higher productivity is part of the secret to effectively applying polymorphism. 
+
+The parent class, when used correctly, contains all the factors that a child class would access directly. It also defines which methods the child class must execute individually.
+
+This provides the child class with the ability to convey its methods while preserving a standard interface. 
+
+A parent class will determine the general form of the methods that are used by all of its child classes by merging inheritance and overridden methods. 
+
+Example 2:
+Code:
+//creating parent class
+
+class Bank{  
+
+//create function to calculate interest
+
+int getRateOfInterest(){return 0;}  
+
+}  
+
+//Creating child classes.  
+
+class SBI extends Bank{  
+
+//create function to calculate interest for SBI
+
+int getRateOfInterest(){return 8;}  
+
+}  
+
+class ICICI extends Bank{  
+
+//create function to calculate interest for ICICI
+
+int getRateOfInterest(){return 7;}  
+
+}  
+
+class AXIS extends Bank{  
+
+//create function to calculate interest for AXIS
+
+int getRateOfInterest(){return 9;}  
+
+}  
+
+public class CodeExample {
+
+public static void main(String[] arg) {
+
+Bank sbibank=new SBI();  // create object for SBI
+
+Bank icicibank=new ICICI();  // create object for ICICI
+
+Bank axisbank=new AXIS();  // create object for AXIS
+
+System.out.println("SBI Rate of Interest: "+sbibank.getRateOfInterest());  
+
+System.out.println("ICICI Rate of Interest: "+icicibank.getRateOfInterest());  
+
+System.out.println("AXIS Rate of Interest: "+axisbank.getRateOfInterest());  
+
+}
+
+}
+
+Output
+SBI Rate of Interest: 8
+
+ICICI Rate of Interest: 7
+
+AXIS Rate of Interest: 9
+
+Screenshot
+OverridinginJavaEx2_1
+
+OverridinginJavaEx2_2.
+
+
+What Are the Rules for Method Overriding in Java? 
+Laws of Method Overriding in JAVA: 
+
+The method name should be common and the same as it is in the parent class.
+The method signature (parameter list, return type) in the method must be the same as in the parent class.
+There must be an inheritance connection between classes.
+All the abstract methods in the parent class should be overridden in the child class.
+If it declared the methods as static or final, then those methods cannot be overridden.
+
+Access Modifier: Defines the access type of the method i.e. from where it can be accessed in your application. In Java, there are 4 types of access specifiers: 
+public: Accessible in all classes in your application.
+protected: Accessible within the package in which it is defined and in its subclass(es) (including subclasses declared outside the package).
+private: Accessible only within the class in which it is defined.
+default (declared/defined without using any modifier): Accessible within the same class and package within which its class is defined.
+
+Data Abstraction is the property by virtue of which only the essential details are displayed to the user. The trivial or non-essential units are not displayed to the user. Ex: A car is viewed as a car rather than its individual components.
+Data Abstraction may also be defined as the process of identifying only the required characteristics of an object, ignoring the irrelevant details. The properties and behaviors of an object differentiate it from other objects of similar type and also help in classifying/grouping the object.
+
+It is defined as the wrapping up of data under a single unit. It is the mechanism that binds together the code and the data it manipulates. Another way to think about encapsulation is that it is a protective shield that prevents the data from being accessed by the code outside this shield. 
+
+Technically, in encapsulation, the variables or the data in a class is hidden from any other class and can be accessed only through any member function of the class in which they are declared.
+In encapsulation, the data in a class is hidden from other classes, which is similar to what data-hiding does. So, the terms “encapsulation” and “data-hiding” are used interchangeably.
+Encapsulation can be achieved by declaring all the variables in a class as private and writing public methods in the class to set and get the values of the variables.
+
+Inheritance is an important pillar of OOP (Object Oriented Programming). It is the mechanism in Java by which one class is allowed to inherit the features (fields and methods) of another class. We are achieving inheritance by using extends keyword. Inheritance is also known as “is-a” relationship.
+
+Let us discuss some frequently used important terminologies:
+
+Superclass: The class whose features are inherited is known as superclass (also known as base or parent class).
+Subclass: The class that inherits the other class is known as subclass (also known as derived or extended or child class). The subclass can add its own fields and methods in addition to the superclass fields and methods.
+Reusability: Inheritance supports the concept of “reusability”, i.e. when we want to create a new class and there is already a class that includes some of the code that we want, we can derive our new class from the existing class. By doing this, we are reusing the fields and methods of the existing class.
+
+Method Overloading allows different methods to have the same name, but different signatures where the signature can differ by the number of input parameters or type of input parameters, or a mixture of both.
+
+Method overloading in Java is also known as Compile-time Polymorphism, Static Polymorphism, or Early binding. In Method overloading compared to the parent argument, the child argument will get the highest priority. we can't override by return type.
+
+Q1. Can we overload static methods?
+YES
+
+HashMap and HashTable are both key-value storage classes in Java. HashMap is non-synchronized, making it faster for single-threaded tasks, while HashTable is inherently synchronized, providing thread safety. HashTable doesn’t allow any null keys or values, but HashMap lets you have one null key and several null values. Additionally, HashMap can be molded to retain insertion order or sorted order using its various implementations, whereas HashTable doesn’t guarantee any particular order for its entries.
+
+Why HashTable Doesn’t Allow null and HashMap Do?
+In the above differences between HashTable and HashMap, there is a point : A HashMap can allow null keys and values, whereas a HashTable does not allow null.
+
+You must be wondering, why a HashMap can store a null whereas HashTable cannot store a null. Let us understand the reason in detail.
+
+A HashTable stores the object in the key, value pair. In order to store and retrieve the object successfully, the object which is used as a key must implement the hashCode method and the equals method. Since null is not an object, it cannot implement these hashCode method and the equals method. So if we store null inside the HashTable, it will not work and throw a null pointer exception error. However, HashMap is a modern version of HashTable and it was created later. It will allow one null key and any number of null values.
+
+This behavior is by design, as it provides more flexibility in certain use cases.
+
+#Creating singleton in java
+public class Singleton {
+    private static Singleton single_instance = null;
+
+    private Singleton() {}
+
+    public static Singleton getInstance()
+    {
+        if (single_instance == null)
+            single_instance = new Singleton();
+
+        return single_instance;
+    }
+}
+
+
+what if we make contructor as public then in that case we can't stop it from being created multiple instances of the class.
+
+
+Set and Map are interfaces. They have several implementations in Java.
+
+Popular implementations of the Map are:
+
+HashMap - accepts one null key
+Hashtable - doesn't accept any null key
+TreeMap - doesn't accept any null key
+LinkedHashMap - accepts one null key
+Any number of null values can be added as value in any of above implementations
+
+Popular implementations of the Set are:
+
+HashSet - accepts one null element
+TreeSet - doesn't accept any null element
+LinkedHashSet - accepts one null element
+Any implementations of List, like ArrayList or LinkedList can accept nulls.
+
+tree type doesn't accepts null because they are used to sort the elements and internally use comparator which will throw nullPointerException.
+
+comparable provides only one instance to compare and to override its compareTo() method and we use coparator when we want to sort by more than on property.
+class RatingCompare implements Comparator<Movie> {
+    public int compare(Movie m1, Movie m2)
+    {
+        if (m1.getRating() < m2.getRating())
+            return -1;
+        if (m1.getRating() > m2.getRating())
+            return 1;
+        else
+            return 0;
+    }
+}
+ 
+// Class to compare Movies by name
+class NameCompare implements Comparator<Movie> {
+    public int compare(Movie m1, Movie m2)
+    {
+        return m1.getName().compareTo(m2.getName());
+    }
+}
+
+class Movie implements Comparable<Movie>
+{
+    private double rating;
+    private String name;
+    private int year;
+ 
+    // Used to sort movies by year
+    public int compareTo(Movie m)
+    {
+        return this.year - m.year;
+    }
+ 
+    // Constructor
+    public Movie(String nm, double rt, int yr)
+    {
+        this.name = nm;
+        this.rating = rt;
+        this.year = yr;
+    }
+ 
+    // Getter methods for accessing private data
+    public double getRating() { return rating; }
+    public String getName()   {  return name; }
+    public int getYear()      {  return year;  }
+}
+ 
+// Driver class
+class Main
+{
+    public static void main(String[] args)
+    {
+        ArrayList<Movie> list = new ArrayList<Movie>();
+        list.add(new Movie("Force Awakens", 8.3, 2015));
+        list.add(new Movie("Star Wars", 8.7, 1977));
+        list.add(new Movie("Empire Strikes Back", 8.8, 1980));
+        list.add(new Movie("Return of the Jedi", 8.4, 1983));
+ 
+        Collections.sort(list);
+ 
+        System.out.println("Movies after sorting : ");
+        for (Movie movie: list)
+        {
+            System.out.println(movie.getName() + " " +
+                               movie.getRating() + " " +
+                               movie.getYear());
+        }
+    }
+}
+
+Output
+Movies after sorting : 
+Star Wars 8.7 1977
+Empire Strikes Back 8.8 1980
+Return of the Jedi 8.4 1983
+Force Awakens 8.3 2015
+
+Thread safety of Comparable implementations depends on the individual implementations. If the compareTo() method and any mutable state accessed by it are properly synchronized, then the Comparable implementation can be considered thread-safe.
+In summary, both Comparable and Comparator can be used to achieve sorting, but they differ in their approach and purpose. The thread safety of their implementations depends on how they are implemented and whether any mutable state accessed by their methods is properly synchronized. It's essential to ensure thread safety when implementing sorting logic, especially in concurrent environments.
+
+what happens if i define default and static method in interface having only one method will it throw compilation error.
+No it will not throw the compilation error as soon as the criteria for functional interface is met ie if it consists only one abstract method.
+
+Terminal vs Non-Terminal/Intermediate operation
+Non-Terminal operation : will transform a stream into another stream, such as filter(Predicate).
+Non-Terminal Operation : Stream --> Stream
+Terminal Operation : will produce a result or side effect, such as count() or forEach(Consumer)
+Terminal Operation : Stream --> Result
+
+Data using get is appended in the url and exposed and can be used for security breach while in case of POST data is passed through the body and is more secure.
+
+This allows us to write multiple SELECT statements, retrieve the desired results, then combine them together into a final, unified set. The main difference between UNION and UNION ALL is that: UNION: only keeps unique records. UNION ALL: keeps all records, including duplicates.
+
+Default methods allow developers to add new methods to interfaces with an implementation without affecting classes that already use this interface. 
+Static methods in interface can not be overriden.
+
+#if i define 2 api with same request mapping it will throw ambiguous error and application will not start.
+
+interface A {
+ int x = 10;	
+ void m1();
+}
+public class B implements A {
+int x = 20;
+public void m1(){
+  System.out.println("One"); 	
+ }
+}
+public class Test {
+public static void main(String[] args){
+ A a = new B();
+  a.m1();
+  System.out.println(a.x);
+  }
+}
+Ans: Output: One, 10.
+
+No, while overriding any interface methods, we must use public only. This is because all interface methods are public by default. We cannot reduce the visibility while overriding them.
+
+public static int maximumSubarraySum(int[] arr) {
+        int n = arr.length;
+        int maxSum = Integer.MIN_VALUE;
+
+        for (int i = 0; i <= n - 1; i++) {
+            int currSum = 0;
+            for (int j = i; j <= n - 1; j++) {
+            currSum += arr[j];
+            if (currSum > maxSum) {
+                maxSum = currSum;
+            }
+            }
+        }
+
+        return maxSum;
+    }
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+class Main {
+    public static int maximumSubarraySum(int[] arr) {
+        int n = arr.length;
+        int maxSum = Integer.MIN_VALUE;
+        int currSum = 0;
+
+        for (int i = 0; i <= n - 1; i++) {
+            currSum += arr[i];
+
+            if (currSum > maxSum) {
+            maxSum = currSum;
+            }
+
+            if (currSum < 0) {
+            currSum = 0;
+            }
+        }
+
+        return maxSum;
+    }
+
+
+    public static void main(String args[]) {
+        // Your code goes here
+        int a[] = {1, 3, 8, -2, 6, -8, 5};
+        System.out.println(maximumSubarraySum(a));
+    }
+}
+
+# JDK stands for java development kit it provides the environmnet or help to develop the java programs.
+JRE stands for java runtime environment that provides the environmnet to run the java based program JVM is used to run java programs.
+ClassLoader in JVM loads the .class file into memory . After loading the file the it passed on to byte code verifier which verifies the content of the file whether the bytecode is valid or not without breaching the java security rules.
+
+An object in Java is any real-world thing that has properties and actions. In other words, an entity that has state, behavior, and identity is known as object.
+An object is reffered as the instance of class.
+
+17. Where the address of an object is stored in the memory?
+Ans: The address of an object is stored in the object reference variable in the stack memory.
+
+18. What is an object reference variable in Java?
+
+Ans: Object reference variable is a variable that stores the address of an object in the stack memory.
+
+Reference variable holds the address of an object whereas a variable holds data.
+
+Why abstract class has constructor even though you cannot create object?
+
+Ans: We cannot create an object of abstract class but we can create an object of subclass of abstract class. When we create an object of subclass of an abstract class, it calls the constructor of subclass.
+
+This subclass constructor has a super keyword in the first line that calls constructor of an abstract class. Thus, the constructors of an abstract class are used from constructor of its subclass.
+
+If the abstract class doesn’t have constructor, a class that extends that abstract class will not get compiled.
+
+ Once exception handling is done, the exception object will be garbage collected.
+
+All Java objects are always created on the heap memory whereas, object references are created in stack memory.
+
+JVM internally uses the mark and swap algorithm for garbage collection.
+
+Colections is a group of objects.
+A collection object works with reference types. It never stores copies of other objects. It stores references of other objects.
+
+Collections in Java can be used for storing multiple homogeneous and heterogeneous, duplicate, and unique elements without any size limitation.
+
+
+String s1="Test";
+String s2="Test";
+String s3=new String("Test");
+String s4=new String("Test");
+System.out.println(s3==s4);
+output : false
+
+#To replace special character we can use sting replaceAll function 
+String plainStr=str.replaceAll("[^a-zA-Z0-9]","");
+To replace all the spaces from a given string.
+str.replaceAll("\\s","");
+
+#Sort character of strings in alphabetical order
+
+String str="java";
+
+char arr[]=str.toCharArray();
+
+char temp;
+for(int i=0;i<arr.length;i++){
+for(int j=i+1;j<arr.length;j++){
+if(arr[i]>arr[j]){
+temp=arr[i];
+arr[i]=arr[j];
+arr[j]=temp;
+}
+Sysout(new String(arr));
+}
+
+}
+
+28. What is the difference between s1.equals("book") and "book" .equals(s1) where s1 represents the object of a string?
+If the s1 value is "book", then both statements will return true. The difference arises when s1 will be a null value. In that case, s1.equals("book") will throw the null pointer exception, and on the other hand "book" .equals(s1) will return false.
+public class Demo
+{
+  public static void main(String[] args)
+  {
+     System.out.println('c' + 'o' + 'd' + 'e');
+   }
+}
+The output of the above code will be 411. The reason is the print statement has character literals in single quotes, so instead of concatenation, the corresponding ASCII value of each character is added, and the result is displayed as 411.
+29. What will be the output of the following code?
+public class StringTest 
+{
+public static void main(String[] args) 
+  {
+     String s1 = new String("coding");
+     String s2 = new String("CODING");
+     System.out.println(s1 = s2);
+   }
+}
+You can also try this code with Online Java Compiler
+Run Code
+
+The output of this code will be CODING because s2 will be assigned to s1. The confusion arises between '==' and '=' operators. That's why this question is a simple yet tricky one. You can learn more about Java code compiler here.
+
+Java is not pure 100% object oriented as it use primitive data types.
+
+Primitive data type cn't store null vaues.
+
+Ways to create object in java
+
+	    Class cls = Class.forName("GFG"); 
+  
+            // Creating object of main class 
+           // using instance method 
+            GFG obj = (GFG)cls.newInstance(); 
+using new keyword,

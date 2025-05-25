@@ -1,0 +1,274 @@
+In Java, Lambda expressions basically express instances of functional interfaces (An interface with a single abstract method is called a functional interface). Lambda Expressions in Java are the same as lambda functions which are the short block of code that accepts input as parameters and returns a resultant value.
+
+Functionalities of Lambda Expression in Java-
+Enable to treat functionality as a method argument, or code as data.
+A function that can be created without belonging to any class.
+A lambda expression can be passed around as if it was an object and executed on demand.
+
+interface FuncInterface
+{
+    // An abstract function
+    void abstractFun(int x);
+ 
+    // A non-abstract (or default) function
+    default void normalFun()
+    {
+       System.out.println("Hello");
+    }
+}
+ 
+class Test
+{
+    public static void main(String args[])
+    {
+        // lambda expression to implement above
+        // functional interface. This interface
+        // by default implements abstractFun()
+        FuncInterface fobj = (int x)->System.out.println(2*x);
+ 
+        // This calls above lambda expression and prints 10.
+        fobj.abstractFun(5);
+    }
+}
+
+The body of a lambda expression can contain zero, one, or more statements.
+When there is a single statement curly brackets are not mandatory and the return type of the anonymous function is the same as that of the body expression.
+When there is more than one statement, then these must be enclosed in curly brackets (a code block) and the return type of the anonymous function is the same as the type of the value returned within the code block, or void if nothing is returned.
+
+Lambda Expressions are anonymous functions. These functions do not need a name or a class to be used. Lambda expressions are added in Java 8. Lambda expressions basically express instances of functional interfaces An interface with a single abstract method is called a functional interface. One example is java.lang.Runnable.
+
+in case of using comparable and comparator.
+While defining our own sorting, JVM is always going to call Comparator to compare() method.
+
+returns negative value(-1), if and only if obj1 has to come before obj2.
+returns positive value(+1), if and only if obj1 has to come after obj2.
+returns zero(0), if and only if obj1 and obj2 are equal.
+
+Functional Interfaces
+An interface that contains only one abstract method is known as a functional interface, but there is no restriction, you can have n number of default and static methods inside a functional interface.
+
+The Consumer Interface is a part of the java.util.function package which has been introduced since Java 8, to implement functional programming in Java. It represents a function which takes in one argument and produces a result. However these kind of functions don’t return any value.
+
+public class Main {
+    public static void main(String args[])
+    {
+        // Consumer to display a number
+        Consumer<Integer> display = a -> System.out.println(a);
+ 
+        // Implement display using accept()
+        display.accept(10);
+ 
+        // Consumer to multiply 2 to every integer of a list
+        Consumer<List<Integer> > modify = list ->
+        {
+            for (int i = 0; i < list.size(); i++)
+                list.set(i, 2 * list.get(i));
+        };
+ 
+        // Consumer to display a list of numbers
+        Consumer<List<Integer> >
+            dispList = list -> list.stream().forEach(a -> System.out.print(a + " "));
+ 
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(2);
+        list.add(1);
+        list.add(3);
+ 
+        // Implement modify using accept()
+        modify.accept(list);
+ 
+        // Implement dispList using accept()
+        dispList.accept(list);
+    }
+}
+
+it has one method accept().
+
+The BiConsumer Interface is a part of the java.util.function package which has been introduced since Java 8, to implement functional programming in Java. It represents a function that takes in two arguments and produces a result. However, these kinds of functions doesn’t return any value.
+
+This functional interface takes in two generics, namely:- 
+
+T: denotes the type of the first input argument to the operation
+U: denotes the type of the second input argument to the operation
+void accept(T t, U u)
+
+The Predicate is a functional interface defined in java. util. Function package, which accepts an argument and returns a boolean. This is mainly used to filter data from a Java Stream. The filter method of a stream accepts a predicate to filter the data and returns a new stream satisfying the predicate.
+
+The Consumer is a functional interface defined in java. util. Function package, which accepts a single input argument and returns no result. Unlike most other functional interfaces, the Consumer is expected to operate via side effects.
+
+The Supplier is a functional interface defined in java. util. Function package. The Supplier interface takes no argument and returns a result. As this is a functional interface and can therefore be used as the assignment target for a lambda expression or method reference. The Supplier has only one get() method and has no default method. In the below example, we created the Supplier object which will be used to supply a new User object.
+
+There are four type method references that are as follows:
+
+Static Method Reference. GFG::compareByName
+Instance Method Reference of a particular object. comparator::compareByName(object::methodName)
+Instance Method Reference of an arbitrary object of a particular type. String::compareToIgnoreCase
+Constructor Reference. StringBuilder::new
+
+Java provides a new feature called method reference in Java 8. Method reference is used to refer method of functional interface. It is compact and easy form of lambda expression. Each time when you are using lambda expression to just referring a method, you can replace your lambda expression with method reference.
+
+A Stream is a sequence of components that can be processed sequentially. These packages include classes, interfaces, and enum to allow functional-style operations on the elements. The stream can be used by importing java.util.stream package. Stream API is used to process collections of objects. Streams are designed to be efficient and can support improving your program’s performance by allowing you to avoid unnecessary loops and iterations.Streams can be used for filtering, collecting, printing, and converting from one data structure to another, etc.
+
+Features of Java Stream
+A stream is not a data structure instead it takes input from the Collections, Arrays, or I/O channels.
+Streams don’t change the original data structure, they only provide the result as per the pipelined methods.
+Each intermediate operation is lazily executed and returns a stream as a result, hence various intermediate operations can be pipelined. Terminal operations mark the end of the stream and return the result.
+
+Parallel Streams are the type of streams that can perform operations concurrently on multiple threads. These Streams are meant to make use of multiple processors or cores available to speed us the processing speed. There are two methods to create parallel streams are mentioned below:
+
+Using the parallel() method on a stream
+Using parallelStream() on a Collection
+
+Intermediate functions return a stream back.
+On any stream you can execute any number of intermediate operations, but the terminal operation should be single and written at last. So following are the intermediate methods provided by the Stream
+Predicate is a non-interfering, stateless predicate to apply to each element to determine if it should be included or not.
+
+intList.stream().filter(
+          element -> (element%2==0)
+        )
+        .forEach(
+          element -> System.out.print(element+ " ")
+        );
+
+ intList.stream()
+            .map(element -> element * element * element)
+            .forEach(
+                element -> System.out.print(element + " "));
+ 
+        // Display message only
+        System.out.println(
+            "\n\nOutput after distinct() implementation : ");
+ 
+        // Applying distinct() on this
+        intList.stream()
+            .distinct()
+            .map(element -> element * element * element)
+            .forEach(
+                element -> System.out.print(element + " "));
+ 
+        // Display message only
+        System.out.println(
+            "\n\nOutput after sorted() implementation : ");
+ 
+        // Now applying sorted() on this
+        intList.stream()
+            .distinct()
+            .sorted()
+            .map(element -> element * element * element)
+            .forEach(
+                element -> System.out.print(element + " "));
+ 
+        // Display message only
+        System.out.println(
+            "\n\nOutput after filter() implementation : ");
+ 
+        // Applying Filter() that values
+        // only below 10000 will be printed
+        intList.stream()
+            .distinct()
+            .sorted()
+            .map(element -> element * element * element)
+            .filter(element -> element < 10000)
+            .forEach(
+                element -> System.out.print(element + " "));
+
+Optional in java.util package. It can help in writing a neat code without using too many null checks. By using Optional, we can specify alternate values to return or alternate code to run.
+
+SecurityContextHolder, to provide access to the SecurityContext.
+SecurityContext, to hold the Authentication and possibly request-specific security information.
+Authentication, to represent the principal in a Spring Security-specific manner.
+GrantedAuthority, to reflect the application-wide permissions granted to a principal.
+UserDetails, to provide the necessary information to build an Authentication object from your application’s DAOs or other source of security data.
+UserDetailsService, to create a UserDetails when passed in a String-based username (or certificate ID or the like).
+
+The AuthenticationManager is just an interface, so the implementation can be anything we choose, but how does it work in practice? What if we need to check multiple authentication databases or a combination of different authentication services such as a database and an LDAP server?
+
+The default implementation in Spring Security is called ProviderManager and rather than handling the authentication request itself, it delegates to a list of configured AuthenticationProvider s, each of which is queried in turn to see if it can perform the authentication. Each provider will either throw an exception or return a fully populated Authentication object. Remember our good friends, UserDetails and UserDetailsService? If not, head back to the previous chapter and refresh your memory. The most common approach to verifying an authentication request is to load the corresponding UserDetails and check the loaded password against the one that has been entered by the user. This is the approach used by the DaoAuthenticationProvider (see below). The loaded UserDetails object - and particularly the GrantedAuthority s it contains - will be used when building the fully populated Authentication object which is returned from a successful authentication and stored in the SecurityContext.
+
+userDetailsService ia an interface which provides the single method loadUserByUsername(String name) and returns the object of userDetails which inturn is an interface and which provide only the getter methods to get grantedAuthorities,username,token etc.
+In loadUserByUsername method after fetching the user object we return userDetails object by its implementing class build method;
+
+The AuthenticationEntryPoint in Spring Security is invoked when an unauthenticated request is received by a secured endpoint. It is responsible for handling authentication failures and initiating the authentication process.
+AuthenticationEntryPoint is an interface which posseses the single method commence()
+Overall, the commence() method plays a crucial role in handling authentication failures and initiating the authentication process, ensuring that unauthenticated requests are handled appropriately according to the application's security policies.
+
+If you don't provide an AuthenticationEntryPoint implementation while using UsernamePasswordAuthenticationFilter, and an unauthenticated request is made to a secured resource, Spring Security will use its default behavior to handle the authentication failure.
+
+Without a custom AuthenticationEntryPoint, Spring Security typically sends a 401 Unauthorized response to the client when an unauthenticated request is made to a secured resource. This response indicates that authentication is required to access the requested resource. However, the response may lack additional details or customization that you might want to provide to the client.
+
+In the context of Spring Security, the AuthenticationManager is a core component responsible for authenticating users based on their credentials. It is typically used to validate authentication requests, such as login attempts, against a configured set of authentication providers.
+
+Here's an overview of how the AuthenticationManager works within Spring Security:
+
+Authentication Request: When a user attempts to authenticate, usually by submitting login credentials through a form or an API request, Spring Security intercepts the authentication request.
+
+Authentication Object: Spring Security creates an Authentication object encapsulating the user's credentials (e.g., username and password).
+
+AuthenticationManager: The AuthenticationManager is responsible for processing the Authentication object and determining whether the provided credentials are valid. It delegates the authentication process to one or more configured AuthenticationProvider instances.
+
+AuthenticationProvider: Each AuthenticationProvider in the authentication chain is responsible for authenticating users using a specific method or strategy. For example, Spring Security provides various AuthenticationProvider implementations for different authentication mechanisms, such as username/password authentication, LDAP authentication, or OAuth authentication.
+
+Authentication Process: The AuthenticationManager iterates over the configured AuthenticationProviders until one of them successfully authenticates the user or until all providers have been tried without success.
+
+Authentication Result: If authentication is successful, the AuthenticationManager returns a fully authenticated Authentication object containing details about the authenticated user, including their granted authorities (roles). If authentication fails, an exception is thrown or an unsuccessful authentication response is generated.
+
+Authentication Flow Control: Depending on the outcome of the authentication process, Spring Security may proceed with the requested operation if authentication is successful or deny access and handle authentication failures accordingly.
+
+In summary, the AuthenticationManager is a crucial component in Spring Security responsible for orchestrating the authentication process, validating user credentials, and determining whether access should be granted or denied based on the authentication result. It acts as the central authority for authenticating users within a Spring Security-enabled application.
+AuthenticationManager has a single method authenticate() which authenticate the user.
+
+AuthenticationProvider interface has 2 methods authenticate() and boolean supports. authenticate method returns the fully authenticated object if authenticated.and supports return true if AuthenticationProvider supports the indicated authentication object.and if false then request is delegated to another AuthenticationProvider.
+
+In Spring Security, the AuthenticationManagerBuilder is a class that is used to build and configure an AuthenticationManager. The AuthenticationManager is a central interface in Spring Security responsible for authenticating users based on their credentials.
+
+Here's an overview of how AuthenticationManagerBuilder works:
+
+Configuration: In a Spring Security configuration class (typically annotated with @Configuration), you can use the AuthenticationManagerBuilder to define how authentication should be performed.
+
+Method Chaining: The AuthenticationManagerBuilder provides methods for configuring authentication, such as inMemoryAuthentication(), jdbcAuthentication(), ldapAuthentication(), and userDetailsService(). These methods allow you to specify different authentication mechanisms and providers.
+
+User Details: When configuring authentication, you typically provide details about users, such as their username, password, and authorities (roles). For example, with inMemoryAuthentication(), you can specify users and their roles directly in the configuration.
+
+Delegation: Behind the scenes, the AuthenticationManagerBuilder delegates the configuration to appropriate AuthenticationProvider implementations based on the authentication mechanism being used. For example, inMemoryAuthentication() configures an InMemoryUserDetailsManager, while jdbcAuthentication() configures a DaoAuthenticationProvider backed by a JDBC datasource.
+
+Customization: You can also customize the authentication process by providing custom implementations of UserDetailsService, PasswordEncoder, AuthenticationProvider, etc., and registering them with the AuthenticationManagerBuilder.
+
+Building: Once the authentication configuration is complete, you call the AuthenticationManagerBuilder's build() method to build the AuthenticationManager instance.
+
+Usage: The configured AuthenticationManager is then typically injected into other components, such as UsernamePasswordAuthenticationFilter or AuthenticationManager beans, to handle authentication requests within your application.
+
+Overall, the AuthenticationManagerBuilder provides a convenient and flexible way to configure authentication in Spring Security, allowing you to tailor the authentication mechanism to your application's specific requirements.
+
+ProviderManager: The ProviderManager class is responsible for managing a list of AuthenticationProvider instances and using them to authenticate Authentication requests. It iterates over the configured providers and delegates the authentication request to the first provider that supports the given Authentication token.
+
+By default, Spring Boot does not enable CORS support, so if your frontend code tries to make requests to a Spring Boot backend hosted on a different domain, those requests will be blocked by the browser's CORS policy.
+
+To allow such cross-origin requests, you can use the @CrossOrigin annotation in your Spring Boot controller. When you apply @CrossOrigin(origins = "*") to a controller or controller method, it tells Spring Boot to include the appropriate CORS headers in the response, allowing requests from any origin (*) to access the controller's endpoints.
+
+what happens if you select spring application port to 0.
+if you want to run multiple instances then in that case available port will be 
+assigned to your application.
+
+The Domain Name System (DNS) is the phonebook of the Internet. Humans access information online through domain names, like nytimes.com or espn.com. Web browsers interact through Internet Protocol (IP) addresses. DNS translates domain names to IP addresses so browsers can load Internet resources.
+Each device connected to the Internet has a unique IP address which other machines use to find the device.
+
+The process of DNS resolution involves converting a hostname (such as www.example.com) into a computer-friendly IP address (such as 192.168.1.1). An IP address is given to each device on the Internet, and that address is necessary to find the appropriate Internet device - like a street address is used to find a particular home. When a user wants to load a webpage, a translation must occur between what a user types into their web browser (example.com) and the machine-friendly address necessary to locate the example.com webpage.
+
+Unlike traditional HTTP, which follows a request-response model, WebSockets allow bi-directional communication. This means that the client and the server can send data to each other anytime without continuous polling.
+
+WebSockets are used for real-time, event-driven communication between clients and servers. They are particularly useful for building applications requiring instant updates, such as real-time chat, messaging, and multiplayer games.
+
+In traditional HTTP, the client sends a request to the server, and the server responds with the requested data. This request-response model requires continuous polling from the client to the server, which can result in increased latency and decreased efficiency.
+
+On the other hand, WebSockets establish a persistent connection between the client and the server. This means that once the connection is established, the client and the server can send data to each other at any time without continuous polling. This allows realtime communication, where updates can be sent and received instantly.
+
+An API gateway accepts API requests from a client, processes them based on defined policies, directs them to the appropriate services, and combines the responses for a simplified user experience. Typically, it handles a request by invoking multiple microservices and aggregating the results. It can also translate between protocols in legacy deployments.
+
+A checksum is a value calculated from a data set to verify its integrity or authenticity. It is a fixed-size, unique value derived from the data using an algorithm, and it serves as a digital fingerprint for the data. Checksums are commonly used in computer networks, storage systems, and data transmission protocols to detect errors or tampering in transmitted or stored data.
+
+
+
+
+
+
+

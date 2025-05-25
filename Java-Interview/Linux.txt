@@ -1,0 +1,15 @@
+source server      destination server
+
+agar aap source se destination p telnet krre ho or telnet nahi hora to pehle
+jis server ka ip port telnet krre ho na uspe jaake pehlecheck kro ki port open bhi h ya nahi below command se
+netstat -nap | grep <port number> (ex-netstat -nap | grep 80)
+
+agar port open h or fer bhi telnet nhi hora to bina firewall down kiye fire below commands
+
+sudo firewall-cmd --add-port=8080/tcp --permanent
+
+sudo firewall-cmd --reload
+
+sudo firewall-cmd --list-ports
+
+sudo systemctl status firewalld

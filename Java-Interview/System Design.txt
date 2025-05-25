@@ -1,0 +1,374 @@
+Scalability is the property of a system to handle a growing amount of load by adding resources to the system.
+
+A system that can continuously evolve to support a growing amount of work is scalable.
+1. Growth in User Base
+More users started using the system, leading to increased number of requests.
+
+Example: A social media platform experiencing a surge in new users.
+
+2. Growth in Features
+Introducing new functionality to expand the system's capabilities.
+
+Example: An e-commerce website adding support for a new payment method.
+
+3. Growth in Data Volume
+Growth in the amount of data the system stores and manages due to user activity or logging.
+
+Example: A video streaming platform like youtube storing more video content over time.
+
+4. Growth in Complexity
+The system's architecture evolves to accommodate new features, scale, or integrations, resulting in additional components and dependencies.
+
+Example: A system that started as a simple application is broken into smaller, independent systems.
+
+5. Growth in Geographic Reach
+The system is expanded to serve users in new regions or countries.
+
+Example: An e-commerce company launching websites and distribution in new international markets.
+
+How to Scale a System?
+Here are 10 common ways to make a system scalable:
+
+1. Vertical Scaling (Scale up)
+This means adding more power to your existing machines by upgrading server with more RAM, faster CPUs, or additional storage. It's a good approach for simpler architectures but has limitations in how far you can go.
+
+
+Vertical Scaling
+2. Horizontal Scaling (Scale out)
+This means adding more machines to your system to spread the workload across multiple servers. It's often considered the most effective way to scale for large systems.
+
+
+Example: Netflix uses horizontal scaling for its streaming service, adding more servers to their clusters to handle the growing number of users and data traffic.
+
+3. Load Balancing
+Load balancing is the process of distributing traffic across multiple servers to ensure no single server becomes overwhelmed.
+
+
+Example: Google employs load balancing extensively across its global infrastructure to distribute search queries and traffic evenly across its massive server farms.
+
+4. Caching
+Store frequently accessed data in-memory (like RAM) to reduce the load on the server or database. Implement caching can dramatically improve response times.
+
+
+Example: Reddit uses caching to store frequently accessed content like hot posts and comments so that they can be served quickly without querying the database each time.
+
+5. Content Delivery Networks (CDNs)
+Distribute static assets (images, videos, etc.) closer to users. This can reduce latency and result in faster load times.
+
+Example: Cloudflare provides CDN services, speeding up website access for users worldwide by caching content in servers located close to users.
+
+Map of globally distributed servers serving content - What is a CDN
+Credit: https://www.cloudflare.com/learning/cdn/what-is-a-cdn/
+6. Partitioning
+Split data or functionality across multiple nodes/servers to distribute workload and avoid bottlenecks.
+
+
+Example: Amazon DynamoDB uses partitioning to distribute data and traffic for its NoSQL database service across many servers, ensuring fast performance and scalability.
+
+7. Asynchronous communication
+Defer long-running or non-critical tasks to background queues or message brokers. This ensures your main application remains responsive to users.
+
+Example: Slack uses asynchronous communication for messaging. When a message is sent, the sender's interface doesn't freeze; it continues to be responsive while the message is processed and delivered in the background.
+
+8. Microservices Architecture
+Break down your application into smaller, independent services that can be scaled independently. This improves resilience and allows teams to work on specific components in parallel.
+
+
+Example: Uber has evolved its architecture into microservices to handle different functions like billing, notifications, and ride matching independently, allowing for efficient scaling and rapid development.
+
+9. Auto-Scaling
+Automatically adjust the number of active servers based on the current load. This ensures that the system can handle spikes in traffic without manual intervention
+
+
+Example: AWS Auto Scaling monitors applications and automatically adjusts capacity to maintain steady, predictable performance at the lowest possible cost.
+
+10. Multi-region Deployment
+Deploy the application in multiple data centers or cloud regions to reduce latency and improve redundancy.
+
+Example: Spotify uses multi-region deployments to ensure their music streaming service remains highly available and responsive to users all over the world, regardless of where they are located.
+
+CDN#
+A content delivery network (CDN) is a geographically distributed group of servers that caches content close to end users. A CDN allows for the quick transfer of assets needed for loading Internet content, including HTML pages, JavaScript files, stylesheets, images, and videos.
+While a CDN does not host content and can’t replace the need for proper web hosting, it does help cache content at the network edge, which improves website performance. Many websites struggle to have their performance needs met by traditional hosting services, which is why they opt for CDNs.
+
+mproving website load times - By distributing content closer to website visitors by using a nearby CDN server (among other optimizations), visitors experience faster page loading times. As visitors are more inclined to click away from a slow-loading site, a CDN can reduce bounce rates and increase the amount of time that people spend on the site. In other words, a faster a website means more visitors will stay and stick around longer.
+Reducing bandwidth costs - Bandwidth consumption costs for website hosting is a primary expense for websites. Through caching and other optimizations, CDNs are able to reduce the amount of data an origin server must provide, thus reducing hosting costs for website owners.
+Increasing content availability and redundancy - Large amounts of traffic or hardware failures can interrupt normal website function. Thanks to their distributed nature, a CDN can handle more traffic and withstand hardware failure better than many origin servers.
+Improving website security - A CDN may improve security by providing DDoS mitigation, improvements to security certificates, and other optimizations.
+
+These Internet exchange points (IXPs) are the primary locations where different Internet providers connect in order to provide each other access to traffic originating on their different networks. By having a connection to these high speed and highly interconnected locations, a CDN provider is able to reduce costs and transit times in high speed data delivery.
+Beyond placement of servers in IXPs, a CDN makes a number of optimizations on standard client/server data transfers. CDNs place Data Centers at strategic locations across the globe, enhance security, and are designed to survive various types of failures and Internet congestion
+
+he globally distributed nature of a CDN means reduce distance between users and website resources. Instead of having to connect to wherever a website’s origin server may live, a CDN lets users connect to a geographically closer data center. Less travel time means faster service.
+Hardware and software optimizations such as efficient load balancing and solid-state hard drives can help data reach the user faster.
+CDNs can reduce the amount of data that’s transferred by reducing file sizes using tactics such as minification and file compression. Smaller file sizes mean quicker load times.
+CDNs can also speed up sites which use TLS/SSL certificates by optimizing connection reuse and enabling TLS false start.
+Load balancing distributes network traffic evenly across several servers, making it easier to scale rapid boosts in traffic.
+Intelligent failover provides uninterrupted service even if one or more of the CDN servers go offline due to hardware malfunction; the failover can redistribute the traffic to the other operational servers.
+In the event that an entire data center is having technical issues, Anycast routing transfers the traffic to another available data center, ensuring that no users lose access to the website.
+Information security is an integral part of a CDN. a CDN can keep a site secured with fresh TLS/SSL certificates which will ensure a high standard of authentication, encryption, and integrity. Investigate the security concerns surrounding CDNs, and explore what can be done to securely deliver content. Learn about CDN SSL/TLS security
+
+#Cache
+Caching is a technique used to store and retrieve frequently accessed data or computations to speed up subsequent data requests. By storing data temporarily in a cache, systems can reduce the time and resources required to fetch the same data from its original source, leading to improved performance and reduced latency.
+3. Cache Invalidation
+If the data is modified in the database, it should be invalidated in the cache, if not, this can cause inconsistent application behavior. There are majorly three kinds of caching systems: Write-through cache, Write-around cache, Write-back cache.
+
+Write through cache: Where writes go through the cache and write is confirmed as success only if writes to DB and the cache BOTH succeed. Pro: Fast retrieval, complete data consistency, robust to system disruptions.
+Con: Higher latency for write operations.
+Write around cache: Where write directly goes to the DB, bypassing the cache.
+Pro: This may reduce latency.
+Con: However, it increases cache misses because the cache system reads the information from DB in case of a cache miss. As a result, this can lead to higher read latency in the case of applications that write and re-read the information quickly. Read must happen from slower back-end storage and experience higher latency.
+Write back cache: Where the write is directly done to the caching layer and the write is confirmed as soon as the write to the cache completes. The cache then asynchronously syncs this write to the DB.
+Pro: This would lead to a really quick write latency and high write throughput for the write-intensive applications.
+Con: However, there is a risk of losing the data in case the caching layer dies because the only single copy of the written data is in the cache. We can improve this by having more than one replica acknowledging the write in the cache.
+4. Cache eviction policies
+Following are some of the most common cache eviction policies:
+
+First In First Out (FIFO): The cache evicts the first block accessed first without any regard to how often or how many times it was accessed before.
+Last In First Out (LIFO): The cache evicts the block accessed most recently first without any regard to how often or how many times it was accessed before.
+Least Recently Used (LRU): Discards the least recently used items first.
+Most Recently Used (MRU): Discards, in contrast to LRU, the most recently used items first.
+Least Frequently Used (LFU): Counts how often an item is needed. Those that are used least often are discarded first.
+Random Replacement (RR): Randomly selects a candidate item and discards it to make space when necessary.
+
+#Local caching refers to storing data on a single machine or within a single application. It’s commonly used in scenarios where data retrieval is limited to one machine or where the volume of data is relatively small. Examples of local caching include browser caches or application-level caches.
+#Distributed caching involves storing data across multiple machines or nodes, often in a network. This type of caching is essential for applications that need to scale across multiple servers or are distributed geographically. Distributed caching ensures that data is available close to where it’s needed, even if the original data source is remote or under heavy load.
+
+Example of local vs. distributed caching
+Consider an e-commerce website that receives thousands of requests per second. If the website relies solely on local caching, it might store product details on the server where the website is hosted. However, as traffic increases or if the website is accessed from different regions, this approach can lead to bottlenecks. On the other hand, with distributed caching, product details can be stored across multiple cache servers located in different regions. When a user accesses the website, the system retrieves product details from the nearest cache server, ensuring faster response times and a better user experience.
+
+Benefits of distributed caching
+Distributed caching addresses the limitations of local caching by storing data across multiple machines or nodes in a network. This approach offers several advantages:
+
+Scalability: As traffic to an application grows, additional cache servers can be added to the distributed cache system without disrupting existing operations.
+Fault tolerance: If one cache server fails, requests can be rerouted to another server, ensuring continuous availability of cached data.
+Performance: Data is stored closer to the user, reducing the time taken to fetch it and improving response times.
+Example of the benefits of distributed caching
+Imagine a global online retailer with customers accessing its platform from multiple continents. If the retailer uses local caching, a user in Asia might experience slower response times when accessing data stored in a server in North America. With distributed caching, the retailer can store frequently accessed data in cache servers located in Asia, North America, and other regions. As a result, users receive data from the nearest cache server, ensuring a consistent and fast browsing experience regardless of their location.
+Cache servers are the primary components in a distributed caching system. They store temporary data across multiple machines or nodes, ensuring that the data is available close to where it’s needed. Each cache server can operate independently, and in case of a server failure, the system can reroute requests to another server, ensuring high availability and fault tolerance.
+Consider a social media platform that uses distributed caching to store user profiles. Using consistent hashing, the platform ensures that user profiles are evenly distributed across multiple cache servers. If a user from Europe accesses their profile, the system retrieves the data from a cache server located in Europe, ensuring low latency. To ensure data availability, the platform replicates each user profile on two or more cache servers. So, if one server fails, the system can still retrieve the user’s profile from a replica server, ensuring uninterrupted service.
+
+Latency and throughput are two metrics that measure the performance of a computer network. Latency is the delay in network communication. It shows the time that data takes to transfer across the network. Networks with a longer delay or lag have high latency, while those with fast response times have lower latency. In contrast, throughput refers to the average volume of data that can actually pass through the network over a specific time. It indicates the number of data packets that arrive at their destinations successfully and the data packet loss.
+
+A network with low throughput and high latency struggles to send and process high data volume, which results in congestion and poor application performance. In contrast, a network with high throughput and low latency is responsive and efficient. Users experience improved performance and increased satisfaction.
+
+Originally, you would measure network throughput in bits per second (bps). But, as data transmission technologies have improved, you can now achieve much higher values. Because of this, you can measure throughput in kilobytes per second (KBps), megabytes per second (MBps), and even gigabytes per second (GBps). One byte is equal to eight bits. 
+
+To improve latency, you can shorten the propagation between the source and destination. You can improve throughput by increasing the overall network bandwidth.
+
+Next, we give some suggestions to improve latency and throughput together.
+
+Caching
+Caching in networking refers to the process of storing frequently accessed data geographically closer to the user. For example, you can store data in proxy servers or content delivery networks (CDNs).
+
+Your network can deliver data from the cached location much faster than if it had to be retrieved from the original source. And the user receives data much faster, improving latency. Additionally, because the data is retrieved from a cache, it reduces the load on the original source. This allows it to handle more requests at once, improving throughput.
+
+Transport protocols
+By optimizing the transport protocol that you use for specific applications, you can improve network performance.
+
+For instance, TCP and UDP are two common network protocols. TCP establishes a connection and checks that you receive data without any errors. Because of its goal of reducing packet loss, TCP has higher latency and higher throughput. UDP does not check for packet loss or errors, transmitting several duplicate packets instead. So, it gives minimal latency but a higher throughput.
+
+Depending on the application that you are using, TCP or UDP may be the better choice. For example, TCP is useful for transferring data, while UDP is useful for video streaming and gaming.
+
+Quality of service 
+You can use a quality of service (QoS) strategy to manage and optimize network performance. QoS allows you to divide network traffic into specific categories. You can assign each category a priority level.
+
+Your QoS configurations prioritize latency-sensitive applications. Some applications and users experience lower latency than others. Your QoS configurations can also prioritize data by type, reducing packet loss and increasing throughput for certain users
+
+What is the CAP theorem?
+The CAP Theorem is comprised of three components (hence its name) as they relate to distributed data stores:
+
+Consistency. All reads receive the most recent write or an error.
+Availability. All reads contain data, but it might not be the most recent.
+Partition tolerance. The system continues to operate despite network failures (ie; dropped partitions, slow network connections, or unavailable network connections between nodes.)
+In normal operations, your data store provides all three functions. But the CAP theorem maintains that when a distributed database experiences a network failure, you can provide either consistency or availability.
+
+It’s a tradeoff. All other times, all three can be provided. But, in the event of a network failure, a choice must be made.
+
+In the theorem, partition tolerance is a must. The assumption is that the system operates on a distributed data store so the system, by nature, operates with network partitions. Network failures will happen, so to offer any kind of reliable service, partition tolerance is necessary—the P of CAP.
+
+That leaves a decision between the other two, C and A. When a network failure happens, one can choose to guarantee consistency or availability:
+
+High consistency comes at the cost of lower availability.
+High availability comes at the cost of lower consistency.
+Consistency in CAP is different than that of ACID. Consistency in CAP means having the most up-to-date information. (ACID refers to a different database event. In ACID, consistency means any new transaction to the database won’t corrupt the database.)
+
+Whichever value is returned from the database depends on our choice to provide consistency or availability. Here’s how this choice could play out:
+
+On a query, we can respond to the user with the current value on the server, offering a highly available service. If we do this, there is no guarantee that the value is the most recent value submitted to the database. It is possible a recent write could be stuck in transit somewhere.
+If we want to guarantee high consistency, then we have to wait for the new write or return an error to the query. Thus, we sacrifice availability to ensure the data returned by the query is consistent.
+
+Consistency in databases
+Consistent databases should be used when the value of the information returned needs to be accurate.
+
+Financial data is a good example. When a user logs in to their banking institution, they do not want to see an error that no data is returned, or that the value is higher or lower than it actually is. Banking apps should return the exact value of a user’s account information. In this case, banks would rely on consistent databases.
+
+Examples of a consistent database include:
+
+Bank account balances
+Text messages
+Database options for consistency:
+
+MongoDB
+Redis
+HBase
+Availability in databases
+Availability databases should be used when the service is more important than the information.
+
+An example of having a highly available database can be seen in e-commerce businesses. Online stores want to make their store and the functions of the shopping cart available 24/7 so shoppers can make purchases exactly when they need.
+
+Database options for availability:
+
+Cassandra
+DynamoDB
+Cosmos DB
+Some database options, like Cosmos and Cassandra, allow a user to turn a knob on which guarantee they prefer—consistency or availability.
+
+Companies usually have their application running on multiple servers. Such a server arrangement is called a server farm. User requests to the application first go to the load balancer. The load balancer then routes each request to a single server in the server farm best suited to handle the request.
+
+Load balancing is like the work done by a manager in a restaurant. Consider a restaurant with five waiters. If customers were allowed to choose their waiters, one or two waiters could be overloaded with work while the others are idle. To avoid this scenario, the restaurant manager assigns customers to the specific waiters who are best suited to serve them.
+
+An ACID transaction is a set of properties that ensure the reliability and consistency of a database transaction. Transactions are a series of operations that are completed as a single unit of work, using read and write operations to access data. Most databases provide transactional guarantees for operations that impact just one record.
+
+Atomicity
+Atomicity in ACID transactions guarantees that a transaction is treated as a single, indivisible unit of work. If any part of the transaction fails, the entire transaction must be rolled back, meaning that any changes made during the transaction are undone. This ensures that the database remains in a consistent state, regardless of any failures that may occur during the transaction.
+
+Consistency
+Consistency ensures that the database remains in a valid state before and after the transaction. In other words, the database schema must satisfy all constraints and rules, and any transaction that violates these constraints must be rolled back to maintain the consistency of the database. This ensures that the database maintains its integrity and the data remains accurate and reliable.
+
+Isolation
+This property ensures that each transaction operates independently of other transactions, which means that a transaction’s effects should only become visible to other transactions after it has been committed. This property prevents interference and conflicts between concurrent transactions, and helps maintain the integrity and consistency of the database. It’s important to note that different levels of isolation can be configured for transactions, depending on the specific requirements of the application and the database system being used.
+
+Durability
+This characteristic makes sure that, even in a system failure, the changes made to the database during a transaction are irreversible. Any changes made after a transaction is committed must persist, even if the system is destroyed or loses power.
+
+E-commerce applications
+E-commerce applications use ACID transactions to make sure that customer orders are processed correctly, and that inventory levels are updated correctly. For example, an ACID transaction is carried out when a customer purchases an item to update the inventory records and guarantee that the transaction is atomic, consistent, isolated, and durable.
+
+SQL databases are better for multi-row transactions, while NoSQL is better for unstructured data like documents or JSON.
+
+It really comes down to the type of application you are building and the data requirements it entails. Understanding each database's unique features will help you decide which one is best for your project. It is also important to consider scalability and performance when making a decision on whether to use SQL or NoSQL. Knowing which database fits your needs can improve performance, ensure data integrity, and ultimately help you create a successful application.
+
+In general, SQL databases are suitable for structured data, where data is consistent, and relationships between tables are well-defined. In contrast, NoSQL databases are suitable for semi-structured or unstructured data, where the data does not conform to a predefined schema, and relationships between data elements are not well-defined. SQL databases are typically used in applications that require complex queries and transaction management, whereas NoSQL databases are used in applications that require high performance and scalability, such as web applications and mobile apps.
+
+An index is a database structure that you can use to improve the performance of database activity. A database table can have one or more indexes associated with it.
+Before you create indexes for a database table, consider how you will use the table. The two most common operations on a table are to:
+
+Insert, update, and delete records
+Retrieve records
+If you most often insert, update, and delete records, then the fewer indexes associated with the table, the better the performance. This is because the driver must maintain the indexes as well as the database tables, thus slowing down the performance of record inserts, updates, and deletes. It may be more efficient to drop all indexes before modifying a large number of records, and re-create the indexes after the modifications.
+
+If you most often retrieve records, you must look further to define the criteria for retrieving records and create indexes to improve the performance of these retrievals. Assume you have an employee database table and you will retrieve records based on employee name, department, or hire date. You would create three indexes-one on the DEPT field, one on the HIRE_DATE field, and one on the LAST_NAME field. Or perhaps, for the retrievals based on the name field, you would want an index that concatenates the LAST_NAME and the FIRST_NAME fields (see "Indexing Multiple Fields" for details).
+
+When joining database tables, index tables can greatly improve performance. Unless the proper indexes are available, queries that use joins can take a long time.
+
+Assume you have the following Select statement:
+
+SELECT * FROM dept, emp WHERE dept.dept_id = emp.dept
+In this example, the DEPT and EMP database tables are being joined using the department ID field. When the driver executes a query that contains a join, it processes the tables from left to right and uses an index on the second table's join field (the DEPT field of the EMP table).
+
+To improve join performance, you need an index on the join field of the second table in the From clause. If there is a third table in the From clause, the driver also uses an index on the field in the third table that joins it to any previous table. For example:
+
+SELECT * FROM dept, emp, addr
+WHERE dept.dept_id = emp.dept AND emp.loc = addr.loc
+In this case, you should have an index on the EMP.DEPT field and the ADDR.LOC field.
+In SQL, indexing is a technique used to improve the performance of queries by allowing the database management system (DBMS) to quickly locate rows in a table based on the values of certain columns. Indexes are data structures that provide a fast lookup mechanism, similar to the index of a book.
+
+public class MyClass {  
+ public static void main(String args[]) {  
+  try{       System.out.print("Try ");  
+     throw new RuntimeException();    }
+catch(Exception e){     
+  System.out.print("Catch ");  
+     System.exit(1);    }
+finally{    
+   System.out.print("Finally");   
+ }   } 
+}
+
+The program enters the try block and executes System.out.print("Try ").
+The throw statement throws a RuntimeException.
+Since the RuntimeException is caught by the catch block, the program executes System.out.print("Catch ").
+The System.exit(1) statement is executed, causing the program to terminate immediately with a status code of 1.
+Before the program terminates, the finally block is executed, printing Finally. However, since System.exit(1) was called earlier, the program terminates abruptly, and the Finally statement is still printed.
+
+Distributed denial of service (DDoS) attacks are a subclass of denial of service (DoS) attacks. A DDoS attack involves multiple connected online devices, collectively known as a botnet, which are used to overwhelm a target website with fake traffic.
+
+Unlike other kinds of cyberattacks, DDoS assaults don’t attempt to breach your security perimeter. Rather, a DDoS attack aims to make your website and servers unavailable to legitimate users. DDoS can also be used as a smokescreen for other malicious activities and to take down security appliances, breaching the target’s security perimeter.
+
+Rate limiting is a technique to limit network traffic to prevent users from exhausting system resources. Rate limiting makes it harder for malicious actors to overburden the system and cause attacks like Denial of Service (DoS). This involves attackers flooding a target system with requests and consuming too much network capacity, storage, and memory.
+
+APIs that use rate limiting can throttle or temporarily block any client that tries to make too many API calls. It might slow down a throttled user’s requests for a specified time or deny them altogether. Rate limiting ensures that legitimate requests can reach the system and access information without impacting the overall application’s performance.
+
+Rate limiting works within applications, not in the web server. Rate limiting typically involves tracking the IP addresses where requests originate and identifying the time lapsed between requests. IP addresses are the application’s main way to identify who has made each request.
+
+Rate-limiting solutions work by measuring the elapsed time between every request from a given IP address and tracking the number of requests made in a set timeframe. If one IP address makes too many requests within the specified timeframe, the rate-limiting solution throttles the IP address and doesn’t fulfill its requests for the next timeframe.
+
+Types of Rate Limits
+Administrators can define different parameters and methods and parameters when setting a rate limit. An organization’s chosen rate-limiting technique depends on the objective and the required level of restriction. Here are three main approaches to rate limiting that an organization might implement:
+
+User rate limits—this is the most popular rate-limiting method. It identifies the number of requests a given user makes, usually by tracking the user’s IP address or API key. Users that exceed the specified rate limit will trigger the application to deny any further requests until the rate-limited timeframe resets. Alternatively, users can contact the developers to increase the rate limit.
+Geographic rate limits—developers can further secure applications in a given geographic region by setting a rate limit for each specific region for a specified timeframe. For example, developers might predict that users in a given region will be less active between midnight and 9:00 am and define a lower rate limit for this timeframe. This approach helps prevent suspicious traffic and further reduces the risk of an attack.
+Server rate limits—developers can set rate limits at the server level if they define a specific server to handle parts of an application. This approach provides more flexibility, allowing the developers to increase the rate limit on commonly used servers while decreasing the traffic limit on less active servers.
+
+What Are the Algorithms Used for Rate Limiting?
+There are several types of rate-limiting algorithms.
+
+Fixed-window Rate Limiting
+Fixed-window rate limiting algorithms restrict the number of requests allowed during a given timeframe (window). For instance, a server’s rate-limiting component might implement an algorithm that accepts up to 200 API requests per minute. There is a fixed timeframe starting from a specified time—the server will not serve more than 200 requests between 9:00 and 9:01, but the window will reset at 9:01, allowing another 200 requests until 9:02.
+
+Developers can implement a fixed-window algorithm at the server or user level. Implementing the algorithm at the user level will restrict each user to 200 requests per minute. In contrast, a server-level algorithm will restrict the server, meaning that all users combined can make up to 200 requests per minute.
+
+Leaky Bucket Rate Limiting
+Leaky bucket rate limiting algorithms differ from fixed-window algorithms because they don’t rely on specified timeframes. They focus on the fixed length of request queues without considering the time. The server will service requests on a first-come, first-serve basis. New requests join the back of the queue. The server will drop a new request if it arrives when the queue is full.
+
+Sliding-window Rate Limiting
+Sliding-window rate limiting algorithms are similar to fixed-window algorithms except for the starting point of each time window. With sliding-window rate limiting, the timeframe only starts when a user makes a new request, not a predetermined time. For instance, if the first request arrives at 9:00:24 am (and the rate limit is 200 per minute), the server will allow up to 200 requests until 9:01:24.
+
+Sliding-window algorithms help solve the issues affecting requests in fixed-window rate limiting. They also mitigate the starvation issue facing leaky bucket rate limiting by providing more flexibility.
+
+A microservices architecture takes this same approach and extends it to the loosely coupled services which can be developed, deployed, and maintained independently. Each of these services is responsible for discrete task and can communicate with other services through simple APIs to solve a larger complex business problem.
+
+Once developed, these services can also be deployed independently of each other and hence its easy to identify hot services and scale them independent of whole application. Microservices also offer improved fault isolation whereby in the case of an error in one service the whole application doesn’t necessarily stop functioning. When the error is fixed, it can be deployed only for the respective service instead of redeploying an entire application.
+
+Another advantage which a microservices architecture brings to the table is making it easier to choose the technology stack (programming languages, databases, etc.) which is best suited for the required functionality (service) instead of being required to take a more standardized, one-size-fits-all approach.
+
+A response’s status is specified by its status code: 1xx for information, 2xx for success, 3xx for redirection, 4xx for client errors and 5xx for server errors.
+
+Batch processing offers advantages like high throughput, efficient resource utilization, and the ability to handle massive datasets. However, it comes with the drawback of higher latency, as insights or results are only available after the entire batch is processed. It’s typically well-suited for tasks where real-time processing is not critical, and the focus is on optimizing data handling and computation efficiency.
+
+Stream processing is a data processing paradigm that involves handling data in real-time as it arrives or is generated. Instead of waiting for data to accumulate in batches, stream processing systems continuously process data as it flows, enabling immediate insights and actions.
+
+This approach is well-suited for tasks that require real-time analytics, monitoring, and decision-making, such as fraud detection, live dashboard updates, social media sentiment analysis, and IoT (Internet of Things) data processing.
+
+Stream processing systems are designed to handle high-velocity data streams, ensuring low latency and rapid processing. They often involve complex infrastructure and fault-tolerance mechanisms to handle data as it arrives, potentially out of order or with varying data velocities. Stream processing is ideal for applications where timely insights and quick responses to data are essential.
+
+While batch processing is about processing large volumes of data at scheduled intervals, stream processing is all about handling data on-the-fly, in real time, or near-real-time. The best choice depends on the specific needs of a project or business requirement.
+
+When multiple servers form a cluster, each server is responsible for storing some portion of the data, based on the partitioning and replication schemes used. Timely detection of server failures is important for taking corrective actions by making some other server responsible for handling requests for the data on a failed server.
+
+Solution
+
+Periodically send a request to all the other servers indicating liveness of the sending server. Select the request interval to be more than the network round trip time between the servers. All the listening servers wait for the timeout interval, which is a multiple of the request interval.
+
+The Basics of Sharding
+Sharding is a technique for improving a database’s overall performance, as well as increasing its storage and resource limits. It’s a relatively simple horizontal scaling technique.
+
+With sharding, data is distributed across various partitions, or nodes. Each node holds only a portion of the data stored in the entire database. In Redis’ case, a key/value input is processed, and the data is stored in a shard.
+
+When a request is made to the database, it is sent to a shard selector, which chooses the appropriate shard to send the request. In Redis, shard selection is often implemented by a proxy that looks at the key for the requested data, and based on the key, the proxy sends the request to the appropriate shard instance.
+
+Sharding is a method for distributing a single dataset across multiple databases, which can then be stored on multiple machines. This allows for larger datasets to be split into smaller chunks and stored in multiple data nodes, increasing the total storage capacity of the system. See more on the basics of sharding here.
+
+Similarly, by distributing the data across multiple machines, a sharded database can handle more requests than a single machine can.
+
+Failover is the ability to seamlessly and automatically switch to a reliable backup system. Either redundancy or moving into a standby operational mode when a primary system component fails should achieve failover and reduce or eliminate negative user impact.
+
+A proxy server is a system or router that provides a gateway between users and the internet. Therefore, it helps prevent cyber attackers from entering a private network. It is a server, referred to as an “intermediary” because it goes between end-users and the web pages they visit online.
+
+Because a proxy server has its own IP address, it acts as a go-between for a computer and the internet. Your computer knows this address, and when you send a request on the internet, it is routed to the proxy, which then gets the response from the web server and forwards the data from the page to your computer’s browser, like Chrome, Safari, Firefox, or Microsoft Edge
+
+
+
+
+

@@ -1,0 +1,95 @@
+1.-when-you-disagree-with-a-coworker,-how-do-you-handle-it?
+Ans - Whenever there is any kind of disagreement we generally schedule a meeting with team lead and other team members
+	and discuss whats the issue that is hampering our task and then discuss how can we solve the problem and came to 
+	final conclusion after that and then resolve the problem.
+
+2.-tell-me-about-an-instance-when-you-had-to-juggle-multiple-tasks.-howl-did-you-handle-this-situation?
+Ans - once i was working for my project and there was some bugs for web developer guy and simultaneously for app developer guy
+	and parallely i had to do new development also so i prioritized my task and and solved each issue of both the web and app guy
+	while they were on lunch so that when they came back from lunch all issues are resolved and they can achieve their deadline.
+
+5.-tell-me-about-a-situation-when-you-required-information-from-someone-unresponsive.-how-did-you-deal-with-it?
+Ans - In one of my projects, I needed critical details from a third-party API provider to complete the payment gateway integration. However, their support team was unresponsive, delaying the implementation.
+
+To handle the situation:
+
+Followed Up Strategically – I sent structured emails summarizing my queries and their urgency while keeping multiple stakeholders in CC to add pressure.
+Explored Documentation & Forums – While waiting, I thoroughly reviewed available documentation and developer forums to find potential solutions.
+Tried Alternative Contacts – I reached out through different channels, including LinkedIn and customer support escalation points.
+Implemented a Temporary Workaround – To avoid blocking progress, I simulated API responses based on existing patterns and logs, ensuring minimal disruption to development.
+
+There can be situations when a colleague does not cooperate in the way you hope. I always try to gauge and understand the possible reasons for that and keep my calm. It may be because they are busy or stretched by their responsibilities. I try to give them some time to respond if possible. If it is something urgent, I would try to talk to them calmly, explaining the urgency of the situation and offering to help them with something they might be struggling with. I feel this usually works well.
+
+6.-tell-me-about-a-moment-when-you-messed-up.-how-did-you-correct-your-mistake?
+Ans - 
+
+One instance that comes to mind was during the Bharat Caravan project, where I was responsible for handling caravan bookings. At one point, I mistakenly implemented the booking logic without properly handling concurrency. This led to a scenario where multiple users could book the same caravan for overlapping dates, causing double bookings and customer complaints.
+
+How I Fixed It:
+Identified the Root Cause – I analyzed logs and database transactions to pinpoint the issue.
+Implemented Optimistic Locking – I updated the booking logic to check availability before confirming a booking, ensuring no duplicate reservations.
+Introduced a Database-Level Constraint – I enforced a unique constraint on caravan bookings for overlapping dates.
+Tested Thoroughly – I wrote JUnit and Mockito test cases to simulate concurrent booking scenarios and validated the fix.
+Communicated Transparently – I informed stakeholders about the issue, the fix, and steps to prevent future occurrences.
+This experience taught me the importance of handling concurrency in high-traffic applications and reinforced the need for thorough testing before deployment.
+
+7. Describe a situation where you felt challenged in some way. How did you respond to it?
+Ans - When I started my career, although I had completed my education, I had never worked as a software engineer. While acquiring hands-on experience, I realised there were many challenges I had been unaware of. I began to take notes and asked senior colleagues and my supervisor many questions. I reviewed these notes daily and quickly became familiar with the company's systems and protocol. Eventually, I was able to achieve my goals at that company successfully.'
+
+8. How do you balance being predictable and timely while being innovative as a software engineer?
+Ans - I keep on reading certain articles from various top tech leads working at top mnc's and they share their experience how to approach the particular problem
+	and what all are the best approaches to approach the solution so i keep on reading such articles and in future if i encounter any such situation then i employe
+	those concepts make my project innovative along side acheiving my deadlines.
+
+9. What’s the biggest takeaway from your current job that you will remember throughout the year
+firstly communication is the key and proactively participate in the architecture how you are going to design and implements changes and if we proceed like
+this will this be easier for both to implement the changes and to achieve requested timeline or not.
+Always learn from your mistake and don't repeat in future .
+
+10. What’s a setback in your career? (Any big failure curve and you overcome)
+Not a failure but situation where i need to swith from kind of operations to development learnt skills show them sample projects and shared my learning with them.
+
+11. What’s your strength?
+As a software engineer, one of my greatest strengths is my ability to solve complex problems in a logical and efficient manner. I enjoy breaking down complex problems into smaller, more manageable parts and finding elegant solutions to them. I am comfortable working with large amounts of data, algorithms, and intricate systems.
+
+
+12. What's your weakness?
+One weakness that I have identified in my work as a software engineer is my tendency to get caught up in the details of a project, sometimes to the point where I lose sight of the bigger picture. While being detail-oriented is an asset in software development, it’s essential to balance this trait with a broader perspective to ensure that the project is meeting the overall goals and objectives.
+
+To address this weakness, I have implemented several strategies to help me stay focused on the bigger picture. For example, I regularly check in with the project’s stakeholders to ensure that I am meeting their expectations and that the project is moving in the right direction. I also make a conscious effort to take a step back from the details and think about how my work fits into the larger context of the project.
+
+13. why you want to leave your current organization?
+As a software engineer, I have always been passionate about creating innovative solutions that have a real-world impact. I have been following X company’s work closely for some time, and I am impressed by the company’s commitment to using technology to solve complex problems and improve people’s lives. I am particularly excited about the company’s focus on cutting-edge technologies, such as machine learning and artificial intelligence, which I believe have the potential to revolutionize the industry.
+
+Additionally, I have heard great things about X company’s culture and work environment. I value a workplace that promotes collaboration, creativity, and continuous learning, and I am impressed by the company’s emphasis on these values. I am also drawn to X company’s reputation for investing in its employees’ professional development and providing opportunities for career growth.
+
+As a software engineer, I have enjoyed my time at my current/last company, and I have gained valuable experience and skills that I believe will serve me well in future roles. However, I am now seeking new opportunities and challenges that will enable me to continue to grow professionally and personally.
+
+One of the reasons I am looking for a new role is that I feel that I have reached a plateau in my current/last position. While I have been able to contribute to a number of exciting projects and initiatives, I am eager to take on more responsibilities and tackle new technical challenges that will push me outside of my comfort zone. I believe that X company will provide me with the opportunity to work on cutting-edge projects and technologies and to continue to develop my skills as a software engineer.
+
+Another reason for my decision to leave my current/last company is that I am looking for a culture that values collaboration, creativity, and innovation. While my current/last company has many positive attributes, I feel that it is not as focused on these values as I would like. I am attracted to X company’s reputation for fostering a culture of continuous learning and innovation, and I believe that I would thrive in this type of environment.
+
+14. how you would increase our revenue?
+ans - first analyze if there is any existing technical flaws in project im working on and try to resolve that at first and will analyze what our competitors are doing and what techn stack or approach they are using to attract high traffic and how we can go beyond the expectations of the user to improve our sysem nd be competitive 
+in our industry.
+
+15. what if you are unable to complete your task?
+Ill will be proactively communicating to my senior developers and relevant stakeholders,push my boundaries and explore possibilities to solve the problem and i have good relation with my current employers and they are having rich experience in my field and i believe they will also help me if i reach out to them.
+
+* My vision is to implement cutting edge solutions and implement innovative solution that enhances the process and elevate experience and to help client unlock their full potential with advanced ai solutions.
+
+I have consistently delivered results and taken on responsibilities beyond my current role. I would love to continue growing within the company.
+
+My current ctc is not the representative of my current value.
+
+How do you ensure you adapt new work environment - for me having good communication and building good interpersonal relation will help you to be comfortable so that
+you could involve yourself more freely and confidently basically collaborating and observation like how projects are architectured and how meetings are arranged to
+achieve delivery so that i can prepare myself in advance and can collaborate effectively.
+
+why do we hire you - 
+I am passionate about delivering highly innovative projects using cutting-edge technologies, as they provide opportunities for continuous learning and professional growth. I am eager to tackle new challenges, take on increased responsibilities, and contribute effectively to a dynamic team. This role aligns perfectly with my skills and aspirations, allowing me to apply my expertise while expanding my capabilities in a challenging and growth-oriented environment.
+
+I am a strong problem solver and a great team player with excellent interpersonal skills, enabling me to collaborate effectively with colleagues and contribute to a positive work environment. My ability to analyze challenges, communicate effectively, and work seamlessly within a team ensures the timely delivery of high-quality solutions. I thrive in dynamic environments where teamwork and problem-solving are key to driving success.
+
+How do you ensure you are innovative - 
+To ensure innovation in my work, I consistently stay updated with the latest industry trends, emerging technologies, and best practices. I actively seek opportunities to apply creative problem-solving techniques, explore new tools, and experiment with different approaches to improve efficiency and scalability. Collaborating with peers, participating in tech communities, and engaging in continuous learning through courses, workshops, and hands-on projects also help me bring fresh, innovative ideas to the table. Additionally, I embrace challenges as opportunities to think outside the box and develop unique solutions that drive meaningful impact.

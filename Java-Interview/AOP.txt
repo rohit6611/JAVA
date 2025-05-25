@@ -1,0 +1,14 @@
+1.Aspect - An aspect is a modularization of a concern that cuts across multiple concerns
+(Jo bhi class mein hum method likhnge jo merko kisi particular joinPoint se pehle chlana h wo aspect h )
+2. Join point- is any point in your program such as method execution,exception handling,field access etc .spring supports only method execution join point.
+3. Advice- represents an action taken an aspect at a particular join point.
+4. Pointcut - it is an expression of AOP that matches join point.
+
+A Pointcut is a predicate that helps match an Advice to be applied by an Aspect at a particular JoinPoint.
+
+We often associate the Advice with a Pointcut expression, and it runs at any Joinpoint matched by the Pointcut.
+
+An Advice is an action taken by an aspect at a particular Joinpoint. Different types of advice include “around,” “before,” and “after.”
+
+In Spring, an Advice is modelled as an interceptor, maintaining a chain of interceptors around the Joinpoint.
+
