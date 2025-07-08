@@ -25,3 +25,8 @@
   Route 53 is DNS service.
   
   CloudWatch for monitoring metrics.		
+
+  AWS Lambda is a serverless compute service that allows you to run code without provisioning or managing servers.
+  It executes code in response to events and automatically manages the underlying compute resources. 
+  Lambda functions are ideal for event-driven applications, such as processing data from S3 buckets or responding to HTTP requests. 
+
