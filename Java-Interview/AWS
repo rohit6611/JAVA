@@ -1,0 +1,27 @@
+
+  AZ - 	Each availability zone (AZ) is one or more
+	discrete data centers with redundant power,
+	networking, and connectivity
+	• They’re separate from each other, so that
+	they’re isolated from disasters
+	• They’re connected with high bandwidth,
+	ultra-low latency networking
+	
+  Access Key ID ~= username
+  • Secret Access Key ~= password
+  
+  Elastic IP - 
+  When you stop and then start an EC2 instance, it can change its public IP.
+  • If you need to have a fixed public IP for your instance, you need an
+  Elastic IP
+  • An Elastic IP is a public IPv4 IP you own as long as you don’t delete it
+  • You can attach it to one instance at a time.
+  
+  Cloudwatch alarms is kind of alarm that will trigger the asg based on conditions like 
+  when cpu usage > 70% then add 2 instances.
+  
+  Note all AWS services focuses on high availability,scalability and high performance,security.
+  
+  Route 53 is DNS service.
+  
+  CloudWatch for monitoring metrics.		
