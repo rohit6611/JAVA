@@ -79,6 +79,11 @@ names.stream()
              .forEach(System.out::println);
 			 for case sensitive
 
+Optional<String> firstWordStartingWithA = words.stream()
+                .filter(word -> word.startsWith("a"))
+                .findFirst();
+
+
 4. Sort a list of integers in descending order
 Input:
 
