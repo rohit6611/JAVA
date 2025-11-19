@@ -618,6 +618,10 @@ Expected Output:
 List<Integer> firstThree = numbers.stream()
                 .limit(3) // Get only the first 3 elements
                 .collect(Collectors.toList());
+
+List<String> list = Arrays.asList("abc","abaae3","ebe","ebabe");
+      
+      list.stream().limit(2).map(s -> s.length()).forEach(System.out::println); // outputs 3,6
                 
                 1, 2, 3, 4, 5, 6]
 List<Integer> mergedList = Stream.concat(list1.stream(), list2.stream())
@@ -1447,7 +1451,7 @@ The finally block always executes, even if an exception is thrown. But if an exc
        
        GC is expensive when gc thread starts all application thread is paused.
 In concurrent mark and sweep gc thread and application thread works concurrently.but it does not gurantee but it will try its best.In g1 gc it gurantees application thread wont stop along with gc thread and it also ensures memory compaction so that remaining memory can be used effectively.
-In heap memory objects are stored in young and old gen. young gen is divided into 3 parts eden,s0,s1 basically survivors.and they are set with age threshold so when they reach the threshold limit they are moved to old gen. in young gen it is minor gc that runs periodically lets say in every 10 secs and in old generation it is called major gc that is lets say runs in every half hours . metaspace is used to store class variables ,static and final variables,constants etc outside the heap memory and metadata about the class. Objects  are freed up from youn generation and keeps on moving from eden to s0 and s1 depending upon the mark and sweep algorithm of gc.
+In heap memory objects are stored in young and old gen. young gen is divided into 3 parts eden,s0,s1 basically survivors.and they are set with age threshold so when they reach the threshold limit they are moved to old gen. in young gen it is minor gc that runs periodically lets say in every 10 secs and in old generation it is called major gc that is lets say runs in every half hours . metaspace is used to store class variables ,static and final variables,constants etc outside the heap memory and metadata about the class. Objects  are freed up from young generation and keeps on moving from eden to s0 and s1 depending upon the mark and sweep algorithm of gc.
 
 Longest String in list
 String word=words.stream().max(Comparator.comparingInt(String::length)).get();
@@ -1798,7 +1802,7 @@ private static boolean isPrime(int num) {
 		return flag;
 	}
 	
-	comparable provides only one instance to compare and to override its compareTo() method and we use coparator when we want to sort by more than on property.
+	comparable provides only one instance to compare and to override its compareTo() method and we use comparator when we want to sort by more than on property.
 class RatingCompare implements Comparator<Movie> {
     public int compare(Movie m1, Movie m2)
     {
@@ -1846,7 +1850,7 @@ class Movie implements Comparable<Movie>
     
 }   
 
-# To visualize the gc logs you can use tools like visual vm to capture the gc logs and to tune the performance adjust the heap size accordingly using xmx sms.
+# To visualize the gc logs you can use tools like visual vm to capture the gc logs and to tune the performance adjust the heap size accordingly using xmx xms.
 
 #Find first non repeating integer in a list of Integer
  Integer[] numbers = {4, 5, 1, 2, 0, 4, 5, 2};
@@ -2332,7 +2336,7 @@ If both are present in the springboot application and both have same type of @Ex
 return view and error thrown by @RestController will be entertained @RestControllerAdvice and json is returned in response.
 
 Aspect		ExecutorService											ForkJoinPool
-Definition	A general-purpose thread pool used to execute Runnable or Callable tasks asynchronously.	A specialized implementation of ExecutorService designed for parallel computation using 			 the Fork/Join framework.
+Definition	A general-purpose thread pool used to execute Runnable or Callable tasks asynchronously.	A specialized implementation of ExecutorService designed for parallel computation using 			 																							the Fork/Join framework.
 Introduced in	Java 5 (java.util.concurrent)	Java 7 (java.util.concurrent)
 Best for	Independent, unrelated tasks (e.g., IO tasks, background jobs).	Recursive, divide-and-conquer tasks (e.g., parallel computation, large data processing).
 Thread Management	Uses a fixed or cached thread pool — one thread per task.	Uses a work-stealing algorithm for efficient CPU utilization.
@@ -2500,7 +2504,7 @@ Blocks both reads and writes by other transactions.
 @Lock(LockModeType.PESSIMISTIC_READ)
 Prevents writes, but allows concurrent reads.
 
-static variables are stored in metaspace.
+static variables are stored in metaspace of permgen heap memory.
 stream api is lazy in nature it won't be invoked untill any terminal operation is called on it.
 
 What is @Secured?
@@ -2528,7 +2532,7 @@ Enable it:
 
 If fallback method itself fails then we throw the exception and propagate the exception.
 
-1st priority - command line property , environment property,config server,default properties file.
+1st priority - command line argument , environment property,config server,default properties file.
 
 If there is no ExceptionHandler in springboot then springboot will use its default exception handler and return its default 500 error response.
 
