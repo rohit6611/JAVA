@@ -2581,3 +2581,62 @@ Data is combined into fewer tables by copying values.
 
 Normalization → Remove redundancy, more tables, more joins, consistent data.
 Denormalization → Add redundancy, fewer joins, faster reads, risk of inconsistency.
+
+| Method            | When Value Present | When Value Missing            | Execution Style                      | Use Case                       |
+| ----------------- | ------------------ | ----------------------------- | ------------------------------------ | ------------------------------ |
+| **orElse()**      | Returns value      | Returns default value         | Default object is **always created** | Simple default values          |
+| **orElseGet()**   | Returns value      | Calls Supplier to get default | Lazy evaluation                      | Expensive default construction |
+| **orElseThrow()** | Returns value      | Throws exception              | Lazy                                 | Mandatory value must exist     |
+
+public String getUserName(Optional<String> nameOpt) {
+
+    String name1 = nameOpt.orElse("Guest");  
+    // "Guest" is created immediately
+
+    String name2 = nameOpt.orElseGet(() -> getDefaultName());  
+    // getDefaultName() executed only if needed
+
+    String name3 = nameOpt.orElseThrow(() -> new RuntimeException("Name missing"));
+    // throws exception if name not present
+
+    return name1; // Just example
+}
+
+The Fork/Join framework helps break a large task into multiple small tasks (called subtasks) that can execute in parallel using multiple CPU cores.
+It uses a special thread pool called ForkJoinPool, which uses the work-stealing algorithm to keep threads busy.
+Basic Flow
+
+fork() → split the large task into smaller tasks
+compute() → execute tasks
+join() → merge results
+
+how does pattern matching for instanceof simplify java code?
+Pattern matching for instanceof (introduced in Java 16) simplifies Java code by removing the need for manual casting after an instanceof check.
+Before pattern matching:
+You check instanceof
+Then you explicitly cast the object
+This creates boilerplate, is error-prone, and makes code verbose.
+
+Without Pattern Matching (Old Java Code)
+Object obj = ...;
+
+if (obj instanceof String) {
+    String s = (String) obj;   // manual cast needed
+    System.out.println(s.toLowerCase());
+}
+
+With Pattern Matching for instanceof (Modern Java)
+Object obj = ...;
+
+if (obj instanceof String s) {
+    System.out.println(s.toLowerCase());
+}
+
+#group employees by department and get the higghest salary per department
+Map<String, Optional<Employee>> highestSalaryByDept =
+        employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::getDepartment,
+                        Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary))
+                ));
+
