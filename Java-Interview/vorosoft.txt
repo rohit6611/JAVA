@@ -2649,3 +2649,5 @@ JIT converts that bytecode into native machine code
 Next time that code runs → it executes directly on the CPU, much faster
 
 Parallel streams does not produce invalid result untill they share some common shared resource and can be saved from race conditon by using synchronized collection for example.
+
+If HikariCP is enabled by default (as in Spring Boot), then the default maximum number of connections in the pool = 10.
