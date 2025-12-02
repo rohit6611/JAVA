@@ -2651,3 +2651,127 @@ Next time that code runs → it executes directly on the CPU, much faster
 Parallel streams does not produce invalid result untill they share some common shared resource and can be saved from race conditon by using synchronized collection for example.
 
 If HikariCP is enabled by default (as in Spring Boot), then the default maximum number of connections in the pool = 10.
+
+List<Integer> list = Arrays.asList(10, 25, 13, 41, 152, 19, 22);
+
+List<Integer> result = list.stream()
+        .filter(num -> String.valueOf(num).startsWith("1"))
+        .toList();
+
+System.out.println(result);
+
+Map<String, Long> genderCount =
+        employees.stream()
+                 .collect(Collectors.groupingBy(Employee::getGender,
+                          Collectors.counting()));
+
+System.out.println(genderCount);
+
+Map<String, Double> avgSalaryByGender =
+        employees.stream()
+                 .collect(Collectors.groupingBy(
+                         Employee::getGender,
+                         Collectors.averagingDouble(Employee::getSalary)
+                 ));
+
+System.out.println(avgSalaryByGender);
+
+List<Integer> list = List.of(2,3,4,5,6,7,8);
+        Integer sum = list.stream().filter(i -> i%2!=0).mapToInt(i -> i).sum();
+        System.out.println(sum);
+
+Map<Boolean,List<Integer>> map = list.stream().
+        collect(Collectors.partitioningBy(i -> i%2==0));
+
+String input = "banana";
+char remove = 'a';
+
+String result = input.chars()
+        .filter(ch -> ch != remove)
+        .mapToObj(ch -> String.valueOf((char) ch))
+        .collect(Collectors.joining());
+
+System.out.println(result);
+
+public class SpecialCharFinder {
+    public static void main(String[] args) {
+        String input = "Hello@World#123!";
+
+        input.chars()
+                .mapToObj(c -> (char) c)
+                .filter(c -> !Character.isLetterOrDigit(c))
+                .forEach(System.out::println);
+    }
+}
+
+public class HalfUpperHalfLower {
+    public static void main(String[] args) {
+        String input = "Programming";
+
+        int mid = input.length() / 2;
+
+        String firstHalf = input.substring(0, mid).toUpperCase();
+        String secondHalf = input.substring(mid).toLowerCase();
+
+        String result = firstHalf + secondHalf;
+
+        System.out.println(result);
+    }
+}
+
+List<Integer> list = List.of(12,3,4,5,6,7,8);
+        Integer max = list.stream().
+        max(Integer::compare).get();
+        System.out.println(max);
+
+Type	What is passed	Effect in method
+Primitive	Actual value	Original value unaffected
+Object	Reference value	Object can be modified, reference itself cannot
+
+given a list of transactions - find top 3 customers by total spending
+transactions.stream()
+        .collect(Collectors.groupingBy(
+                Transaction::getCustomerId,
+                Collectors.summingDouble(Transaction::getAmount)
+        ))
+        .entrySet().stream()
+        .sorted((e1, e2) -> (int)(e2.getValue() - e1.getValue())) // simple lambda
+        .limit(3)
+        .forEach(entry ->
+                System.out.println(entry.getKey() + " : " + entry.getValue())
+        );
+
+Spring singleton beans and manual singleton utilities serve different purposes.
+If you are inside a Spring-managed app, you usually don’t need manual singleton.
+If you need global access outside Spring, legacy code, or utility classes, a singleton pattern is still useful.
+
+Feature	Spring REST API	Spring MVC
+Response Type	JSON/XML	HTML/JSP/Thymeleaf
+Client	Any	Web browser
+Stateless	✅	Usually ❌ (uses session)
+Scalability	High	Moderate
+Front-end Integration	Easy (SPA)	Harder
+HTTP Semantics	Fully leveraged	Partially
+Microservices	✅	❌
+
+Use REST APIs when building modern, scalable, and client-agnostic services (mobile, SPA, microservices).
+Use Spring MVC when you need server-rendered pages (traditional websites).
+
+Map<String, List<Employee>> top5ByDept = employees.stream()
+        .collect(Collectors.groupingBy(
+                Employee::getDepartment,
+                Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> list.stream()
+                                .sorted((e1, e2) -> Double.compare(e2.getSalary(), e1.getSalary())) // descending
+                                .limit(5)
+                                .toList()
+                )
+        ));
+
+calculate totals by user id using streams
+Map<String, Double> totalsByUser = transactions.stream()
+        .collect(Collectors.groupingBy(
+                Transaction::getUserId,
+                Collectors.summingDouble(Transaction::getAmount)
+        ));
