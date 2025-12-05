@@ -2775,3 +2775,14 @@ Map<String, Double> totalsByUser = transactions.stream()
                 Transaction::getUserId,
                 Collectors.summingDouble(Transaction::getAmount)
         ));
+
+Enhancements made in hashmap after 1.8 is when the bucket size reaches to 8 then the linkedlist is converted to balanced tree(Red-Black Tree) so that hash collision cases can be handled more efficiently as for all hash function for the same bucket time complexity is acheived to O(logn) from O(n).
+
+with bucket size of 16 how many read write operation can happen simultaneously
+HashMap is NOT thread-safe → so the number of simultaneous read/write operations is NOT limited by bucket size.
+
+ String s = "I love programming very much";
+        String reversed = Arrays.stream(s.split("\\s")).map(st -> new StringBuilder(st).reverse()).collect(
+            Collectors.joining(" "));
+            System.out.println(reversed);
+I evol gnimmargorp yrev hcum
