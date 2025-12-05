@@ -1,0 +1,1029 @@
+
+1. Abstraction
+
+What it is:
+Abstraction means exposing only the essential features of an object while hiding internal implementation details. It models what an object does, not how it does it.
+
+How to implement in Java:
+
+interface — full abstraction (Java 8+ allows default/private methods)
+
+abstract class — partial abstraction; can hold state and concrete methods.
+
+When to use which:
+
+Use interface when you need a contract that many unrelated classes might implement (multiple inheritance of type).
+
+Use abstract class when implementations share common state or helper methods and you want to provide a partial default implementation.
+
+Example — Interface:
+
+public interface Payment {
+    void pay(double amount);
+    default boolean validate() { return true; } // Java 8+
+}
+
+public class CardPayment implements Payment {
+    @Override
+    public void pay(double amount) {
+        // Card processing logic
+    }
+}
+
+
+Example — Abstract class:
+
+public abstract class Vehicle {
+    protected String model;
+    public Vehicle(String model) { this.model = model; }
+    public abstract void drive();
+    public void start() { System.out.println("Vehicle started"); } // common behavior
+}
+
+public class Car extends Vehicle {
+    public Car(String model) { super(model); }
+    @Override
+    public void drive() { System.out.println("Driving " + model); }
+}
+
+
+Advantages:
+
+Hides complexity → easier API for callers.
+
+Makes code more modular and easier to change/extend.
+
+Pitfalls / interview gotchas:
+
+Confusing abstraction with encapsulation — abstraction hides behavior/contract; encapsulation hides state and access.
+
+Over-abstraction leads to too many tiny interfaces (interface fragmentation).
+
+Choosing abstract class when multiple implementation inheritance is required.
+
+One-line interview answer:
+“Abstraction separates what an object does from how it does it; use interfaces for contracts and abstract classes for shared behavior.”
+
+2. Inheritance
+
+What it is:
+Inheritance allows a class (subclass/child) to acquire properties and behavior (fields/methods) of another class (superclass/parent). In Java: class Child extends Parent.
+
+Types:
+
+Single inheritance (Java classes) — one superclass.
+
+Interface inheritance — a class can implement multiple interfaces.
+
+Example:
+
+class Animal {
+    void eat() { System.out.println("eat"); }
+}
+
+class Dog extends Animal {
+    void bark() { System.out.println("bark"); }
+}
+
+// Usage
+Dog d = new Dog();
+d.eat(); // inherited
+d.bark();
+
+
+When to use:
+
+Use inheritance when there is an “is-a” relationship and the subclass truly extends or specializes the superclass.
+
+Composition over Inheritance:
+Prefer composition (has-a) when behavior can be reused by delegation rather than forcing an is-a relationship. Composition is more flexible and avoids fragile base class problems.
+
+Advantages:
+
+Code reuse (fields/methods from parent).
+
+Polymorphic behavior (treat subclass as parent type).
+
+Pitfalls:
+
+Tight coupling between child and parent.
+
+Fragile base class problem: changes in parent can break children.
+
+Improper use leads to deep inheritance hierarchies — hard to maintain.
+
+Violates the Liskov Substitution Principle if subclass changes expected behavior.
+
+Interview tip:
+Always justify inheritance with a real “is-a” relationship and consider composition when behavior should be reused without forming a strict subtype.
+
+One-line interview answer:
+“Inheritance lets a class reuse and extend behavior of another class; use for true ‘is-a’ relationships, but prefer composition to avoid coupling.”
+
+3. Polymorphism
+
+What it is:
+Polymorphism means “many forms” — the same operation behaves differently based on the actual object’s type. It allows writing code that works on supertype references while actual runtime type decides the concrete behavior.
+
+Two kinds in Java:
+
+Compile-time (Static) polymorphism — method overloading (same method name, different parameters).
+
+Runtime (Dynamic) polymorphism — method overriding (subclass provides specific implementation for a superclass method) using dynamic dispatch.
+
+Examples:
+
+Compile-time — Overloading:
+
+class MathUtil {
+    int add(int a, int b){ return a + b; }
+    double add(double a, double b){ return a + b; }
+}
+
+
+Runtime — Overriding & dynamic dispatch:
+
+class Shape {
+    void draw() { System.out.println("generic shape"); }
+}
+class Circle extends Shape {
+    @Override
+    void draw() { System.out.println("circle"); }
+}
+class Square extends Shape {
+    @Override
+    void draw() { System.out.println("square"); }
+}
+
+// usage
+Shape s = new Circle();
+s.draw(); // prints "circle" — runtime decides which draw()
+
+
+Why it matters:
+
+Enables flexible and extensible design.
+
+Supports techniques like strategy pattern, dependency injection, polymorphic collections.
+
+Common pitfalls:
+
+If methods are static, private, or final, they are not polymorphic (no dynamic dispatch).
+
+Using instanceof checks frequently indicates a design smell — consider polymorphism or visitor pattern.
+
+Interview snippets:
+
+“Overloading is resolved at compile time; overriding is resolved at runtime.”
+
+“Polymorphism enables substitutability: code written for a base type can work with any derived type.”
+
+4. Encapsulation
+
+What it is:
+Encapsulation is the bundling of data (fields) and methods that operate on the data into a single unit (class), and restricting direct access to some of the object’s components.
+
+How to implement:
+
+Use access modifiers (private, protected, public, package-private).
+
+Provide public getters/setters (or no setters for immutability).
+
+Use final to make fields immutable when required.
+
+Example — Encapsulated class:
+
+public class Account {
+    private double balance;           // hidden field
+
+    public Account(double balance) {  // controlled initialization
+        this.balance = balance;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount <= 0) throw new IllegalArgumentException("invalid");
+        balance += amount;
+    }
+
+    public void withdraw(double amount) {
+        if (amount > balance) throw new IllegalStateException("insufficient");
+        balance -= amount;
+    }
+}
+
+
+Immutability (strong encapsulation):
+
+public final class Person {
+    private final String name;
+    public Person(String name) { this.name = name; }
+    public String getName() { return name; }
+}
+
+
+Advantages:
+
+Protects object integrity — invariants enforced in methods.
+
+Hides implementation details — safe to refactor internals.
+
+Reduces coupling.
+
+Pitfalls:
+
+Exposing internal mutable collections via getters can break encapsulation (return defensive copies or unmodifiable views).
+
+Overuse of setters can make objects anemic (no behavior).
+
+Interview tip:
+Demonstrate encapsulation with defensive copying and discuss immutability: “Prefer immutable objects where possible for thread-safety and simplicity.”
+
+Putting the four together — small design example
+
+Imagine a payment processing module:
+
+Abstraction: Payment interface defines pay().
+
+Inheritance & Polymorphism: AbstractPayment provides shared behavior; CardPayment, UPIPayment extend it and override process(). Polymorphism lets PaymentService treat all payments as Payment.
+
+Encapsulation: PaymentDetails class keeps cardNumber private and exposes only masked output.
+
+## collections use hashCode() internally to decide the bucket location and equals() to check equality.
+
+equals() — Purpose
+
+Used to compare logical equality (same value/content).
+
+Default implementation (from Object class) checks reference equality.
+
+Example of reference equality (WRONG in most domain classes):
+
+String s1 = new String("abc");
+String s2 = new String("abc");
+
+System.out.println(s1 == s2);       // false (different objects)
+System.out.println(s1.equals(s2));  // true (logically same)
+
+hashCode() — Purpose
+
+Provides a hash (int) representation of an object.
+
+Used to locate the bucket in hash-based collections.
+
+Faster lookup → avoids comparing equals() on every insert/search.
+
+If hashCode is inconsistent → object cannot be found even if it exists
+
+public class Employee {
+    private int id;
+    private String name;
+
+    // Constructor, getters...
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;               // same reference
+        if (o == null || getClass() != o.getClass()) return false;
+        
+        Employee e = (Employee) o;
+        return id == e.id && Objects.equals(name, e.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+}
+
+If two objects are equal via equals(), they must return same hashCode().
+
+##
+🔵 1. Comparable (java.lang.Comparable)
+
+Used to define default / natural ordering of a class.
+
+✔ Key Points
+
+Defined inside the class whose objects need to be sorted.
+
+Method to implement:
+
+int compareTo(T o)
+
+
+Only one compareTo() method → only one sorting logic possible.
+
+Modifies the class itself.
+
+✔ When to use?
+
+When you want natural sorting (name, id, etc.).
+
+When sorting rule is obvious and standard for that class.
+
+✔ Example
+class Employee implements Comparable<Employee> {
+    int id;
+    String name;
+
+    public Employee(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public int compareTo(Employee other) {
+        return this.id - other.id;  // sort by ID
+    }
+}
+
+
+Usage:
+
+Collections.sort(list); // Uses compareTo()
+
+🔵 2. Comparator (java.util.Comparator)
+
+Used to define custom sorting, outside the class.
+
+✔ Key Points
+
+Defined outside the class (separate class or lambda).
+
+Method to implement:
+
+int compare(T o1, T o2)
+
+
+Allows multiple sorting logics.
+
+Does not modify the class.
+
+✔ When to use?
+
+When you want multiple ways to sort (by name, salary, date, etc.)
+
+When the class cannot be modified.
+
+✔ Example
+
+Sort Employee by name:
+
+Comparator<Employee> sortByName = (e1, e2) -> e1.name.compareTo(e2.name);
+Collections.sort(list, sortByName);
+
+
+Another comparator: sort by salary
+
+Comparator<Employee> sortBySalary = (a, b) -> a.salary - b.salary;
+
+
+##String is immutable, whereas StringBuffer and StringBuilder are mutable.
+StringBuffer is synchronized (thread-safe) but slower.
+StringBuilder is not synchronized but fastest.
+Use String for constant values, StringBuffer for multithreaded modifications, and StringBuilder for single-threaded, high-performance string operations.
+
+
+##
+                 Throwable
+                 /       \
+           Error         Exception
+                        /        \
+               RuntimeException  CheckedException
+
+Feature			Errors					Exceptions
+Meaning			Serious problems beyond app’s control	Issues that the program should handle
+Recoverable?		❌ No	✔ Usually yes
+Compiler check?		Not checked	Checked/Unchecked
+Examples		OutOfMemoryError, StackOverflowError	IOException, SQLException, NullPointerException
+Should you handle?	❌ No	✔ Yes
+
+
+
+##
+Serialization is the process of converting a Java object into a byte stream
+(so it can be saved to file, sent over network, or stored in a database).
+
+Deserialization is converting the byte stream back into the original object.
+
+import java.io.*;
+
+class Student implements Serializable {
+    int id;
+    String name;
+}
+
+public class TestSerialization {
+    public static void main(String[] args) throws Exception {
+        Student s = new Student();
+        s.id = 101;
+        s.name = "Rohit";
+
+        FileOutputStream fos = new FileOutputStream("student.ser");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+        oos.writeObject(s);
+        oos.close();
+    }
+}
+
+FileInputStream fis = new FileInputStream("student.ser");
+ObjectInputStream ois = new ObjectInputStream(fis);
+
+Student s = (Student) ois.readObject();
+ois.close();
+
+serialVersionUID - A unique identifier that ensures the sender and receiver of a serialized object have compatible classes.
+
+##
+✅ Default Size of Each Java Collection
+🔵 1. ArrayList
+
+Default Capacity = 10
+
+When first element is added → capacity becomes 10.
+
+🔵 2. Vector
+
+Default Capacity = 10
+
+Grows by 100% (doubles) when expanded.
+
+🔵 3. HashMap
+
+Default Initial Capacity = 16
+
+Default Load Factor = 0.75
+
+Expands when size exceeds 16 * 0.75 = 12 buckets.
+
+🔵 4. LinkedHashMap
+
+Default Initial Capacity = 16
+
+Load Factor = 0.75
+
+Same as HashMap; just maintains insertion order.
+
+🔵 5. TreeMap
+
+No initial capacity
+Because it is a Red-Black Tree, not array-based.
+
+🔵 6. HashSet
+
+Uses an internal HashMap
+
+Default Initial Capacity = 16
+
+Load Factor = 0.75
+
+🔵 7. LinkedHashSet
+
+Uses LinkedHashMap
+
+Default Initial Capacity = 16
+
+Load Factor = 0.75
+
+🔵 8. TreeSet
+
+Uses TreeMap
+
+No initial capacity
+(tree structure)
+
+🔵 9. PriorityQueue
+
+Default Capacity = 11
+
+Internally stores elements in a binary heap array.
+
+🔵 10. ArrayDeque
+
+Default Capacity = 16
+
+Must always be a power of two.
+
+🔵 11. LinkedList
+
+No capacity, since it's a linked structure.
+
+#HashMap working & internal implementation
+
+#Multithreading and concurrency
+
+#Thread lifecycle
+
+#Synchronization & locking mechanisms
+Locking mechanism is more recommendable as we can control the order of locking and also uses reentrant lock which means same thread can be acquire the same lock in the nested call.
+optimistic and pessimistic locking. 
+
+#Thread blocking
+
+#Garbage Collection (GC)
+
+#GC logs, heap dump, memory analysis
+#VisualVM / Structure / Memory optimization
+
+#Basic logical programming & problem-solving
+
+2. Data Structures & Algorithms
+Searching, sorting, object comparison
+Practical use of data structures
+Filter and sorting in Java
+Performance optimization in DS/Algorithms
+
+3. Java Memory & JVM Internals
+#JVM architecture & tuning
+
+The Java Virtual Machine (JVM) is a runtime environment that executes Java bytecode.
+1. Class Loader Subsystem
+	Responsible for loading Java classes into memory.
+	Phases of Class Loading
+
+	Loading → Reads .class bytecode
+	Linking → Verify + Prepare + Resolve
+	Initialization → Executes static blocks, initializers
+2. JVM Runtime Data Areas
+	VM Stack (per thread)
+	Stores method call frames
+	Local variables
+	Reference variables	
+
+Shared Memory (Important for Interviews)
+🔶 D. Heap Area
+
+Largest memory part
+
+Stores all objects
+
+Divided into:
+
+             ┌───────────── Heap ─────────────┐
+             │       Young Gen                 │
+             │    ┌───────┬───────────┬────┐  │
+             │    │ Eden  │ Survivor1 │ S2 │  │
+             │    └───────┴───────────┴────┘  │
+             │           Old Gen               │
+             └─────────────────────────────────┘
+             
+             
+3. Execution Engine
+
+A. Interpreter
+Reads bytecode instruction-by-instruction
+Slow but starts quickly
+
+B. JIT Compiler (Just-In-Time)
+Compiles hot code (frequently executed code) into native CPU instructions
+Dramatically improves performance             
+             
+Basically JVM architecture java source code is converted into byte code which is platform independent and then class loader used to load the class into the memory
+and it invloves loading ,linking and initialization and then that code is compiled used compiler and JVM is tuned by using the JIT compiler which stores the hot code that is frequently used by the JVM and eventually program is executed.             
+             
+#GC algorithms and tuning
+Class loaders
+JIT compilation
+Heap, stack, thread dump analysis
+
+4. Java EE / Advance Java
+Servlets and Filters (request flow)
+API design / REST concepts
+GET vs POST
+Controller vs RestController
+
+5. Spring Framework
+Core concepts IoC, DI, @Autowired, @Qualifier
+Spring MVC internal flow
+Circular dependency
+Spring Boot architecture and annotations
+AOP concepts (advices, pointcuts, proxies)
+##
+
+
+Cache management & performance tuning
+##
+@Cacheable: Indicates that the result of invoking a method should be cached. If the same method is called again with the same arguments, the cached value is returned instead of 
+invoking the method again.
+@CachePut: Indicates that the result of invoking a method should be cached, but the method should always be invoked. Here the Cache Value for a particular key will be updated with 
+the new value returned from the invoked method.
+@CacheEvict: Indicates that the cache entries associated with the method should be removed from the cache.
+
+Use @Cacheable when the result is consistent for the same inputs and you want to avoid redundant computations.
+Use @CachePut when the result changes frequently and you need the cache to reflect the latest value after every method execution.
+
+@CachePut ensures that after a method modifies or generates a new result, this result is always written back to the cache. This is essential for use cases where the data changes 
+frequently, and you want subsequent reads to fetch the updated value from the cache instead of outdated or invalid data.
+
+@Caching is used for multiple nested caching on the same method.
+
+@PutMapping("/{id}")
+@Caching(
+     evict = {@CacheEvict(value = "productList", allEntries = true)},
+     put = {@CachePut(value = "product", key = "#id")}
+)
+public Product editProduct(@PathVariable long id, @RequestBody Product product)
+
+Summary Table  load factor is same ie 0.75 ie on reaching load factor size increases
+Collection	Default Initial Capacity	Resize Behavior
+ArrayList		10							Grows by 50% of the current size
+LinkedList		No fixed capacity			Dynamically grows
+HashSet			16							Doubles when load factor exceeded
+LinkedHashSet		16						Doubles when load factor exceeded
+TreeSet			No fixed capacity			Dynamically grows (balanced tree)
+HashMap			16								Doubles when load factor exceeded
+LinkedHashMap		16						Doubles when load factor exceeded
+TreeMap			No fixed capacity				Dynamically grows (balanced tree)
+PriorityQueue		11						Dynamically grows
+ArrayDeque		16							Doubles during resizing
+
+6. JPA / Hibernate
+Entity lifecycle and mapping basics
+One-to-one, One-to-many relationships
+First-level vs Second-level cache
+N+1 problem
+Dirty read / optimistic vs pessimistic locking
+Transaction propagation
+Criteria API / Query optimization
+EntityManager fundamentals
+#
+✅ EntityManager Fundamentals (JPA / Hibernate)
+
+The EntityManager is the core interface in JPA that manages the lifecycle of entities.
+It acts as a bridge between your application and the persistence context (usually a database).
+
+1. What is EntityManager?
+
+Part of javax.persistence package
+
+Responsible for:
+
+CRUD operations on entities
+
+Managing persistence context (first-level cache)
+
+Handling transactions
+
+Querying with JPQL or native SQL
+
+7. Transaction Management
+ACID principles
+Isolation levels
+Transaction propagation in Spring
+Rollback rules and annotation usage
+
+8. Database Concepts
+Practical SQL query writing
+Query tuning & indexing
+Oracle / RDBMS usage
+Understanding joins, views, triggers
+##
+A. INNER JOIN
+
+Returns only matching rows in both tables.
+
+SELECT e.name, d.department_name
+FROM employee e
+INNER JOIN department d
+ON e.department_id = d.id;
+
+
+If employee has no department → row excluded
+
+B. LEFT JOIN (LEFT OUTER JOIN)
+
+Returns all rows from the left table, matching rows from right table
+
+Null if no match
+
+SELECT e.name, d.department_name
+FROM employee e
+LEFT JOIN department d
+ON e.department_id = d.id;
+
+
+All employees shown, even without a department
+
+C. RIGHT JOIN (RIGHT OUTER JOIN)
+
+Returns all rows from the right table, matching rows from left
+
+Null if no match
+
+SELECT e.name, d.department_name
+FROM employee e
+RIGHT JOIN department d
+ON e.department_id = d.id;
+
+D. FULL OUTER JOIN
+
+Returns all rows from both tables
+
+Null where no match
+
+SELECT e.name, d.department_name
+FROM employee e
+FULL OUTER JOIN department d
+ON e.department_id = d.id;
+
+✅ 2. VIEWS
+
+Purpose:
+
+A virtual table based on SQL query
+
+Does not store data physically (except materialized view)
+
+Simplifies complex queries, improves security
+
+A. Create a View
+CREATE VIEW employee_department AS
+SELECT e.id, e.name, d.department_name
+FROM employee e
+INNER JOIN department d
+ON e.department_id = d.id;
+
+
+Now you can query:
+
+SELECT * FROM employee_department WHERE department_name = 'Sales';
+
+Advantages of Views
+
+Simplifies queries for users
+
+Provides abstraction & security
+
+Can encapsulate business logic
+
+
+9. Project / Architecture Understanding
+Ability to explain end-to-end project flow
+API design & microservices basics
+Explaining role & responsibility in project
+Design patterns (Factory, Singleton, Builder, Strategy, etc.)
+Basic structural design understanding
+
+##
+✅ 1. Factory Design Pattern
+
+Type: Creational Pattern
+Purpose: Create objects without exposing the creation logic to the client.
+The client uses an interface or abstract class to get the object.
+
+Example: Shape Factory
+// Product Interface
+interface Shape {
+    void draw();
+}
+
+// Concrete Products
+class Circle implements Shape {
+    public void draw() { System.out.println("Drawing Circle"); }
+}
+class Rectangle implements Shape {
+    public void draw() { System.out.println("Drawing Rectangle"); }
+}
+
+// Factory
+class ShapeFactory {
+    public Shape getShape(String type) {
+        if(type.equalsIgnoreCase("CIRCLE")) return new Circle();
+        else if(type.equalsIgnoreCase("RECTANGLE")) return new Rectangle();
+        return null;
+    }
+}
+
+// Client
+public class Main {
+    public static void main(String[] args) {
+        ShapeFactory factory = new ShapeFactory();
+        Shape shape1 = factory.getShape("CIRCLE");
+        shape1.draw();  // Drawing Circle
+    }
+}
+
+Key Points
+
+Encapsulates object creation
+
+Useful when object creation is complex or depends on input
+
+Follows Open/Closed Principle (can add new products without changing client)
+
+✅ 2. Strategy Design Pattern
+
+Type: Behavioral Pattern
+Purpose: Define a family of algorithms, encapsulate each, and make them interchangeable.
+Client chooses algorithm at runtime.
+
+Example: Payment Strategy
+// Strategy Interface
+interface PaymentStrategy {
+    void pay(int amount);
+}
+
+// Concrete Strategies
+class CreditCardPayment implements PaymentStrategy {
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using Credit Card");
+    }
+}
+class PaypalPayment implements PaymentStrategy {
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using PayPal");
+    }
+}
+
+// Context
+class ShoppingCart {
+    private PaymentStrategy paymentStrategy;
+    
+    public ShoppingCart(PaymentStrategy paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
+    }
+    
+    public void checkout(int amount) {
+        paymentStrategy.pay(amount);
+    }
+}
+
+// Client
+public class Main {
+    public static void main(String[] args) {
+        ShoppingCart cart = new ShoppingCart(new PaypalPayment());
+        cart.checkout(500);  // Paid 500 using PayPal
+    }
+}
+
+Key Points
+
+Encapsulates algorithms or behaviors
+
+Makes behavior interchangeable at runtime
+
+Avoids if-else or switch statements in code
+
+Often used in payment processing, sorting, or discount calculation
+
+##
+Bean lifecycle - Bean instantiated,dependency injection,initialization,bean is ready for use,destroyed finally.
+
+@PostConstruct - Marks a method to be executed after bean initialization but before the bean is ready for use.
+When is it called?
+
+After:
+Bean instantiation
+Dependency injection (@Autowired, @Value)
+
+selection sort - 
+    int arr[] = {2,16,3,7,3,8,17,467,15,74,24};
+     int n = arr.length;
+     for(int i=0;i<n-1;i++)
+     {
+         int minidx = i;
+         for(int j=i+1;j<n;j++)
+         {
+             if(arr[minidx]>arr[j])
+             {
+                 minidx = j;
+             }
+         }
+         int temp = arr[minidx];
+             arr[minidx]=arr[i];
+             arr[i]=temp;
+     }
+     System.out.print(Arrays.toString(arr));
+     
+     bubble sort -
+     int arr[] = {2,16,3,7,3,8,17,467,15,74,24};
+     int n = arr.length;
+     for(int i=0;i<n-1;i++)
+     {
+         for(int j=0;j<n-1-i;j++)
+         {
+             if(arr[j]>arr[j+1])
+             {
+                 int temp = arr[j];
+             arr[j]=arr[j+1];
+             arr[j+1]=temp;
+             }
+         }
+         
+     }
+     System.out.print(Arrays.toString(arr));
+     
+     merge sort - 
+     public class Main
+{
+    public static void main(String[] args) {
+     
+     int arr[] = {2,16,3,7,3,8,17,467,15,74,24};
+     int n = arr.length;
+     int low = 0;
+     int high = arr.length-1;
+     merge(arr,low,high);
+     
+     System.out.print(Arrays.toString(arr));
+        
+    }
+    
+    public static void merge(int[] arr,int low,int high){
+        if(low<high){
+            int mid = low + (high-low)/2;
+            merge(arr,low,mid);
+            merge(arr,mid+1,high);
+            sort(arr,low,mid,high);
+        }
+    }
+        
+        public static void sort(int[] arr,int low,int mid,int high){
+            int k = low;
+            int n1 = mid-low+1;
+            int n2=high-mid;
+            int[] left = new int[n1];
+            int[] right = new int[n2];
+            for(int i=0;i<n1;i++){
+                left[i] = arr[low+i];
+            }
+            for(int i=0;i<n2;i++){
+                right[i]=arr[mid+1+i];
+            }
+            
+            int i=0,j=0;
+            while(i<n1 && j<n2){
+                if(left[i]<=right[j]){
+                    arr[k]=left[i];
+                    i++;
+                }
+               else{
+                    arr[k] = right[j];
+                    j++;
+                }
+                k++;
+            }
+            while(i<n1){
+                arr[k]=left[i];
+                i++;k++;
+            }
+            while(j<n2){
+                arr[k]=right[j];
+                j++;k++;
+            }
+        }
+}
+
+
+quick sort - 
+public class Main
+{
+    public static void main(String[] args) {
+     
+     int arr[] = {2,16,3,7,3,8,17,467,15,74,24};
+     int n = arr.length;
+     int low = 0;
+     int high = arr.length-1;
+     quick(arr,low,high);
+     
+     System.out.print(Arrays.toString(arr));
+        
+    }
+    
+    public static void quick(int[] arr,int s,int e){
+        if(s>=e)
+        {
+            return;
+        }
+        int low=s;
+        int high=e;
+        int mid=s+(e-s)/2;
+        int pivot = arr[mid];
+        while(s<=e)
+        {
+            while(arr[s]<pivot)
+            {
+                s++;
+            }
+            while(arr[e]>pivot)
+            {
+                e--;
+            }
+            if(s<=e){
+                int temp=arr[s];
+                arr[s]=arr[e];
+                arr[e]=temp;
+                s++;e--;
+            }
+        }
+        quick(arr,s,high);
+        quick(arr,low,e);
+        
+        
+    }
+}
+
