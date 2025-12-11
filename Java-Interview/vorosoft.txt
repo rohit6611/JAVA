@@ -2786,3 +2786,36 @@ HashMap is NOT thread-safe → so the number of simultaneous read/write operatio
             Collectors.joining(" "));
             System.out.println(reversed);
 I evol gnimmargorp yrev hcum
+
+Dynamic Method Dispatch - It refers to the process by which a method call to an overridden method is resolved at runtime, rather than compile-time.
+
+Metaspace is a native memory region introduced in Java 8 to store class metadata, replacing the PermGen space. PermGen had several limitations — it had a fixed maximum size, often caused OutOfMemoryError: PermGen space, and was prone to classloader memory leaks during application redeployment. Metaspace solved these issues by allocating metadata in native memory, allowing it to grow dynamically and free unused class metadata when classloaders are garbage collected. This improves JVM reliability, reduces tuning effort, and eliminates a significant source of production issues.
+
+execute() is used for fire-and-forget Runnable tasks and does not return anything. submit() can accept a Runnable or Callable and returns a Future, allowing us to retrieve results, handle exceptions safely, and cancel tasks. submit() captures exceptions inside the Future, while execute() throws them to the thread’s UncaughtExceptionHandler.
+
+Runnable is used for tasks that don’t return a result and cannot throw checked exceptions. Callable was introduced in Java 5 for tasks that return a value and can throw checked exceptions. Runnable uses the run() method and Callable uses call(). Callable is typically executed with submit() which returns a Future.
+
+ExecutorService executor = Executors.newFixedThreadPool(1);
+
+Future<?> future = executor.submit(() -> {
+    System.out.println("Task running...");
+});
+
+Object result = future.get(); // returns null
+System.out.println(result);   // prints: null
+
+Use Collections.synchronizedMap when you need basic thread safety and very low contention.
+Use ConcurrentHashMap when building scalable, high-performance, multi-threaded applications.
+
+Segment-based locking is a concurrency technique where a data structure is divided into multiple independent segments, and each segment has its own lock.
+Instead of putting a single lock on the entire collection (like Collections.synchronizedMap), segment-based locking allows multiple threads to work in parallel because they lock only the part (segment) they are modifying, not the whole map.
+
+To reduce contention.
+To allow high concurrency.
+To enable parallel read/write operations.
+To make ConcurrentHashMap much faster than Hashtable or synchronizedMap.
+
+@Repository is not mandatory, but when applied to DAO/repository beans it signals Spring to wrap them with a proxy that automatically translates vendor-specific checked persistence exceptions (like SQLException or HibernateException) into Spring’s unchecked DataAccessException hierarchy via the PersistenceExceptionTranslationPostProcessor; if you omit @Repository you must either manually catch-and-translate those exceptions (or throw runtime wrappers) or explicitly register the translation post-processor and ensure your beans are proxied so exception translation still occurs.
+
+JPA is a specification (a set of interfaces and rules) that defines how Java applications should interact with relational databases using ORM, while Hibernate is a concrete implementation of that specification (a framework) that provides the actual working classes, advanced features, and extra capabilities beyond JPA such as caching, lazy loading strategies, query language (HQL), and proprietary annotations.
+
