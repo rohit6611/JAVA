@@ -2819,3 +2819,10 @@ To make ConcurrentHashMap much faster than Hashtable or synchronizedMap.
 
 JPA is a specification (a set of interfaces and rules) that defines how Java applications should interact with relational databases using ORM, while Hibernate is a concrete implementation of that specification (a framework) that provides the actual working classes, advanced features, and extra capabilities beyond JPA such as caching, lazy loading strategies, query language (HQL), and proprietary annotations.
 
+new Employee(1, "Ram", "Mumbai")
+new Employee(1, "Ram", "Bengaluru")
+
+equals() fields	hashCode() fields	Output
+id, name	id, name	1 ✅
+id, name	id, name, city	2 ❌ (bug)
+id, name, city	id, name, city	2 (since cities differ)
