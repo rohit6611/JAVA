@@ -2826,3 +2826,5 @@ equals() fields	hashCode() fields	Output
 id, name	id, name	1 ✅
 id, name	id, name, city	2 ❌ (bug)
 id, name, city	id, name, city	2 (since cities differ)
+
+final method cab be overloaded but can't be overriden
