@@ -2,7 +2,7 @@ List interface - arraylist,linkedlist,vector,stack
 
 arraylist - data is stored in contiguous memory location.
 vector - data is stored in contiguous memory location.
-Only difference between vector and linkedlist is vector is synchronized and arraylist is not.
+Only difference between vector and arraylist is vector is synchronized and arraylist is not.
 linkedlist - data is stored in non-contiguous memory location. concept of pointers to next element is used and a data is stored as a node.
 stack - follows lifo and in addition it has 3 more function empty,peek,search.
 stack is a subclass of vector so it is also thread safe.
