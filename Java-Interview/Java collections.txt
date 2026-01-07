@@ -1,4 +1,4 @@
-List - arraylist,linkedlist,vector,stack
+List interface - arraylist,linkedlist,vector,stack
 
 arraylist - data is stored in contiguous memory location.
 vector - data is stored in contiguous memory location.
