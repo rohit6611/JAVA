@@ -2828,3 +2828,33 @@ id, name	id, name, city	2 ❌ (bug)
 id, name, city	id, name, city	2 (since cities differ)
 
 final method cab be overloaded but can't be overriden
+
+Forward Proxy:
+A forward proxy sits between the client and the internet and acts on behalf of the client. It is client-configured and is commonly used for access control, anonymity, or monitoring outbound traffic (e.g., corporate proxy, VPN).
+
+Reverse Proxy:
+A reverse proxy sits in front of backend servers and acts on behalf of the server. Clients are unaware of it, and it is used for load balancing, SSL termination, security, and routing requests to internal services (e.g., Nginx, AWS ALB, Cloudflare).
+
+I design horizontally scalable systems by keeping services stateless, using load balancers, externalizing state, and scaling components independently. The main trade-offs are increased system complexity, higher operational cost, and challenges around data consistency and debugging in distributed environments.
+
+Key Design Principles (mention 4–5, not all)
+
+Stateless application servers
+No user session or in-memory state
+Enables adding/removing instances freely
+
+Load balancing
+Distributes traffic across instances
+Health checks + auto scaling
+
+Externalized state
+DB, Redis, object storage
+No local filesystem dependency
+
+Data partitioning (sharding)
+Split data by key (userId, region)
+Avoids single DB bottleneck
+
+Async & event-driven processing
+Queues (Kafka/SQS) for heavy tasks
+Improves throughput and resilience
