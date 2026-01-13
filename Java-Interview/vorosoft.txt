@@ -2920,6 +2920,34 @@ String template = "Hello {name} welcome to xcelore {empId}";
         }
         System.out.println(template);
 
+#This is the most optimized solution as Pattern scans the complete string once and replace method traverse the complete times the placeholders are present.appendTail(sb) is used because
+after teh pattern matching is done loops breaks here only and it does not append then and the text after last match will not appera in result.
+
+String template = "Hello {name} welcome to xcelore {empId} tech";
+ 
+        Map<String, String> values = Map.of(
+        "name", "Rohit",
+        "employeeID", "#12345",
+        "empid","#12345",
+        "empId","#12345"
+        );
+        
+        Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
+        Matcher matcher=pattern.matcher(template);
+        StringBuilder sb = new StringBuilder();
+        while(matcher.find())
+        {
+            String key = matcher.group(1);
+            String fullKey = matcher.group();
+            if(values.get(key)!=null)
+            {
+                // template = template.replace(fullKey,values.get(key));
+                matcher.appendReplacement(sb,values.get(key));
+            }
+        }
+        matcher.appendTail(sb);
+        System.out.println(sb.toString());
+
 A covered index is an index that contains all columns required by a query, allowing the database to return results directly from the index without accessing the table, improving performance by reducing I/O.
 A covered index is a logical concept, not a special index type.
 ➡ An index that contains all columns required by a query, so the database does not need to access the table.
