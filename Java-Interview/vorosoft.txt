@@ -2861,3 +2861,40 @@ Improves throughput and resilience
 
 when threshold is 8 and capacity is 64 then hashmap converts the bucket into tree. and resizing occurs when the load factor reaches to 0.75 . initial capacity of hashmap is 16 so when size 
 reaches to 12 then resizing occurs and new capacity is doubled.
+
+
+// Online IDE - Code Editor, Compiler, Interpreter
+import java.util.*;
+public class Main
+{
+    public static void main(String[] args) {
+        
+        String template = "Hello {name} welcome to xcelore {empId}";
+ 
+        Map<String, String> values = Map.of(
+        "name", "Rohit",
+        "employeeID", "#12345",
+        "empid","#12345",
+        "empId","#12345"
+        );
+        
+        String[] templateArray = template.split("\\s");
+        
+        for(String element:templateArray)
+        {
+            if(element.contains("{"))
+            {
+               String tempElement=element.replace("{","");
+                tempElement=tempElement.replace("}","");
+                String value = values.get(tempElement);
+                if(value!=null){
+                template=template.replace(element,value);    
+                }
+                
+            }
+        }
+        System.out.println(template);
+        
+    }
+}
+
