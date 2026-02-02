@@ -2953,3 +2953,5 @@ A covered index is a logical concept, not a special index type.
 ➡ An index that contains all columns required by a query, so the database does not need to access the table.
 
 Java has 50 reserved keywords.
+
+Hashset store only one null key and bucket 0 is used to store the null value.
