@@ -2955,3 +2955,17 @@ A covered index is a logical concept, not a special index type.
 Java has 50 reserved keywords.
 
 Hashset store only one null key and bucket 0 is used to store the null value.
+
+In Java 8, a Function is a functional interface from java.util.function used to take one input and return one output.
+@FunctionalInterface
+public interface Function<T, R> {
+    R apply(T t);
+}
+T → input type
+
+R → return type
+
+👉 Exactly one abstract method, so it works with lambda expressions.
+Function<Integer, Integer> square = x -> x * x;
+System.out.println(square.apply(5)); // 25
+
