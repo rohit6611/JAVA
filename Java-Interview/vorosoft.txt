@@ -2969,3 +2969,4 @@ R → return type
 Function<Integer, Integer> square = x -> x * x;
 System.out.println(square.apply(5)); // 25
 
+It depends on pessimistic locking whether some other transaction can read the data from it or not if it is shared lock that is also referred as read lock then some other transaction can read the data and used using select......For share and on the other hand in case of exclusive locking that is used using select.......for update. And in case of optimistic read operations are allowed and version is used to check at commit time
