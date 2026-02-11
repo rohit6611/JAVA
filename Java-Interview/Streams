@@ -189,6 +189,20 @@ Expected Output:
 
 
 { 'h' -> 1, 'e' -> 1, 'l' -> 2, 'o' -> 1 }
+
+String str = "programming";
+
+Map<Character, Long> charCount =
+        str.chars()
+           .mapToObj(c -> (char) c)
+           .collect(Collectors.groupingBy(
+                   c -> c,
+                   Collectors.counting()
+           ));
+
+System.out.println(charCount);
+
+
 13. Group a list of people by age
 Input:
 
