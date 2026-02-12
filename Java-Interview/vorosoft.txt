@@ -580,6 +580,15 @@ String word=words.stream().max(Comparator.comparingInt(String::length)).get();
 	List<String> list = Arrays.asList("Geeks", "for", "gfg", 
                                           "GeeksforGeeks", "GeeksQuiz");
 	list.stream().mapToInt(str -> str.length()).forEach(System.out::println);
+
+List<String> list = Arrays.asList("Geeks", "for", "gfg", 
+                                          "GeeksforGeeks", "GeeksQuiz");
+        Map.Entry<String,Integer> map = list.stream().
+        collect(Collectors.toMap(s->s,s->s.length())).
+        entrySet().stream()
+        .sorted(Comparator.comparing(Map.Entry<String,Integer>::getValue,
+        Comparator.reverseOrder())
+        ).findFirst().get();
 	
 	List<Integer> numbers = Arrays.asList(5, 12, 18, 3, 9, 20);
     Long count=numbers.stream().filter(n -> n>10).count();
