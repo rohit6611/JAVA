@@ -576,6 +576,22 @@ Expected Output:
 String word=words.stream().max(Comparator.comparingInt(String::length)).get();
     System.out.print(word);
 	max and min accepts comparator.
+
+ List<String> words = 
+        Arrays.asList("apple", "banana", "cherry", "strawberry");
+        
+        // OptionalInt length = words.stream().mapToInt(String::length).max();
+        // System.out.println(length.orElse(0));
+        
+        Optional<Entry<String,Integer>> output=
+        words
+        .stream()
+        .collect(Collectors.toMap(i->i,String::length))
+        .entrySet()
+        .stream()
+        .max(Comparator.comparingInt(Map.Entry<String,Integer>::getValue));
+        
+        System.out.println(output.get().getKey());
 	
 	List<String> list = Arrays.asList("Geeks", "for", "gfg", 
                                           "GeeksforGeeks", "GeeksQuiz");
@@ -593,7 +609,22 @@ List<String> list = Arrays.asList("Geeks", "for", "gfg",
 	List<Integer> numbers = Arrays.asList(5, 12, 18, 3, 9, 20);
     Long count=numbers.stream().filter(n -> n>10).count();
     System.out.print(count);
-    
+
+List<Integer> list = Arrays.asList(1,12,4,2,12,4,5,12,41);
+        
+        list.stream().map(i->String.valueOf(i))
+        .filter(i -> i.contains("1")).
+        collect(Collectors.toList())
+        .forEach(System.out::println);
+
+List<String> list = Arrays.asList("1","12","4","2","12","4"
+        ,"5","12","41");
+        
+        list.stream().map(i->Integer.parseInt(i))
+        .filter(i -> i>10).
+        collect(Collectors.toList())
+        .forEach(System.out::println);
+
     @Configuration
 @EnableAutoConfiguration
 @ComponentScan
