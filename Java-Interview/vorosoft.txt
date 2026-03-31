@@ -3139,3 +3139,163 @@ com.hacker.Malicious
 That would be dangerous.
 
 Immutability prevents this.
+
+String is a bad choice for storing passwords because:
+
+Strings are immutable – cannot overwrite password in memory
+Remain in memory until garbage collected
+May be stored in the String Constant Pool
+Cannot be manually cleared
+Vulnerable to memory dump attacks
+
+map.put("name", "John")
+        │
+        ▼
+hash("name") → hashCode = 3373752
+        │
+        ▼
+index = hashCode & (capacity - 1)   // e.g., 3373752 & 15 = 8
+        │
+        ▼
+bucket[8] → is it empty?
+        │
+   ┌────┴────┐
+   YES       NO
+   │         │
+   ▼         ▼
+ Store     Check equals()
+ Node      on each node
+           │
+      ┌────┴────┐
+    MATCH     NO MATCH
+      │         │
+      ▼         ▼
+   Replace   Append to
+   value     linked list
+             (or tree if ≥ 8 nodes)
+
+Default values:
+
+Property	Value
+Initial Capacity	16
+Load Factor	0.75
+
+Resize condition:
+
+capacity × loadFactor
+16 × 0.75 = 12
+
+When entries exceed 12, the map resizes.
+
+When does a linked list convert to a Red-Black Tree?
+
+In Java 8+.
+
+Conditions:
+
+Condition	Value
+Bucket size	≥ 8 nodes
+Table capacity	≥ 64
+
+Then the linked list converts into a Red-Black Tree to improve lookup.
+
+Time complexity improves from:
+
+O(n) → O(log n)
+
+Why is the bucket size always a power of 2?
+
+Because index calculation uses bitwise AND:
+
+index = (n - 1) & hash
+
+If capacity is power of 2:
+
+16 -> 00010000
+
+This makes index calculation faster than modulo %.
+
+Benefits:
+
+Faster computation
+Better hash distribution
+
+Yes. When resizing occurs in a HashMap in Java, the existing entries are redistributed into a new bucket array, but their hashCode() is NOT recomputed again. Only the bucket index changes because the capacity changes.
+
+In ConcurrentHashMap from Java, thread safety is achieved using fine-grained locking and lock-free reads, instead of locking the entire map like Hashtable.
+Instead of locking the whole map, ConcurrentHashMap locks only the bucket (bin) where modification occurs.
+All threads can operate simultaneously because they work on different buckets.
+
+This is called fine-grained locking.
+
+HashMap
+
+✅ Allows one null key
+✅ Allows multiple null values
+Important points:
+
+Only one null key is allowed.
+Because keys must be unique.
+Internally, the null key is stored in bucket index 0.
+
+ConcurrentHashMap
+
+❌ Does NOT allow null key
+❌ Does NOT allow null value
+
+Because of ambiguity in concurrent reads.
+
+Example:
+
+map.get(key)
+
+If it returns null, two possibilities exist:
+
+1. key does not exist
+2. key exists but value is null
+
+In a multi-threaded environment, another thread might be inserting/removing simultaneously.
+
+This ambiguity makes lock-free reads impossible.
+
+Therefore ConcurrentHashMap forbids null.
+
+	How does ArrayList grow internally?
+ArrayList Growth:
+  Default capacity = 10
+  When full → new capacity = old * 1.5 (roughly)
+  Arrays.copyOf() → new array created
+  Old array → eligible for GC
+
+HashSet Internally:
+  HashSet uses HashMap internally
+  add("hello") → map.put("hello", PRESENT)
+  PRESENT = new Object() (dummy value)
+  Uniqueness = HashMap key uniqueness
+
+CopyOnWriteArrayList is a thread-safe list where modifications create a new copy of the underlying array.
+It is best used in read-heavy and write-light concurrent environments, such as listener lists or configuration data,
+because reads are lock-free while writes involve copying the entire array.
+
+In CopyOnWriteArrayList, only one write operation can occur at a time because write operations use a single lock to copy and update the underlying array, while reads are lock-free and can occur concurrently.
+
+Yes, in Java you can have try without catch, but only if you have a finally block.
+
+In Java, if an exception is thrown inside a finally block, it overrides any exception thrown in the try or catch block.
+
+This means the exception from finally is the one that propagates.
+
+# custom exception - 
+class InsufficientBalanceException extends Exception {
+    public InsufficientBalanceException(String message) {
+        super(message);
+    }
+}
+
+// Know these by heart:
+Predicate<T>   → boolean test(T t)         // filter
+Function<T,R>  → R apply(T t)              // transform
+Consumer<T>    → void accept(T t)          // consume
+Supplier<T>    → T get()                   // produce
+BiFunction<T,U,R> → R apply(T t, U u)     // two inputs
+UnaryOperator<T>  → T apply(T t)          // same type in/out
