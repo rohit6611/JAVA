@@ -3012,3 +3012,130 @@ System.out.println(square.apply(5)); // 25
 It depends on pessimistic locking whether some other transaction can read the data from it or not if it is shared lock that is also referred as read lock then some other transaction can read the data and used using select......For share and on the other hand in case of exclusive locking that is used using select.......for update. And in case of optimistic read operations are allowed and version is used to check at commit time.
 
 “B-Tree indexes store data in sorted order and support both equality and range queries, while hash indexes use a hash function for very fast equality lookups but cannot handle range queries or sorting.”
+
+Feature	SynchronizedMap	ConcurrentMap
+Locking	Whole map lock	Segment/Bucket lock
+Threads allowed	One thread	Many threads
+Performance	Slow	Fast
+Iteration	Manual synchronization needed	No synchronization needed
+Blocking	High	Low
+Introduced	Early Java	Java 5 (java.util.concurrent)
+
+Explain the complete request lifecycle in Spring MVC
+Client (Browser / Postman)
+        │
+        ▼
+DispatcherServlet
+        │
+        ▼
+HandlerMapping
+        │
+        ▼
+Controller
+        │
+        ▼
+Service Layer
+        │
+        ▼
+Repository / Database
+        │
+        ▼
+Controller returns response
+        │
+        ▼
+ViewResolver (if view-based)
+        │
+        ▼
+HTTP Response to client
+
+G1 GC (Garbage First Garbage Collector) is the modern default garbage collector in Java (since Java 9).
+It is designed for large heap sizes (multi-GB) and low pause times, which is why it is commonly used in high-throughput backend systems like Spring Boot microservices.
+Instead of collecting the entire heap, it collects the regions with the most garbage first.
+
+Metaspace is a memory area in the JVM where class metadata is stored (class definitions, methods, constant pool, etc.).
+
+Before Java 8, this data was stored in PermGen (Permanent Generation).
+Starting from Java 8, PermGen was removed and replaced by Metaspace.
+Unlike other JVM memory areas, Metaspace is allocated in native memory (outside the heap).
+JVM Memory
+-----------------------------
+Heap
+   |-- Young Generation
+   |-- Old Generation
+
+Non-Heap Memory
+   |-- Metaspace
+   |-- Code Cache
+   |-- Direct Memory
+
+In Loading phase object is loaded into main memory using class loaders and after loading linking is done where as the the byte code is verified for its correctness and after the memory is allocated to static fields in the metaspace and objects are created in the heap and in the final stage initialization is done using static blocks and static initializers.
+
+Java designers intentionally made String immutable for security, performance, memory efficiency, and thread safety.
+
+1. Security
+Strings are heavily used in sensitive areas such as:
+
+Database connection URLs
+File paths
+Network connections
+Class loading
+Authentication tokens
+
+2. String Pool Optimization (Memory Efficiency)
+
+Java stores String literals in the String Constant Pool.
+String a = "Java";
+String b = "Java";
+Both variables point to the same object in the pool.
+
+String Pool
+   |
+   |---- "Java" <---- a
+   |                 |
+   |                 ---- b
+
+This is possible only because String is immutable.
+
+3. Thread Safety (Concurrency)
+Immutable objects are automatically thread-safe.
+String s = "Hello";
+Multiple threads can use it safely:
+
+Thread 1 -> read "Hello"
+Thread 2 -> read "Hello"
+Thread 3 -> read "Hello"
+
+No synchronization needed.
+
+If mutable → race conditions could occur.
+
+4. HashCode Caching (Performance)
+Strings are widely used as keys in HashMap.
+
+Example:
+
+Map<String, Integer> map = new HashMap<>();
+map.put("apple", 10);
+
+Because Strings are immutable:
+
+hashCode() is calculated only once
+Then cached internally
+
+5. Class Loading Safety
+
+Java uses Strings in class loading.
+
+Example:
+
+Class.forName("com.app.Service")
+
+If the String could be modified after validation:
+
+com.app.Service
+↓
+com.hacker.Malicious
+
+That would be dangerous.
+
+Immutability prevents this.
