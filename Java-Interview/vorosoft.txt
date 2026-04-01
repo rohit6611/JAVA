@@ -3299,3 +3299,77 @@ Consumer<T>    → void accept(T t)          // consume
 Supplier<T>    → T get()                   // produce
 BiFunction<T,U,R> → R apply(T t, U u)     // two inputs
 UnaryOperator<T>  → T apply(T t)          // same type in/out
+
+Bean Lifecycle:
+  Instantiation
+       │
+       ▼
+  Populate Properties (DI)
+       │
+       ▼
+  BeanNameAware.setBeanName()
+       │
+       ▼
+  BeanFactoryAware.setBeanFactory()
+       │
+       ▼
+  @PostConstruct
+       │
+       ▼
+  InitializingBean.afterPropertiesSet()
+       │
+       ▼
+  Custom init-method
+       │
+       ▼
+  ═══ BEAN READY TO USE ═══
+       │
+       ▼
+  @PreDestroy
+       │
+       ▼
+  DisposableBean.destroy()
+       │
+       ▼
+  Custom destroy-method
+
+main()
+ ↓
+SpringApplication.run()
+ ↓
+Create SpringApplication
+ ↓
+Prepare Environment
+ ↓
+Create ApplicationContext
+ ↓
+Component Scan
+ ↓
+Auto Configuration
+ ↓
+Bean Creation & Dependency Injection
+ ↓
+Embedded Server Start
+ ↓
+ApplicationReadyEvent
+
+Spring Boot startup begins with SpringApplication.run(). It prepares the environment, creates the ApplicationContext, performs component scanning, applies auto-configuration, 
+creates beans with dependency injection, and finally starts the embedded server like Tomcat before the application becomes ready to serve requests.
+
+@ConditionalOnClass is a conditional annotation used in Spring Boot auto-configuration.
+It tells Spring to create a bean or configuration only if a specific class is present in the classpath.
+
+It is part of the conditional configuration mechanism of Spring Framework.
+
+application.properties uses a flat key-value format for configuration, while application.yml uses YAML hierarchical syntax with indentation. YAML is more readable and better for complex
+or nested configurations, whereas properties files are simpler and less error-prone.
+
+DispatcherServlet is the central front controller in Spring MVC (used inside Spring Boot web applications).
+
+It receives every HTTP request first and then routes it to the appropriate controller.
+
+So it acts like a traffic controller for all web requests
+
+BindingResult is used to capture validation errors instead of throwing an exception.
+
+@Version tells Hibernate to use optimistic locking.
