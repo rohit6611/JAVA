@@ -3391,3 +3391,36 @@ Integer[] arr={1,4,2,6,1,5,8,9,3,87,12};
             }
         }
         System.out.println("Largest - "+largest+" Second Largest - "+secondLargest);
+
+* Find missing number in array of 1 to N
+public class MissingNumber {
+    public static int findMissing(int[] arr, int n) {
+        int expectedSum = n * (n + 1) / 2;
+        int actualSum = 0;
+
+        for (int num : arr) {
+            actualSum += num;
+        }
+        return expectedSum - actualSum;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 4, 5, 6};  // missing 3
+        System.out.println(findMissing(arr, 6));  // 3
+    }
+}
+
+*Group anagrams
+
+         List<String> words = Arrays.asList("eat","tea","tan","ate","nat","bat");
+       Collection<List<String>> result = words.stream().collect(Collectors.groupingBy(
+            word ->
+            {
+                char[] c=word.toCharArray();
+                Arrays.sort(c);
+                return new String(c);
+            }
+            
+            )).values();
+        
+        System.out.println(result);
