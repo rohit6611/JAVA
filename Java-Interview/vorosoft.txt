@@ -3424,3 +3424,398 @@ public class MissingNumber {
             )).values();
         
         System.out.println(result);
+
+# @Mock creates a fake implementation of a class or interface.
+  Instead of calling the real object, Mockito creates a mock object whose behavior you control.
+
+# @InjectMocks creates the actual class you want to test and injects the mocks into it automatically.
+
+JUnit 5 = JUnit Platform + JUnit Jupiter + JUnit Vintage
+
+┌─────────────────────────────────────────────────┐
+│              JUnit 5 Architecture                │
+│                                                 │
+│  ┌──────────────┐  Provides new annotations,    │
+│  │ JUnit Jupiter │  assertions, extensions       │
+│  └──────────────┘                               │
+│  ┌──────────────┐  Foundation for launching      │
+│  │JUnit Platform │  test frameworks on JVM       │
+│  └──────────────┘                               │
+│  ┌──────────────┐  Backward compatibility        │
+│  │JUnit Vintage  │  with JUnit 3/4              │
+│  └──────────────┘                               │
+└─────────────────────────────────────────────────┘
+
+import org.junit.jupiter.api.*;
+
+@DisplayName("User Service Tests")
+class UserServiceTest {
+
+    @BeforeAll       // Runs ONCE before all tests (must be static)
+    static void setupAll() {
+        System.out.println("Initialize DB connection");
+    }
+
+    @BeforeEach      // Runs before EACH test
+    void setup() {
+        System.out.println("Setup test data");
+    }
+
+    @Test            // Marks a test method
+    @DisplayName("Should create user successfully")
+    void shouldCreateUser() {
+        // test logic
+    }
+
+    @Test
+    @Disabled("Bug #123 - Fix pending")    // Skip this test
+    void shouldUpdateUser() {
+        // skipped
+    }
+
+    @RepeatedTest(3)    // Run this test 3 times
+    void shouldBeConsistent() {
+        // repeated logic
+    }
+
+    @AfterEach       // Runs after EACH test
+    void tearDown() {
+        System.out.println("Cleanup test data");
+    }
+
+    @AfterAll        // Runs ONCE after all tests (must be static)
+    static void tearDownAll() {
+        System.out.println("Close DB connection");
+    }
+}
+
+@BeforeAll
+  │
+  ├─ @BeforeEach → @Test (test1) → @AfterEach
+  ├─ @BeforeEach → @Test (test2) → @AfterEach
+  ├─ @BeforeEach → @Test (test3) → @AfterEach
+  │
+@AfterAll
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class AssertionExamples {
+
+    @Test
+    void testAssertions() {
+        // Basic
+        assertEquals(4, 2 + 2, "2 + 2 should be 4");
+        assertNotEquals(5, 2 + 2);
+
+        // Boolean
+        assertTrue(10 > 5);
+        assertFalse(10 < 5);
+
+        // Null
+        assertNull(null);
+        assertNotNull("hello");
+
+        // Same reference
+        String s1 = "hello";
+        String s2 = s1;
+        assertSame(s1, s2);
+
+        // Exception
+        assertThrows(ArithmeticException.class, () -> {
+            int result = 10 / 0;
+        });
+
+        // Timeout
+        assertTimeout(Duration.ofSeconds(2), () -> {
+            Thread.sleep(1000);  // Should complete within 2 sec
+        });
+
+        // Group assertions (ALL are checked even if one fails)
+        assertAll("User validation",
+            () -> assertEquals("John", user.getName()),
+            () -> assertEquals("john@mail.com", user.getEmail()),
+            () -> assertTrue(user.isActive())
+        );
+    }
+}
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
+
+class ParameterizedTests {
+
+    // Source 1: @ValueSource
+    @ParameterizedTest
+    @ValueSource(strings = {"racecar", "madam", "level"})
+    void shouldBePalindrome(String word) {
+        assertTrue(isPalindrome(word));
+    }
+
+    // Source 2: @CsvSource
+    @ParameterizedTest
+    @CsvSource({
+        "1, 1, 2",
+        "2, 3, 5",
+        "10, 20, 30"
+    })
+    void shouldAddNumbers(int a, int b, int expected) {
+        assertEquals(expected, a + b);
+    }
+
+    // Source 3: @MethodSource
+    @ParameterizedTest
+    @MethodSource("provideUsers")
+    void shouldValidateUser(String name, int age, boolean expected) {
+        assertEquals(expected, age >= 18);
+    }
+
+    static Stream<Arguments> provideUsers() {
+        return Stream.of(
+            Arguments.of("John", 25, true),
+            Arguments.of("Jane", 17, false),
+            Arguments.of("Bob", 18, true)
+        );
+    }
+
+    // Source 4: @EnumSource
+    @ParameterizedTest
+    @EnumSource(value = DayOfWeek.class, names = {"SATURDAY", "SUNDAY"})
+    void shouldBeWeekend(DayOfWeek day) {
+        assertTrue(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
+    }
+
+    // Source 5: @NullAndEmptySource
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"  ", "\t", "\n"})
+    void shouldRejectBlankStrings(String input) {
+        assertTrue(input == null || input.trim().isEmpty());
+    }
+}
+
+@WebMvcTest(UserController.class)
+class UserControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean                   // Spring Boot version of @Mock (for Spring context)
+    private UserService userService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    // ✅ Test: GET /api/users/{id}
+    @Test
+    @DisplayName("GET /api/users/1 — Should return user")
+    void getUser_Success() throws Exception {
+        // GIVEN
+        UserDto user = new UserDto(1L, "John", "john@mail.com");
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        // WHEN & THEN
+        mockMvc.perform(get("/api/users/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("John"))
+                .andExpect(jsonPath("$.email").value("john@mail.com"));
+    }
+
+    // ✅ Test: GET /api/users/99 — Not Found
+    @Test
+    @DisplayName("GET /api/users/99 — Should return 404")
+    void getUser_NotFound() throws Exception {
+        when(userService.getUserById(99L))
+                .thenThrow(new EntityNotFoundException("User not found"));
+
+        mockMvc.perform(get("/api/users/99"))
+                .andExpect(status().isNotFound());
+    }
+
+    // ✅ Test: POST /api/users — Create user
+    @Test
+    @DisplayName("POST /api/users — Should create user")
+    void createUser_Success() throws Exception {
+        // GIVEN
+        CreateUserRequest request = new CreateUserRequest("John", "john@mail.com");
+        UserDto response = new UserDto(1L, "John", "john@mail.com");
+        when(userService.createUser(any())).thenReturn(response);
+
+        // WHEN & THEN
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("John"));
+    }
+
+    // ✅ Test: POST /api/users — Validation failure
+    @Test
+    @DisplayName("POST /api/users — Should return 400 for invalid request")
+    void createUser_ValidationError() throws Exception {
+        CreateUserRequest request = new CreateUserRequest("", "");  // invalid
+
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+}
+
+@Mock (Mockito):
+  - Used in plain unit tests
+  - No Spring context loaded
+  - Faster execution
+  - Use with @ExtendWith(MockitoExtension.class)
+
+@MockBean (Spring Boot):
+  - Used in integration tests
+  - Replaces a bean in Spring ApplicationContext
+  - Spring context is loaded
+  - Use with @WebMvcTest or @SpringBootTest
+
+// @Mock — Unit test (NO Spring context)
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private UserService userService;
+}
+
+// @MockBean — Integration test (WITH Spring context)
+@WebMvcTest(UserController.class)
+class UserControllerTest {
+    @MockBean
+    private UserService userService;
+
+    @Autowired
+    private MockMvc mockMvc;
+}
+
+Docker is a containerization platform that packages 
+applications with all their dependencies into containers.
+
+PROBLEM WITHOUT DOCKER:
+  Developer: "It works on my machine!"
+  Tester:    "It doesn't work on mine!"
+  DevOps:    "Production is different!"
+
+SOLUTION WITH DOCKER:
+  Same container runs everywhere — dev, test, prod
+
+┌──────────────────────────────────────────────┐
+│              HOST MACHINE                     │
+│                                              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+│  │Container1│  │Container2│  │Container3│  │
+│  │ Java App │  │PostgreSQL│  │  Redis   │  │
+│  │ JDK 17   │  │  v15     │  │  v7      │  │
+│  └──────────┘  └──────────┘  └──────────┘  │
+│                                              │
+│           Docker Engine                      │
+│           Host OS (Linux)                    │
+└──────────────────────────────────────────────┘
+
+IMAGE:
+  - Blueprint / Template (read-only)
+  - Built from Dockerfile
+  - Stored in registry (Docker Hub, ACR)
+  - Like a Java CLASS
+
+CONTAINER:
+  - Running instance of an image
+  - Has its own filesystem, network, process space
+  - Can be started, stopped, deleted
+  - Like a Java OBJECT
+
+One Image → Multiple Containers
+
+  ┌─────────────┐
+  │ Docker Image│ ──── docker run ──► Container 1
+  │  (my-app)   │ ──── docker run ──► Container 2
+  │             │ ──── docker run ──► Container 3
+  └─────────────┘
+
+# === IMAGE COMMANDS ===
+docker build -t my-app:1.0 .          # Build image from Dockerfile
+docker images                           # List all images
+docker pull nginx:latest                # Pull image from registry
+docker push myrepo/my-app:1.0          # Push image to registry
+docker rmi my-app:1.0                  # Remove image
+
+# === CONTAINER COMMANDS ===
+docker run -d -p 8080:8080 --name app my-app:1.0   # Run container
+docker ps                               # List running containers
+docker ps -a                            # List all containers
+docker stop app                         # Stop container
+docker start app                        # Start stopped container
+docker rm app                           # Remove container
+docker logs app                         # View container logs
+docker logs -f app                      # Follow logs (tail)
+docker exec -it app /bin/sh             # Enter container shell
+
+# === USEFUL FLAGS ===
+docker run -d                           # Detached mode (background)
+           -p 8080:8080                 # Port mapping host:container
+           -e DB_URL=jdbc:...           # Environment variable
+           -v /host/path:/container     # Volume mount
+           --name my-app                # Container name
+           --restart always             # Auto restart
+           --network my-network         # Custom network
+           my-app:1.0
+
+# === CLEANUP ===
+docker system prune                     # Remove unused data
+docker volume prune                     # Remove unused volumes
+
+Docker Compose is a tool used to define and run multi-container Docker applications using a YAML configuration file. It allows developers to start multiple dependent services like databases, caches, and application containers with a single command such as docker compose up.
+
+Docker Compose is a tool used to define and run multiple Docker containers together using a single configuration file.
+Instead of starting containers one by one, you describe all services in a YAML file and start them with one command.
+It is part of the ecosystem of Docker.
+
+Suppose you have a Spring Boot application that needs:
+
+App container
+Database container
+Redis container
+
+Without Docker Compose you would run multiple commands:
+docker run -d -p 8080:8080 my-springboot-app
+docker run -d -p 3306:3306 mysql
+docker run -d -p 6379:6379 redis
+
+Managing them manually becomes difficult.
+Docker Compose lets you define everything in one file.
+
+Docker Compose
+      ↓
+--------------------------------
+| Spring Boot App Container   |
+| MySQL Container             |
+| Redis Container             |
+--------------------------------
+
+Kubernetes (K8s) is a container orchestration platform 
+that automates deployment, scaling, and management of 
+containerized applications.
+
+PROBLEM WITHOUT K8s:
+  - How to run 100s of containers across multiple servers?
+  - What if a container crashes at 3 AM?
+  - How to scale when traffic spikes?
+  - How to do zero-downtime deployments?
+
+SOLUTION WITH K8s:
+  - Auto-healing (restarts crashed containers)
+  - Auto-scaling (adds more containers on high traffic)
+  - Rolling updates (zero downtime deployments)
+  - Load balancing (distributes traffic)
+  - Service discovery (containers find each other)
+
+Docker = Run ONE container
+Kubernetes = Manage THOUSANDS of containers
+
