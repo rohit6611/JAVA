@@ -3819,3 +3819,32 @@ SOLUTION WITH K8s:
 Docker = Run ONE container
 Kubernetes = Manage THOUSANDS of containers
 
+String s = "aaabcdsaa";
+        
+        int start = 0;
+        int end=s.length()-1;
+        while(start<end)
+        {
+            if(s.charAt(start)==s.charAt(end))
+            {
+                start++;end--;
+            }
+            if(s.charAt(start)!=s.charAt(end))
+            {
+                System.out.println(s.substring(start, end + 1));
+                break;
+            }
+        }
+
+seperate even before odd and preserve its order
+List<Integer> arr = Arrays.asList(3,8,5,6,1,4);
+          
+          List<Integer> result = Stream.concat(
+              arr.stream().filter(i->i%2==0),
+              arr.stream().filter(i->i%2!=0)
+              ).collect(Collectors.toList());
+              
+              System.out.println(result);
+        
+            }
+
