@@ -3848,3 +3848,29 @@ List<Integer> arr = Arrays.asList(3,8,5,6,1,4);
         
             }
 
+* to remove the image we first need to remove the container and removed using docker rm containerId which we can get using docker ps -a (-a is used to list all the containers including those
+are stoped) and for removing image we can use docker rmi imageId which can be find using docker images.
+every images is tagged with tag which i sthe kind of version we are using and by default :latest is used to fetch the latest tag basically version.
+docker create hello-world will create a container from hello-world image as there is no hello-world container.
+docker search to search the images.
+docker pull to pull images from the docker hutargetb or docker registery.
+docker stop containerId(may be partial id) to stop the container.
+docker pause containerId(maybe partial id) to pause the container.
+docker run host:port says that your host port that is your docker container port will run on machine port 8081 as docker is independent and does not run on machine port.
+
+sample docker file
+FROM openjdk:22-jdk    // pull jdk image from docker hub
+ADD target/demo.jar demo.jar // copy the jar from source to target
+ENTRYPOINT ["java","-jar","/demo.jar"] //to run the the jar
+
+steps to create docker image from docker file
+docker build -t telusko/rest-demo:v3 .
+-t tells u are tagging the image and :v3 is used to tag and generally v3 is used to tag the image and after that . represents that you want to work with current directory and if you
+want to work with some other directory u need to give the path to that directory.
+To run the docker container use docker run -p 8081:8081 telusko/rest-demo:v3
+
+docker-compose up -build
+docker compose is to run multiple containers using docker-compose.yml and as both containers are isolated and run in their on own network we need to provide connectivity
+between the containers.
+
+Docker Compose is used to define and run multi-container applications using a YAML file where services, networks, and volumes are configured and started with a single command like docker compose up
