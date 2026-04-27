@@ -3884,3 +3884,142 @@ docker compose is to run multiple containers using docker-compose.yml and as bot
 between the containers.
 
 Docker Compose is used to define and run multi-container applications using a YAML file where services, networks, and volumes are configured and started with a single command like docker compose up
+
+#Maximum subarray sum
+public class Main
+{
+    public static void main(String[] args) {
+        
+          int[] arr = new int[]{2, 3, -5, 6, -4};
+          int maxSum = Integer.MIN_VALUE;
+          for(int i=0;i<arr.length;i++)
+          {
+              int currsum = 0;
+              for(int j=i;j<arr.length;j++)
+              {
+                  currsum+=arr[j];
+                  maxSum=Math.max(currsum,maxSum);
+              }
+          }
+          System.out.println(maxSum);
+        
+            }
+}
+
+Kadanes algorithm
+public class Main
+{
+    public static void main(String[] args) {
+        
+          int[] arr = new int[]{-2, 1, -3, 4, -1, 2, 1, -5, 4};
+          int maxSum = arr[0];
+          int currSum = arr[0];
+          for(int i=0;i<arr.length;i++)
+          {
+              currSum = Math.max(arr[i],currSum+arr[i]);
+              maxSum = Math.max(currSum,maxSum);
+          }
+          System.out.println(maxSum);
+        
+            }
+}
+
+import org.springframework.retry.annotation.Recover;
+
+@Service
+public class PaymentService {
+
+    @Retryable(value = RuntimeException.class, maxAttempts = 3)
+    public String processPayment() {
+        throw new RuntimeException("Service down");
+    }
+
+    @Recover
+    public String recover(RuntimeException e) {
+        return "Payment failed after retries";
+    }
+}
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: password
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+by implementing cloneable interface we need to override protected void clone() method we need to use super.clone() directly for returning the shallow copy 
+and for deep copy we need to use super.clone() and assign it to object and then return that object for deep copy.
+What is applicationContext?
+applicationContext is the central interface to the Spring IoC container. It is responsible for instantiating, configuring, and assembling the beans in the application. 
+It acts as a container that holds all the beans and provides various functionalities such as dependency injection, event propagation, and resource loading.
+@Cacheable: Indicates that the result of invoking a method should be cached. If the same method is called again with the same arguments, the cached value is returned instead of 
+invoking the method again.
+@CachePut: Indicates that the result of invoking a method should be cached, but the method should always be invoked. Here the Cache Value for a particular key will be updated with 
+the new value returned from the invoked method.
+@CacheEvict: Indicates that the cache entries associated with the method should be removed from the cache.
+
+Use @Cacheable when the result is consistent for the same inputs and you want to avoid redundant computations.
+Use @CachePut when the result changes frequently and you need the cache to reflect the latest value after every method execution.
+
+@CachePut ensures that after a method modifies or generates a new result, this result is always written back to the cache. This is essential for use cases where the data changes 
+frequently, and you want subsequent reads to fetch the updated value from the cache instead of outdated or invalid data.
+
+@Caching is used for multiple nested caching on the same method.
+
+@PutMapping("/{id}")
+@Caching(
+     evict = {@CacheEvict(value = "productList", allEntries = true)},
+     put = {@CachePut(value = "product", key = "#id")}
+)
+
+// Using Future
+ExecutorService executor = Executors.newFixedThreadPool(2);
+Future<String> future = executor.submit(() -> {
+    // Simulating long-running task
+    Thread.sleep(2000);
+    return "Hello, Future!";
+});
+
+try {
+    // Blocking call, waiting for the result
+    String result = future.get();
+    System.out.println(result);
+} catch (Exception e) {
+    e.printStackTrace();
+}
+
+// Using CompletableFuture
+CompletableFuture.supplyAsync(() -> {
+    // Simulating long-running task
+    try { Thread.sleep(2000); } catch (Exception e) {}
+    return "Hello, CompletableFuture!";
+})
+.thenApply(result -> result + " with Async Chaining!")
+.thenAccept(System.out::println)
+.exceptionally(e -> {
+    System.out.println("Exception occurred: " + e);
+    return null;
+});
+
+ScheduledExecutorService scheduledExecService = Executors.newScheduledThreadPool(1);
+  // Schedule the task to run every 3 seconds, with an initial delay of 1 second
+        scheduler.scheduleAtFixedRate(task, 1, 3, TimeUnit.SECONDS);
+        
+        @Configuration
+public class AsyncConfig {
+
+    @Bean(name = "taskExecutor")
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);      // minimum number of threads
+        executor.setMaxPoolSize(10);      // max number of threads
+        executor.setQueueCapacity(25);    // queue size before rejecting new tasks
+        executor.setThreadNamePrefix("MyExecutor-");
+        executor.initialize();
+        return executor;
+    }
+} 
