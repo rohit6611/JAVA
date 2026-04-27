@@ -4023,3 +4023,9 @@ public class AsyncConfig {
         return executor;
     }
 } 
+
+# you can break singleton design pattern using 
+1.reflection API
+2.deserialization 
+3.cloning 
+4.multithreading - is not synchronized properly 
