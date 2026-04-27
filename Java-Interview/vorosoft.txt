@@ -573,6 +573,16 @@ Expected Output:
 
 "strawberry"
 
+List<String> words =
+          Arrays.asList("apple", "banana", "cherry", "strawberry");
+          
+          Map.Entry<String,Integer> res = words.stream().
+          collect(Collectors.toMap(i->i,String::length))
+          .entrySet().stream().
+          max(Comparator.comparing(Map.Entry<String,Integer>::getValue)).get();
+        
+        System.out.println(res.getKey());
+
 String word=words.stream().max(Comparator.comparingInt(String::length)).get();
     System.out.print(word);
 	max and min accepts comparator.
