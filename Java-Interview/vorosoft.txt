@@ -4029,3 +4029,16 @@ public class AsyncConfig {
 2.deserialization 
 3.cloning 
 4.multithreading - is not synchronized properly 
+
+ Set<String> set = new HashSet<String>();
+          set.add("rohit");
+          set.add(null);
+          
+          Iterator iterator = set.iterator();
+          while(iterator.hasNext())
+          {
+           System.out.println(iterator.next());    
+          }
+output - 
+null
+rohit
