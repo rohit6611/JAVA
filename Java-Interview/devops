@@ -1,0 +1,425 @@
+Docker architecture (Engine, CLI, Registry)
+  Docker cli     ->(Rest API call) Docker daemon manages containers  -> (pull <-> pull) -> Docker hub registery,ecr
+                                    |
+                                    containers running process
+
+  The three pieces
+1. Docker CLI (client)
+
+The docker command you type — docker run, docker build, docker ps, etc. It's just a thin client:
+it doesn't do any actual container work itself. Every command gets translated into a REST API call sent to the daemon.
+
+2. Docker Engine (daemon — dockerd)
+
+This is where the real work happens — a persistent background process that:
+
+Builds images (docker build)
+Creates, starts, stops containers
+Manages networking (creates the docker0 bridge, sets up iptables NAT rules — ties back to our earlier port-exposure discussion)
+Manages volumes/storage
+Pulls/pushes images to registries on your behalf
+
+Internally, dockerd doesn't directly run containers itself either — it delegates to containerd (a lower-level container runtime), which in turn uses runc to actually create the isolated process (namespaces + cgroups, from our container-vs-VM discussion) at the OS level.
+
+docker CLI → dockerd → containerd → runc → actual container process
+
+  3. Registry
+
+A registry stores and distributes images — the packaged, versioned filesystem + config that containers are created from.
+
+bash
+docker pull nginx:latest        # pulls from Docker Hub (default public registry)
+docker pull myregistry.com/myapp:v2   # pulls from a private/custom registry
+docker push myregistry.com/myapp:v2   # pushes your built image up
+
+Common registries:
+
+Registry	Type
+Docker Hub	Public, default
+AWS ECR	Private, cloud-native
+Google Artifact Registry	Private, cloud-native
+Azure Container Registry	Private, cloud-native
+Harbor	Self-hosted, open-source
+
+Images are identified by repository:tag (e.g., nginx:1.25), and are made of layers — each Dockerfile instruction (RUN, COPY, etc.) creates a new layer,
+cached and reused across builds/pulls for efficiency.
+
+# Images
+docker pull nginx:latest
+docker build -t myapp:v1 .
+docker images
+docker rmi myapp:v1
+docker system prune -a
+
+# Containers
+docker run -d --name myweb -p 8080:80 -v ./data:/usr/share/nginx/html nginx
+docker ps -a
+docker logs -f <container>
+docker exec -it <container> bash
+docker stop <container> && docker rm <container>
+docker port <container>            # check port mapping
+
+# Compose
+docker compose up -d
+docker compose down
+docker compose logs -f
+
+The writable container layer
+
+When you docker run an image, Docker adds one more layer on top — the only writable one. Everything that happens while the container runs 
+(temp files, logs, downloaded data) goes there.
+
+This layer is ephemeral — deleted when the container is removed (docker rm), unless the data lives in a mounted volume.
+It's why multiple containers from the same image never interfere with each other — each gets its own separate writable layer on top of the same shared, 
+read-only image layers underneath.
+
+CMD — default command when the container starts
+dockerfile
+CMD ["node", "server.js"]
+
+Only one CMD per Dockerfile (last one wins if multiple are specified). Can be overridden at runtime:
+
+bash
+docker run myapp node other-script.js    # overrides the CMD
+ENTRYPOINT — the fixed command that always runs
+dockerfile
+ENTRYPOINT ["python3", "app.py"]
+
+Unlike CMD, this is not easily overridden — docker run myapp --debug appends --debug as an argument to the entrypoint, rather than replacing it.
+
+ENTRYPOINT + CMD combo (very common pattern — fixed command, overridable default args):
+
+dockerfile
+ENTRYPOINT ["python3", "app.py"]
+CMD ["--port", "8080"]
+bash
+docker run myapp                    # runs: python3 app.py --port 8080
+docker run myapp --port 9000        # runs: python3 app.py --port 9000 (overrides CMD's args
+
+VOLUME — declare a mount point
+dockerfile
+VOLUME /data
+
+Tells Docker this path should be treated as persistent/externally managed storage, separate from the container's writable layer.
+
+HEALTHCHECK — define how Docker checks if the container is healthy
+dockerfile
+HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:8080/health || exit 1
+
+Shows up in docker ps as (healthy) / (unhealthy) — useful for orchestrators (Kubernetes, Swarm, load balancers) deciding whether to route traffic to this container.                                                                        
+
+The four core network drivers
+1. bridge — the default
+bash
+docker run -d --name web nginx
+# implicitly uses the default "bridge" network
+
+Docker creates a virtual bridge (docker0 on Linux) — a private internal subnet (e.g., 172.17.0.0/16). Each container gets its own IP on that subnet, and traffic to/from the outside world goes through NAT (exactly the NAT concept from earlier — the container's private IP gets translated to the host's IP for outbound traffic).
+
+bash
+docker network inspect bridge
+
+Important limitation of the default bridge network: containers can only reach each other by IP, not by name, unless you create a custom bridge network:
+
+bash
+docker network create mynet
+docker run -d --name web --network mynet nginx
+docker run -d --name api --network mynet myapi
+
+Now web can reach api by hostname (http://api:3000) — Docker runs an embedded DNS server on custom networks that resolves container names automatically. This is the standard way multi-container apps talk to each other (and exactly what Docker Compose sets up for you automatically).
+
+2. host — no isolation, shares the host's network stack directly
+bash
+docker run -d --network host nginx
+
+The container skips the bridge/NAT layer entirely — it binds directly to the host's network interfaces. If nginx listens on port 80 inside the container, it's immediately on port 80 on the host — no -p mapping needed or even possible.
+
+Trade-off: better performance (no NAT overhead), but zero network isolation — the container can bind to any port the host allows, and there's no port-mapping flexibility (can't run two containers both wanting port 80). Generally avoided unless you specifically need raw network performance or are doing low-level network tooling.
+
+3. none — fully isolated, no networking at all
+bash
+docker run -d --network none myapp
+
+The container gets a loopback interface only (127.0.0.1) — no external network access whatsoever. Useful for security-sensitive batch jobs that process data locally and need zero network exposure (defense in depth — even if the app were compromised, it has no network path out).
+
+4. overlay — multi-host networking (Swarm/clustered setups)
+bash
+docker network create -d overlay myoverlay
+
+Lets containers on different physical Docker hosts communicate as if they were on the same network — used in Docker Swarm clusters. Conceptually similar to what a Kubernetes CNI plugin does for pod-to-pod networking across nodes, just Docker's native version of it.
+
+Port publishing vs Docker networking (tying back to earlier)
+
+Networking modes control container-to-container and container-to-host communication. Publishing ports (-p 8080:80) is the separate mechanism that exposes a container port to the outside world, and only applies meaningfully to bridge networking (with host mode, there's nothing to "publish" — it's already on the host directly).
+
+bash
+docker run -d -p 8080:80 --network mynet nginx
+Inspecting and debugging container networking
+bash
+docker network ls                          # list all networks
+docker network inspect mynet               # see connected containers, subnet, gateway
+docker inspect <container> | grep IPAddress # find a specific container's IP
+docker exec -it <container> ping other-container   # test connectivity between containers (needs custom network for name resolution)
+Practical example: a typical multi-container app
+bash
+docker network create appnet
+
+docker run -d --name db --network appnet -e POSTGRES_PASSWORD=secret postgres
+docker run -d --name api --network appnet -e DB_HOST=db myapi
+docker run -d --name web --network appnet -p 8080:80 -e API_HOST=api mynginx
+api connects to db using hostname db — Docker's embedded DNS resolves it
+web connects to api using hostname api — same mechanism
+Only web publishes a port to the host (-p 8080:80) — db and api stay completely internal, unreachable from outside the Docker network entirely
+
+This is effectively the same tiered isolation principle as the 3-tier security group design from earlier (LB → App → DB) — just implemented at the container-network level instead of the cloud-VPC level. The database container has no publish port at all, so it's simply unreachable from outside no matter what — a much stronger guarantee than a firewall rule that could be misconfigured.
+
+In Docker Compose (this is handled automatically)
+yaml
+services:
+  db:
+    image: postgres
+  api:
+    image: myapi
+    environment:
+      - DB_HOST=db          # works automatically — compose creates a shared network
+  web:
+    image: mynginx
+    ports:
+      - "8080:80"
+
+Compose automatically creates a custom bridge network for all services in the file, and every service can reach every other service by service name — no manual docker network create needed.
+
+Docker Compose lets you define and run multi-container applications using a single YAML file, instead of stringing together long docker run commands manually. It ties together everything we've covered — networking, volumes, port mapping, environment variables — into one declarative config.
+
+The core file: docker-compose.yml
+yaml
+version: "3.9"
+
+services:
+  web:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    depends_on:
+      - api
+    networks:
+      - appnet
+
+  api:
+    build: ./api
+    environment:
+      - DB_HOST=db
+      - DB_PASSWORD=secret
+    networks:
+      - appnet
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+volumes:
+  dbdata:
+
+networks:
+  appnet:
+Key sections explained
+services
+
+Each service is essentially one docker run command, expressed declaratively. web, api, and db here are each their own container.
+
+image vs build
+yaml
+web:
+  image: nginx          # pull a pre-built image from a registry
+
+api:
+  build: ./api           # build from a Dockerfile in ./api instead
+
+You can mix both in the same file — some services pulled, others built locally.
+
+ports
+yaml
+ports:
+  - "8080:80"
+
+Same host:container mapping as docker run -p — only needed for services that must be reached from outside the Compose network (typically just the front-facing service, like web here).
+
+volumes
+yaml
+volumes:
+  - ./html:/usr/share/nginx/html     # bind mount (relative path)
+  - dbdata:/var/lib/postgresql/data  # named volume (declared in top-level `volumes:`)
+
+Same volume vs bind mount distinction from earlier — just expressed in YAML instead of -v flags.
+
+environment
+yaml
+environment:
+  - DB_HOST=db
+  - DB_PASSWORD=secret
+
+Equivalent to -e flags on docker run. Can also load from a file:
+
+yaml
+env_file:
+  - .env
+depends_on
+yaml
+depends_on:
+  - api
+
+Controls startup order only — api starts before web. Important caveat: this does NOT wait for api to be actually ready (e.g., finished booting, listening on its port) — just that the container process has started. For true readiness, pair with a healthcheck:
+
+yaml
+api:
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+    interval: 10s
+    retries: 5
+
+web:
+  depends_on:
+    api:
+      condition: service_healthy
+networks
+yaml
+networks:
+  appnet:
+
+Compose creates this custom bridge network automatically even if you don't declare it explicitly — every service in the file gets attached, and (as covered in the bridge/custom networks discussion) can reach every other service by service name thanks to Compose's automatic DNS resolution.
+
+Core commands
+bash
+docker compose up                 # start everything, foreground (see all logs)
+docker compose up -d               # start everything, detached
+docker compose down                 # stop and remove containers, networks (keeps volumes)
+docker compose down -v               # ALSO removes volumes — data loss risk, as covered earlier
+docker compose ps                     # list services and their status
+docker compose logs -f                 # follow logs across ALL services
+docker compose logs -f api              # follow logs for just one service
+docker compose exec api sh               # shell into a running service
+docker compose build                      # rebuild images for services using `build:`
+docker compose up -d --build                # rebuild + restart in one step
+docker compose restart web                    # restart a single service
+docker compose stop / start                     # stop/start without removing containers
+Scaling a service
+bash
+docker compose up -d --scale api=3
+
+Runs 3 instances of the api service — useful for quick local load-testing (in production, Kubernetes' Deployment replicas handle this more robustly, but Compose supports basic scaling too).
+
+Multiple Compose files (environment overrides)
+bash
+docker-compose.yml           # base config
+docker-compose.override.yml  # auto-merged in dev (Compose applies this automatically)
+docker-compose.prod.yml      # explicit prod overrides
+bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+Common pattern: keep shared config in the base file, then override just what differs per environment (e.g., different environment values, no bind mounts in prod, different replica counts).
+
+.env file — variable substitution
+bash
+# .env
+DB_PASSWORD=supersecret
+WEB_PORT=8080
+yaml
+services:
+  web:
+    ports:
+      - "${WEB_PORT}:80"
+  db:
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+Compose automatically loads .env from the same directory — keeps secrets/config out of the committed YAML file (should still be .gitignore'd, same as any secret).
+                                                                        
+Docker's embedded DNS resolves db to whatever internal IP that container currently has — no hardcoded IPs, no manual lookup, and it keeps working even if the container restarts and gets a new IP.
+                                                                                                                
+version: "3.9"        # Compose file format version (mostly informational in modern Compose v2)
+
+services:              # ← top-level: defines each container/app component
+  web:                  # ← service name — becomes the hostname other services use to reach it
+    image: nginx          # use a pre-built image (pulled from registry)
+    build: ./api           # OR build from a Dockerfile in this directory (use one or the other, or both — build + custom tag)
+    ports:
+      - "8080:80"           # host_port:container_port — publishes to the HOST, makes it externally reachable
+    volumes:
+      - ./html:/usr/share/nginx/html   # bind mount: host_path:container_path
+      - dbdata:/var/lib/postgresql/data # named volume: volume_name:container_path (must be declared below)
+    environment:
+      - DB_HOST=db            # env vars injected INTO the container at runtime
+    env_file:
+      - .env                   # load a whole file of env vars at once
+    depends_on:
+      - api                     # controls STARTUP ORDER only (not readiness, unless combined with healthcheck condition)
+    networks:
+      - appnet                   # attaches this service to a named network (for name-based DNS to other services)
+    healthcheck:                  # defines how Compose/Docker checks if this container is "healthy"
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped         # restart policy: no | always | on-failure | unless-stopped
+    command: ["npm", "start"]         # OVERRIDES the image's default CMD
+    entrypoint: ["/bin/sh", "-c"]       # OVERRIDES the image's default ENTRYPOINT
+
+volumes:                # ← top-level: declares NAMED volumes used by any service above
+  dbdata:                  # just declaring the name — Docker manages the actual storage
+
+networks:                # ← top-level: declares custom networks used by any service above
+  appnet:                   # Compose creates this network; services join via `networks:` under each service
+                                                                                                                
+ To directly answer the "running state" question
+docker compose build → no containers need to be running; it's purely a build step, works even on a completely fresh machine with nothing started yet.
+docker compose up → this is what actually creates and starts containers for services defined in the file — after up, yes, all listed services (unless you scoped it) will be in a running state.
+You can build without ever running (build only), or run without ever explicitly building (up triggers a build automatically the first time if build: is set and no image exists yet)
+                                                                                                                
+The core distinction
+	Named Volume	Bind Mount
+Managed by	Docker	You (arbitrary host path)
+Storage location	/var/lib/docker/volumes/<name>/_data (Docker-controlled)	Any path you specify on the host
+Created via	docker volume create (or auto-created by Compose)	Just reference a host path directly
+Portability	High — no path assumptions, works across machines	Low — tied to that specific host's directory structure
+Typical use	Databases, persistent app data, production	Local dev (live code editing), injecting config files
+In command form
+bash
+# Named volume — Docker manages the actual location
+docker run -v mydata:/var/lib/postgresql/data postgres
+
+# Bind mount — you control the exact host path
+docker run -v /home/user/pgdata:/var/lib/postgresql/data postgres
+docker run -v ./src:/app/src myapp        # relative path, common in dev
+In Docker Compose
+yaml
+services:
+  db:
+    image: postgres
+    volumes:
+      - dbdata:/var/lib/postgresql/data      # named volume
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql   # bind mount
+
+volumes:
+  dbdata:      # must declare named volumes at the top level; bind mounts need no declaration
+                                                                                                                
+ docker ps                    # running containers
+docker ps -a                  # ALL containers, including stopped/crashed ones                                                                                                               
+                                                                                                                
+                                                                                                                
+                                                                                                                
+                                                                                                                
+                                                                                                                
+                                                                                                                
+                                                                                                                
+
+                                                                                                                
+                                                                                                                
+                                                                                                                
+                                                                                                                
+                                                                                                                
