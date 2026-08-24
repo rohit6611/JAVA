@@ -485,13 +485,389 @@ A: --memory and --cpus flags (or deploy.resources in Compose/K8s). Exceeding mem
 Q: Your image builds fine locally but fails in CI — what do you check?
 A: Base image tag drift (latest vs pinned version), build context differences (.dockerignore mismatches), architecture mismatch (arm64 laptop vs amd64 CI runner), and cached layers from a stale local build masking a real issue that only shows on a clean CI build.                                                                                                                
                                                                                                                 
-                                                                                                                
-                                                                                                                
-                                                                                                                
-                                                                                                                
+What is Cloud Computing?
 
+Delivery of computing resources (servers, storage, databases, networking, software) over the internet ("the cloud"), on-demand, with pay-as-you-go pricing — instead of buying and maintaining physical hardware yourself.
+
+Core Characteristics (NIST's definition, still the standard reference)
+On-demand self-service: provision resources yourself, no human intervention from the provider needed.
+Broad network access: available over the internet, from any device.
+Resource pooling: provider's physical infrastructure serves many customers ("multi-tenancy"), with resources dynamically assigned.
+Rapid elasticity: scale up or down quickly based on demand.
+Measured service: you pay for what you use, usage is metered/tracked.
+Service Models (the classic "as-a-Service" stack)
+
+IaaS (Infrastructure as a Service)
+Raw compute, storage, networking — you manage the OS, runtime, and app.
+Examples: AWS EC2, Azure VMs, Google Compute Engine.
+
+PaaS (Platform as a Service)
+Provider manages OS/runtime; you just deploy code.
+Examples: Heroku, AWS Elastic Beanstalk, Google App Engine.
+
+SaaS (Software as a Service)
+Fully managed application, you just use it.
+Examples: Gmail, Salesforce, Dropbox.
+
+A common way to remember the tradeoff: as you move IaaS → PaaS → SaaS, you give up control but gain convenience — the provider manages more of the stack for you.
+
+There's also FaaS (Function as a Service / serverless) — you just write functions (e.g. AWS Lambda), and the provider handles everything including scaling individual function invocations, with no persistent server to manage at all.
+
+Deployment Models
+Public cloud: shared infrastructure, managed by a third-party provider (AWS, Azure, GCP). Cheapest, most common.
+Private cloud: dedicated infrastructure for a single organization, either on-prem or hosted. More control/compliance, more cost.
+Hybrid cloud: mix of public + private, often for compliance reasons (sensitive data stays private, everything else goes public) or to burst extra capacity into public cloud during peak load.
+Multi-cloud: using more than one public cloud provider, often to avoid vendor lock-in or leverage best-of-breed services.
+Key Concepts You'll Run Into Constantly
+
+Elasticity vs Scalability
+
+Scalability: system's capacity to handle growth (can it scale?).
+Elasticity: the automatic, dynamic adjustment of resources in response to real-time load (does it scale itself up/down as needed?).
+
+Availability Zones & Regions
+
+Region: a geographic area (e.g. us-east-1) containing multiple data centers.
+Availability Zone (AZ): an isolated data center within a region, with independent power/cooling/networking, so a failure in one AZ doesn't take down the whole region.
+Deploying across multiple AZs is the standard way to get high availability.
+
+Vertical vs Horizontal Scaling
+
+Vertical: bigger machine (more CPU/RAM on the same instance). Has a ceiling.
+Horizontal: more machines running in parallel, load-balanced. This is what "cloud-native" scaling usually means.
+
+Load Balancing
+Distributes incoming traffic across multiple instances so no single server gets overwhelmed, and so a failed instance doesn't take the whole app down.
+
+CapEx vs OpEx
+Traditional infrastructure = CapEx (big upfront capital expense for hardware). Cloud = OpEx (ongoing operational expense, pay-as-you-go) — one of the main business reasons companies moved to cloud.
+
+Shared Responsibility Model
+Security is split between provider and customer:
+
+Provider secures the cloud (physical data centers, host infrastructure, hypervisor).
+Customer secures what's in the cloud (data, access management, OS patching depending on service model, app-level security).
+This split shifts depending on IaaS vs PaaS vs SaaS — the more managed the service, the more the provider takes on.
+Common Building Blocks Across Providers
+Category	AWS	Azure	GCP
+Compute	EC2	Virtual Machines	Compute Engine
+Object storage	S3	Blob Storage	Cloud Storage
+Serverless functions	Lambda	Azure Functions	Cloud Functions
+Managed DB	RDS	Azure SQL	Cloud SQL
+Container orchestration	EKS	AKS	GKE
+CDN	CloudFront	Azure CDN	Cloud CDN
+Identity/Access	IAM	Azure AD / Entra ID	Cloud IAM                                                                                                                
                                                                                                                 
+AWS Global Infrastructure
+  └── Regions
+        └── Availability Zones (AZs)
+              └── Data Centers
+  └── Edge Locations / Local Zones / Wavelength Zones (supplementary)                                                                                                                
                                                                                                                 
+Quick Comparison Table
+Concept	Scope	Purpose
+Region	Large geographic area	Top-level isolation boundary; pick based on compliance/latency
+Availability Zone	Data center(s) within a region	High availability via redundancy
+Edge Location	Hundreds of cities globally	CDN caching, DNS resolution (CloudFront/Route53)
+Local Zone	Metro area near you	Low-latency compute closer to users, outside full region
+Wavelength Zone	Inside telecom 5G networks	Ultra-low-latency for mobile/edge apps
                                                                                                                 
+What is EC2?
+
+Elastic Compute Cloud — AWS's IaaS offering for resizable virtual servers ("instances") in the cloud. You rent compute capacity instead of buying physical servers, and can scale up/down on demand.
+
+Core Building Blocks
+
+1. AMI (Amazon Machine Image)
+The template used to launch an instance — includes OS, pre-installed software, and configuration. You can use:
+
+AWS-provided AMIs (Amazon Linux, Ubuntu, Windows Server, etc.)
+Marketplace AMIs (pre-configured by third parties)
+Custom AMIs you create from your own configured instance (useful for consistent, repeatable deployments)
+
+2. Instance Types
+Named by family + generation + size, e.g. t3.medium, m5.large, c6g.xlarge. Families are optimized for different workloads:
+
+Family	Optimized for	Example use case
+T (t2, t3, t4g)	Burstable, general purpose, cheap	Dev/test, low-traffic web apps
+M (m5, m6i)	Balanced compute/memory/network	General purpose production apps
+C (c5, c6g)	Compute-optimized	High-CPU workloads, batch processing
+R (r5, r6g)	Memory-optimized	In-memory caches, large databases
+I (i3)	Storage-optimized, high IOPS	NoSQL databases, data warehousing
+G/P (g4, p3)	GPU	ML training, video rendering
+
+3. Key Pairs
+Public/private key pair used for SSH (Linux) or RDP password decryption (Windows) authentication into an instance. AWS stores the public key; you keep the private key (.pem file) — lose it and you generally can't recover SSH access to that instance without extra steps.
+
+4. Security Groups
+Virtual firewall attached to an instance, controlling inbound/outbound traffic.
+
+Stateful: if inbound traffic is allowed, the corresponding outbound response is automatically allowed (and vice versa) — you don't need matching rules both ways.
+Rules are allow-only — you can't write explicit "deny" rules (that's what Network ACLs are for, at the subnet level).
+Default: all inbound traffic denied, all outbound allowed, until you add rules.
+
+5. Elastic IP
+A static, public IPv4 address you can attach/detach from instances. Without one, an instance's public IP changes every time it's stopped and started — an Elastic IP keeps it fixed.
+
+6. EBS (Elastic Block Store)
+Persistent block storage volumes attached to instances (like a virtual hard drive). Data persists independently of instance lifecycle (unlike instance store, below). Comes in different volume types (gp3 general purpose, io2 high-IOPS, st1/sc1 for throughput-optimized cold storage).
+
+7. Instance Store
+Temporary storage physically attached to the host — much faster than EBS, but data is lost when the instance stops or terminates (not on reboot). Used for caches, temp data, scratch space — never for anything that needs to persist.
+
+Instance Lifecycle States
+pending → running → (stopping → stopped) → (rebooting) → terminated
+
+Key distinctions:
+
+Stop vs Terminate: Stop preserves EBS-backed root volumes (you can restart later, billed only for storage); Terminate deletes the instance and (by default) its root EBS volume permanently.
+Reboot is like an OS-level restart — doesn't change the underlying host or lose instance store data.
+Stopping/starting an instance may put it on a different physical host — this is why Elastic IPs matter (public IP would otherwise change).
+Pricing Models
+Model	How it works	Best for
+On-Demand	Pay per second/hour, no commitment	Unpredictable, short-term workloads
+Reserved Instances	1 or 3-year commitment, significant discount (~30-70%)	Steady, predictable long-term workloads
+Savings Plans	Commit to $/hour spend (flexible across instance types), discount similar to RIs	Flexible long-term commitment
+Spot Instances	Bid on unused AWS capacity, up to ~90% discount, but can be reclaimed with short notice	Fault-tolerant, flexible workloads (batch jobs, CI/CD)
+Dedicated Hosts	Physical server dedicated to you	Compliance/licensing requirements (e.g. BYOL)
+Auto Scaling & Load Balancing (tightly coupled with EC2)
+Auto Scaling Group (ASG): automatically adds/removes instances based on demand (CPU, custom CloudWatch metrics, or schedule), maintains a minimum/desired/maximum instance count.
+Elastic Load Balancer (ELB): distributes traffic across multiple instances (often across AZs) — Application Load Balancer (Layer 7, HTTP/HTTPS) vs Network Load Balancer (Layer 4, TCP, ultra-low latency) are the two most common types.
+
+Together, ASG + ELB is the standard pattern for a scalable, highly-available web tier.
+
+Common Interview/Practical Questions
+
+Q: What happens to data on instance store vs EBS when you stop an instance?
+A: Instance store data is lost. EBS-backed root volumes and any attached EBS volumes persist.
+
+Q: How do you SSH into an EC2 instance if you lost your private key?
+A: You can't directly recover the original key, but you can: stop the instance, detach its root volume, attach it to another instance as a secondary volume, add a new public key to authorized_keys on that volume, then reattach it to the original instance and restart.
+
+Q: Security Group vs NACL?
+A: Security Group = instance-level, stateful, allow-only. NACL = subnet-level, stateless (need explicit inbound AND outbound rules), supports both allow and deny rules — used as a coarser, secondary layer of defense.
+
+Q: How would you reduce EC2 costs for a variable workload?
+A: Mix of Reserved/Savings Plans for baseline predictable load + Spot Instances for burst/batch capacity + Auto Scaling to avoid over-provisioning + right-sizing instance types based on actual CPU/memory utilization (via CloudWatch).                                                                                                                
                                                                                                                 
+Quick Summary Table
+	Security Group	NACL (Network ACL)
+Level	Instance-level (attached to ENI/instance)	Subnet-level (attached to a subnet)
+Statefulness	Stateful — return traffic automatically allowed	Stateless — must explicitly allow both inbound and outbound
+Rule types	Allow only — no explicit deny	Allow and Deny both supported
+Rule evaluation	All rules evaluated, most permissive wins	Rules processed in order by rule number, first match wins
+Scope	Applies only to instances explicitly associated with it	Applies to all instances in the subnet automatically
+Default behavior	Denies all inbound by default, allows all outbound	Default NACL allows all traffic; custom NACLs deny all until you add rules
+Key Concepts Explained
+
+Stateful vs Stateless — the most important distinction
+
+Security Group (stateful): If you allow inbound traffic on port 443, the response traffic going back out is automatically allowed — you don't need a matching outbound rule.
+NACL (stateless): You must write rules for both directions independently. Allow inbound on port 443 doesn't automatically allow the outbound response — you need a separate outbound rule (often on an ephemeral port range, since return traffic uses high random ports).
+
+This trips people up constantly — it's the #1 reason NACL misconfigurations break connectivity that "should" work.
+
+Allow-only vs Allow+Deny
+
+Security groups can't block specific IPs — you can only add rules for what's allowed. To block something, you simply don't add a rule for it.
+NACLs let you explicitly deny — useful for blocking a known-bad IP range at the subnet level without touching every security group.
+
+Rule order matters (NACL only)
+
+NACL rules have numbers (e.g., 100, 200, 300) and are evaluated in ascending order — first match wins, and evaluation stops there. Security groups have no such ordering; all rules are evaluated together and the most permissive outcome applies.
+
+How They Work Together (Defense in Depth)
+
+Traffic passing into an instance goes through both layers:
+
+Internet → NACL (subnet boundary) → Security Group (instance boundary) → Instance
+
+NACLs act as a coarser, subnet-wide filter (first line of defense, e.g., block a malicious IP range for the whole subnet), while Security Groups give fine-grained, per-instance control (e.g., only allow port 22 from your office IP to this specific bastion host).
+
+Practical Rule of Thumb
+Security Groups: your primary, day-to-day tool — use for almost everything (which ports, which sources, which instances).
+NACLs: mostly left at default (allow all) unless you have a specific need to block something at the subnet level — e.g., blacklisting a known bad actor's IP range across an entire subnet regardless of security group config.
+Common Interview Follow-up
+
+Q: Why would you need both if Security Groups already control access?
+A: Defense in depth — if a security group is misconfigured too permissively, a NACL can still block malicious traffic at the subnet boundary before it even reaches the instance level. It's a second, independent layer that doesn't rely on per-instance configuration being correct.                                                                                                                
                                                                                                                 
+S3 Fundamentals
+
+S3 (Simple Storage Service) is AWS's object storage service — not a filesystem, not a block device. You store and retrieve arbitrary files ("objects") via HTTP(S) API calls, not through a mounted drive.
+
+Key characteristics:
+
+Virtually unlimited storage, no capacity provisioning needed.
+11 nines (99.999999999%) durability — achieved by automatically replicating objects across multiple AZs within a region.
+Flat namespace (no real folders) — what looks like folders in the console is just / characters in object keys, simulated visually.
+Accessed via REST API, AWS CLI, SDKs, or console.
+
+Storage Classes (cost vs retrieval-speed/frequency tradeoff):
+
+Class	Use case	Retrieval
+S3 Standard	Frequently accessed data	Instant
+S3 Intelligent-Tiering	Unknown/changing access patterns	Instant, auto-moves between tiers
+S3 Standard-IA (Infrequent Access)	Backups, DR, less-frequent access	Instant, but retrieval fee
+S3 One Zone-IA	Same as above but single AZ (cheaper, less durable)	Instant
+S3 Glacier Instant Retrieval	Archive, rarely accessed, need fast retrieval	Instant
+S3 Glacier Flexible Retrieval	Archive	Minutes to hours
+S3 Glacier Deep Archive	Long-term archive, compliance	Up to 12 hours
+
+Lifecycle policies automate moving objects between classes (e.g., "move to Glacier after 90 days, delete after 365 days") — a common cost-optimization interview topic.
+
+Buckets & Objects
+
+Bucket = top-level container for objects. Bucket names are globally unique across all of AWS (not just your account) — a common early gotcha.
+
+Object = the actual file, plus metadata, stored with a unique key (its "path" within the bucket). An object's full identity = bucket + key + version ID (if versioning is on).
+
+Key facts:
+
+Max object size: 5 TB (single PUT is capped at 5 GB — anything larger requires multipart upload).
+Objects are immutable — you can't "edit" an object in place, only overwrite it entirely with a new PUT.
+Versioning (optional, per-bucket): keeps every version of an object when overwritten/deleted, protecting against accidental deletion/overwrite. Once enabled, can be suspended but never fully turned back off.
+Object keys with / create the illusion of folders in the console UI, but S3 has no real directory structure underneath.
+Permissions & Policies
+
+S3 access control has several overlapping layers — a very common source of confusion, and a common interview question ("why is my bucket still public/private despite X setting?").
+
+1. IAM Policies (attached to users/roles)
+Control what an IAM identity can do across AWS, including S3 actions — this is the modern, recommended primary mechanism.
+
+2. Bucket Policies (attached to the bucket itself)
+JSON resource-based policies defining who can access the bucket and how — including cross-account access, since bucket policies can grant access to principals outside your own account.
+
+3. ACLs (Access Control Lists) — legacy, mostly discouraged now
+Older, more limited permission mechanism at the bucket or object level. AWS recommends disabling ACLs entirely and using bucket policies/IAM instead for new setups.
+
+4. Block Public Access settings (account and bucket level)
+A separate override layer that can force-block public access even if a policy/ACL would otherwise allow it — added specifically to prevent accidental public bucket exposure, which has historically been a very common (and damaging) misconfiguration. Best practice: leave this on unless you have a specific, deliberate reason for public access (e.g., static website hosting).
+
+Evaluation logic: AWS evaluates all applicable policies together — if Block Public Access is on, it overrides everything else regardless of what the bucket policy says. Otherwise, if any policy (IAM, bucket policy) explicitly denies, that wins; otherwise if any explicitly allows, access is granted.
+
+Common interview Q: "My bucket policy allows public read, but the bucket still isn't accessible — why?"
+A: Almost always Block Public Access is enabled at the bucket or account level, overriding the policy.
+
+Encryption (relevant to permissions/compliance discussions):
+
+SSE-S3: AWS manages the keys entirely.
+SSE-KMS: keys managed via AWS KMS — adds audit trail (CloudTrail) and finer-grained key permission control.
+SSE-C: you supply your own encryption key with each request.
+Client-side encryption: encrypt before upload, AWS never sees plaintext.
+EBS Volumes
+
+EBS (Elastic Block Store) = persistent block storage, attached to a single EC2 instance (with limited exceptions like io2 Multi-Attach) — behaves like a virtual hard drive, unlike S3's object model.
+
+Key facts:
+
+AZ-locked — an EBS volume only attaches to instances in the same Availability Zone. To move it, you snapshot it and restore into a different AZ.
+Persists independently of instance lifecycle (survives stop/start; deleted only if you choose to delete it or if "delete on termination" is set for the root volume).
+
+Volume types:
+
+Type	Best for	Notes
+gp3	General purpose (default recommendation)	Balanced price/performance, decoupled IOPS/throughput scaling
+gp2	General purpose (older)	Performance tied to volume size
+io2 / io2 Block Express	High-performance, mission-critical DBs	Highest IOPS, most durable, supports Multi-Attach
+st1	Throughput-optimized HDD	Big sequential workloads (data warehousing, log processing)
+sc1	Cold HDD	Infrequently accessed, lowest cost
+
+EBS Snapshots:
+
+Point-in-time backups of a volume, stored in S3 (though not directly accessible as S3 objects).
+Incremental — after the first full snapshot, subsequent snapshots only store changed blocks, saving cost/time.
+Can be copied across regions/accounts, and used to create new volumes or AMIs.
+Backup Concepts
+
+Core principles (apply broadly, not just AWS-specific):
+
+RPO (Recovery Point Objective): how much data loss is acceptable, measured in time (e.g., "we can afford to lose up to 1 hour of data" → need backups/replication at least hourly).
+RTO (Recovery Time Objective): how long you can tolerate being down before restoring service.
+These two numbers drive your entire backup/DR architecture decision — tighter RPO/RTO = more expensive, more complex solution.
+
+AWS-specific backup mechanisms:
+
+Service/Feature	What it backs up
+EBS Snapshots	Block volumes (incremental, stored in S3 internally)
+AMI	Full instance image (root volume + config) — used to relaunch identical instances
+RDS Automated Backups	Daily snapshots + transaction logs, enabling point-in-time restore
+RDS Manual Snapshots	On-demand, retained until you delete them (unlike automated backups, which expire)
+S3 Versioning	Protects against accidental overwrite/delete of objects
+S3 Cross-Region Replication	Automatic copy of objects to a bucket in another region (DR, compliance)
+AWS Backup	Centralized service to manage backup policies across EBS, RDS, DynamoDB, EFS, etc. from one place
+
+Common DR strategy tiers (from cheapest/slowest to most expensive/fastest recovery) — a classic interview framing:
+
+Backup & Restore — cheapest, highest RTO (hours) — just have backups, restore when needed.
+Pilot Light — minimal core infrastructure always running in a second region, scaled up during failover.
+Warm Standby — a scaled-down but fully functional copy running in a second region, scaled up on failover.
+Multi-site Active/Active — full production capacity running simultaneously in multiple regions — lowest RTO/RPO, highest cost.
+
+Common interview Q: "Difference between an EBS snapshot and an AMI?"
+A: A snapshot backs up a single volume's data. An AMI is a full instance template — includes the root volume snapshot plus launch configuration (instance type compatibility, block device mappings) needed to launch a new instance from scratch, not just restore a volume.
+
+CloudTrail vs CloudWatch — a very common point of confusion:
+
+CloudWatch: monitors performance and operational health — metrics, logs, alarms ("is CPU high? is the app throwing errors?").
+CloudTrail: logs API calls and account activity for audit/security — "who launched this instance, when, from what IP?"
+
+In-Place Deployment Strategy
+
+How it works: CodeDeploy stops the app on each instance, deploys the new version, restarts it — instance by instance (or in batches), on the same existing instances. No new infrastructure is created.
+
+Characteristics:
+
+Downtime per instance during its update window (briefly unavailable while stopped/restarted).
+Cheapest option — no duplicate infrastructure needed.
+Rollback is harder: to roll back, you have to redeploy the previous version through the same in-place process — the old version isn't sitting there ready to receive traffic again instantly.
+Works with EC2/on-premises deployments (not applicable to Lambda or ECS, which use different deployment models).
+
+When to use: cost-sensitive environments, dev/test, or workloads that can tolerate brief per-instance blips (especially with a rolling batch approach so the whole fleet isn't down simultaneously).
+
+Blue-Green Deployment Strategy
+
+How it works: Instead of updating existing instances, you provision a completely separate, parallel environment ("green") running the new version, alongside the currently live one ("blue"). Once green passes health checks, traffic is switched over — either all at once or gradually — from blue to green.
+
+Characteristics:
+
+Zero downtime — blue keeps serving traffic until green is verified healthy.
+Instant, safe rollback — if something's wrong post-cutover, just switch traffic back to blue, which is still fully intact and running.
+Costs more — you're running double the infrastructure during the transition window.
+Traffic-shifting can be all-at-once, linear (shift a fixed % every X minutes), or canary (shift a small % first, wait, then shift the rest) — CodeDeploy supports configuring this directly.
+
+Rolling Deployment Strategy
+
+How it works: Instances/tasks are updated in batches, not all at once. A batch of the old version is taken out of rotation, updated to the new version, health-checked, and put back into rotation — then the next batch, until the whole fleet is updated.
+
+Batch 1 (25%) → update → health check → back in rotation
+Batch 2 (25%) → update → health check → back in rotation
+Batch 3 (25%) → update → health check → back in rotation
+Batch 4 (25%) → update → health check → back in rotation
+
+Key characteristics:
+
+No new infrastructure created — same instances get updated in place, just in waves rather than all simultaneously (distinguishing it from blue/green, which spins up a whole parallel environment).
+Capacity dips during rollout unless you use "rolling with additional batch," which launches extra temporary capacity first so total capacity never drops below 100%.
+Rollback is slower than blue/green — you have to roll the batches backward through the same process; there's no "old environment sitting idle" to just switch back to.
+Both old and new versions run simultaneously during the rollout window — this matters for the same backward-compatibility reason as blue/green (schema/API compatibility across versions).
+
+Canary Deployment Strategy
+
+How it works: Deploy the new version to a small subset of traffic/instances first (the "canary" — named after canaries in coal mines used to detect danger early), monitor it closely, and only if it looks healthy do you progressively shift more traffic to it, eventually reaching 100%.
+
+Step 1: 10% traffic → new version, 90% → old version
+        [monitor error rates, latency, etc.]
+Step 2: 50% traffic → new version
+        [monitor again]
+Step 3: 100% traffic → new version
+
+Key characteristics:
+
+Smallest blast radius if something's wrong — only a small fraction of users are affected before you catch the problem and can halt/rollback.
+Requires real traffic-shifting capability at the load balancer/routing layer (weighted target groups, weighted Lambda aliases, weighted Route 53 records) — not just instance-level batching like rolling.
+Usually paired with automated monitoring + automatic rollback — canary's whole value proposition depends on catching problems during the small-percentage window before wider rollout, so it's commonly wired to CloudWatch alarms that auto-abort if error rate/latency spikes.
+
+
+
+
