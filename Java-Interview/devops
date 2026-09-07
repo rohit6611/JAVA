@@ -868,6 +868,17 @@ Smallest blast radius if something's wrong — only a small fraction of users ar
 Requires real traffic-shifting capability at the load balancer/routing layer (weighted target groups, weighted Lambda aliases, weighted Route 53 records) — not just instance-level batching like rolling.
 Usually paired with automated monitoring + automatic rollback — canary's whole value proposition depends on catching problems during the small-percentage window before wider rollout, so it's commonly wired to CloudWatch alarms that auto-abort if error rate/latency spikes.
 
+A NAT Gateway (Network Address Translation Gateway) is a managed service that lets resources in a private subnet (no public IP) initiate outbound connections to the internet — without allowing anything from the internet to initiate a connection back in.
 
+Why it exists
+
+In your VPC, you want app servers, databases, etc. in private subnets for security — they shouldn't be directly reachable from the internet. But those servers often still need outbound access:
+
+Pulling OS/package updates
+Calling external APIs (Stripe, SendGrid, etc.)
+Downloading container images
+Sending logs/metrics to an external SaaS
+
+That's the exact gap NAT Gateway fills: outbound yes, inbound no.
 
 
