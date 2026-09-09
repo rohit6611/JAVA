@@ -873,12 +873,1823 @@ A NAT Gateway (Network Address Translation Gateway) is a managed service that le
 Why it exists
 
 In your VPC, you want app servers, databases, etc. in private subnets for security — they shouldn't be directly reachable from the internet. But those servers often still need outbound access:
+That's the exact gap NAT Gateway fills: outbound yes, inbound no.
 
 Pulling OS/package updates
 Calling external APIs (Stripe, SendGrid, etc.)
 Downloading container images
 Sending logs/metrics to an external SaaS
 
-That's the exact gap NAT Gateway fills: outbound yes, inbound no.
+Example:
 
+ENTRYPOINT ["java"]
+CMD ["-jar", "app.jar"]
+
+Result:
+
+java -jar app.jar
+
+CMD is easier to override.
+
+ENTRYPOINT defines the primary executable.
+
+
+
+Why use multi-stage builds?
+
+Example:
+
+FROM maven:3.9-eclipse-temurin-21 AS build
+
+COPY . .
+
+RUN ./mvnw clean package -DskipTests
+
+
+FROM eclipse-temurin:21-jre
+
+COPY --from=build /app/target/app.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+The first stage contains:
+
+Maven
+JDK
+source
+dependencies
+
+The final stage contains only what is needed to run the application.
+
+This reduces image size and attack surface; Docker explicitly recommends multi-stage builds for separating build and runtime environments.
+
+Why use .dockerignore?
+
+Prevent unnecessary files from being sent as build context.
+
+For example:
+
+.git
+target
+.idea
+*.log
+.env
+
+This improves build performance and reduces accidental inclusion of sensitive/unnecessary files. Docker specifically recommends .dockerignore as a build best practice.
+
+
+What is a VPC?
+
+A logically isolated network in AWS.
+
+Know:
+
+VPC
+ │
+ ├── Public subnet
+ │
+ ├── Private subnet
+ │
+ ├── Route table
+ │
+ ├── Internet Gateway
+ │
+ ├── NAT Gateway
+ │
+ └── Security Groups
+
+Security Group vs NACL
+Q37. Difference?
+Security Group	NACL
+Stateful	Stateless
+Instance/ENI level	Subnet level
+Allow rules	Allow + deny
+Return traffic automatically allowed	Return traffic must be explicitly handled
+
+
+                         Kubernetes Cluster
+┌──────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│                     CONTROL PLANE                                │
+│                                                                  │
+│   ┌──────────────┐       ┌──────────────┐                       │
+│   │ kube-apiserver│◄─────►│    etcd      │                       │
+│   └──────┬───────┘       └──────────────┘                       │
+│          │                                                       │
+│     ┌────┴──────────────┐                                       │
+│     │                   │                                       │
+│ ┌───▼────────┐    ┌─────▼──────────────┐                       │
+│ │ Scheduler  │    │ Controller Manager │                       │
+│ └────────────┘    └────────────────────┘                       │
+│                                                                  │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+                  Kubernetes API
+                           │
+          ┌────────────────┼─────────────────┐
+          │                │                 │
+          ▼                ▼                 ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│  WORKER NODE 1  │ │  WORKER NODE 2  │ │  WORKER NODE 3  │
+│                 │ │                 │ │                 │
+│ kubelet         │ │ kubelet         │ │ kubelet         │
+│ kube-proxy      │ │ kube-proxy      │ │ kube-proxy      │
+│ container       │ │ container       │ │ container       │
+│ runtime         │ │ runtime         │ │ runtime         │
+│                 │ │                 │ │                 │
+│ Pod             │ │ Pod             │ │ Pod             │
+│ ├── container   │ │ ├── container   │ │ ├── container   │
+│ └── container   │ │ └── container   │ │                 │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+
+2. Control Plane vs Worker Node
+
+A Kubernetes cluster consists broadly of:
+
+Control Plane
+
+Responsible for:
+
+API
+cluster state
+scheduling
+reconciliation
+desired state
+cluster-level decisions
+Worker Nodes
+
+Responsible for:
+
+running Pods
+running containers
+networking
+reporting node/pod status
+
+So:
+
+Control Plane
+     │
+     │ manages
+     ▼
+Worker Nodes
+     │
+     │ run
+     ▼
+Pods
+     │
+     │ contain
+     ▼
+Containers
+3. Control Plane components
+
+The major Control Plane components are:
+
+Control Plane
+│
+├── kube-apiserver
+│
+├── etcd
+│
+├── kube-scheduler
+│
+├── kube-controller-manager
+│
+└── cloud-controller-manager
+
+The first four are the most important to understand.
+
+4. kube-apiserver
+
+This is arguably the most important Kubernetes component.
+
+Think of it as:
+
+The front door of the Kubernetes cluster.
+
+Everything talks through the Kubernetes API.
+
+kubectl
+   │
+   ▼
+kube-apiserver
+   │
+   ├── authentication
+   ├── authorization
+   ├── admission
+   └── API processing
+5. What happens when you run kubectl?
+
+Suppose you execute:
+
+kubectl get pods
+
+The flow is approximately:
+
+kubectl
+   │
+   │ HTTPS
+   ▼
+kube-apiserver
+   │
+   ├── Authenticate
+   │
+   ├── Authorize
+   │
+   ├── Admission
+   │
+   ▼
+etcd
+   │
+   ▼
+Pod information
+   │
+   ▼
+kube-apiserver
+   │
+   ▼
+kubectl
+
+Important:
+
+kubectl does not directly talk to kubelet.
+
+It normally communicates with the API server.
+
+6. kube-apiserver responsibilities
+
+It handles:
+
+Authentication
+
+Who are you?
+
+Examples:
+
+Certificate
+Bearer token
+OIDC
+ServiceAccount
+Authorization
+
+Are you allowed to do this?
+
+For example:
+
+Developer
+   │
+   ├── get pods       ✅
+   ├── create pods    ❌
+   └── delete namespace ❌
+
+RBAC is commonly used.
+
+Admission
+
+Should this request be allowed or modified?
+
+Examples:
+
+Pod request
+   ↓
+Admission
+   ├── security policy
+   ├── resource restrictions
+   └── mutation
+API validation
+
+For example:
+
+apiVersion: apps/v1
+kind: Deployment
+
+The API server validates that the request is structurally valid.
+
+7. etcd
+
+etcd is the distributed key-value store containing Kubernetes cluster state.
+
+Think:
+
+etcd = Kubernetes' source of truth for cluster state.
+
+It stores information such as:
+
+Namespaces
+Deployments
+Pods
+Services
+ConfigMaps
+Secrets
+Nodes
+RBAC
+ReplicaSets
+
+Conceptually:
+
+etcd
+│
+├── cluster configuration
+├── desired state
+├── object metadata
+├── secrets
+├── node information
+└── resource state
+8. Important interview point about etcd
+
+Suppose you deploy:
+
+replicas: 3
+
+Kubernetes needs to know:
+
+"The user wants 3 replicas."
+
+That desired state is represented in Kubernetes objects persisted through the API server into etcd.
+
+Conceptually:
+
+Deployment
+replicas = 3
+        │
+        ▼
+kube-apiserver
+        │
+        ▼
+etcd
+9. Is etcd storing container data?
+
+No.
+
+It doesn't store:
+
+application logs
+Docker image layers
+container filesystem
+database records
+
+It stores Kubernetes cluster state and metadata.
+
+Your PostgreSQL data should remain in PostgreSQL, for example.
+
+10. Why is etcd critical?
+
+If etcd loses data, Kubernetes loses its knowledge of cluster state.
+
+Therefore production clusters normally run etcd with high availability.
+
+For example:
+
+etcd cluster
+
+┌──────────┐
+│ etcd 1   │
+└──────────┘
+     │
+┌──────────┐
+│ etcd 2   │
+└──────────┘
+     │
+┌──────────┐
+│ etcd 3   │
+└──────────┘
+
+This uses consensus through Raft.
+
+For interview purposes:
+
+etcd is a distributed, strongly consistent key-value store, and Kubernetes uses it as the backing store for cluster state.
+
+11. kube-scheduler
+
+The scheduler answers:
+
+Which worker node should run this Pod?
+
+Suppose you create:
+
+replicas: 3
+
+Kubernetes needs to decide:
+
+Pod A → Worker 1
+Pod B → Worker 2
+Pod C → Worker 3
+
+That's the scheduler's job.
+
+12. Scheduler flow
+Pod created
+     │
+     ▼
+API Server
+     │
+     ▼
+etcd
+     │
+     ▼
+Scheduler
+     │
+     ├── filtering
+     │
+     ├── scoring
+     │
+     └── node selection
+     │
+     ▼
+Selected Node
+13. Scheduler filtering
+
+First it eliminates nodes that cannot run the Pod.
+
+Example:
+
+Worker 1
+CPU available = 100m
+Pod requires = 500m
+
+❌ Cannot schedule
+
+Worker 2:
+
+CPU available = 2 CPU
+Pod requires = 500m
+
+✅ Candidate
+
+Other constraints can include:
+
+node selectors
+node affinity
+taints/tolerations
+resource requirements
+topology constraints
+volume constraints
+14. Scheduler scoring
+
+After filtering:
+
+Worker 2 → score 70
+Worker 3 → score 90
+Worker 4 → score 50
+
+Scheduler chooses the best candidate according to its scheduling framework/plugins.
+
+15. Important misconception
+
+The scheduler does not start the container.
+
+It says:
+
+"This Pod should run on Worker Node 2."
+
+Then kubelet on Worker Node 2 takes over.
+
+16. kube-controller-manager
+
+This is another extremely important component.
+
+Think:
+
+Controllers continuously compare desired state with actual state and take corrective action.
+
+Kubernetes is fundamentally a reconciliation system.
+
+17. Desired state vs actual state
+
+Suppose:
+
+replicas: 3
+
+Desired:
+
+3 Pods
+
+Actual:
+
+2 Pods
+
+Controller sees:
+
+Desired = 3
+Actual  = 2
+
+Therefore:
+
+Create 1 Pod
+
+Then:
+
+Desired = 3
+Actual  = 3
+
+Everything is okay.
+
+18. Controller Manager contains multiple controllers
+
+Conceptually:
+
+kube-controller-manager
+│
+├── Deployment controller
+├── ReplicaSet controller
+├── Node controller
+├── Job controller
+├── Namespace controller
+├── ServiceAccount controller
+└── many others
+
+These controllers continuously reconcile state.
+
+19. Example: Deployment controller
+
+You create:
+
+kind: Deployment
+spec:
+  replicas: 3
+
+The Deployment controller ensures the corresponding ReplicaSet exists.
+
+Then:
+
+Deployment
+    │
+    ▼
+ReplicaSet
+    │
+    ▼
+Pods
+20. Deployment → ReplicaSet → Pod
+
+This hierarchy is extremely important for interviews.
+
+Deployment
+    │
+    │ manages
+    ▼
+ReplicaSet
+    │
+    │ manages
+    ▼
+Pod
+    │
+    │ contains
+    ▼
+Container
+
+Suppose:
+
+Deployment v1
+     │
+     ▼
+ReplicaSet v1
+     │
+     ├── Pod
+     ├── Pod
+     └── Pod
+
+When you deploy v2:
+
+Deployment
+    │
+    ├── ReplicaSet v1
+    │
+    └── ReplicaSet v2
+
+Rolling deployment gradually scales:
+
+v1: 3 → 2 → 1 → 0
+
+v2: 0 → 1 → 2 → 3
+
+depending on rollout configuration.
+
+21. cloud-controller-manager
+
+In cloud environments such as AWS/Azure/GCP, Kubernetes may interact with cloud infrastructure.
+
+For example:
+
+Kubernetes
+     │
+     ▼
+Cloud Controller Manager
+     │
+     ├── AWS
+     ├── Azure
+     └── GCP
+
+Responsibilities can include cloud-specific:
+
+node lifecycle integration
+load balancers
+routes
+cloud volumes
+
+In managed Kubernetes such as EKS/AKS, some control-plane infrastructure is managed by the cloud provider.
+
+22. Worker Node architecture
+
+Now let's move to the part that actually runs your Spring Boot application.
+
+A worker node generally contains:
+
+Worker Node
+│
+├── kubelet
+│
+├── kube-proxy
+│
+├── Container Runtime
+│
+└── Pods
+23. kubelet
+
+Think:
+
+kubelet = agent running on every worker node
+
+It communicates with the Kubernetes API and makes sure Pods assigned to its node are actually running.
+
+             Control Plane
+                  │
+                  │
+            API Server
+                  │
+                  ▼
+               kubelet
+                  │
+        ┌─────────┴─────────┐
+        ▼                   ▼
+ Container Runtime       Pod
+24. kubelet responsibilities
+
+Kubelet:
+
+receives Pod specifications
+creates/starts containers through the container runtime
+monitors containers
+reports node/pod status
+executes probes
+mounts volumes
+handles lifecycle events
+25. kubelet does not directly create containers
+
+This is an important interview detail.
+
+Modern Kubernetes uses the Container Runtime Interface (CRI).
+
+Conceptually:
+
+kubelet
+   │
+   │ CRI
+   ▼
+Container Runtime
+   │
+   ├── containerd
+   └── CRI-O
+
+Historically Docker was commonly used, but Kubernetes removed the built-in Docker runtime integration (dockershim) starting with Kubernetes 1.24.
+
+So don't say:
+
+kubelet talks directly to Docker.
+
+Say:
+
+kubelet communicates with a CRI-compatible container runtime such as containerd or CRI-O.
+
+26. Container runtime
+
+The runtime actually manages containers.
+
+Examples:
+
+containerd
+CRI-O
+
+Responsibilities include:
+
+pull images
+create containers
+start/stop containers
+manage container lifecycle
+manage container filesystem
+interact with Linux namespaces/cgroups
+27. Image pulling
+
+Suppose your Pod specifies:
+
+image: myacr.azurecr.io/influencer-service:8f42a91
+
+Flow:
+
+kubelet
+   │
+   ▼
+Container Runtime
+   │
+   ▼
+Container Registry
+   │
+   ▼
+Docker Image
+   │
+   ▼
+Local Node
+
+Then the runtime creates the container.
+
+28. kube-proxy
+
+This is related to Kubernetes networking.
+
+Think:
+
+kube-proxy helps implement Service networking on nodes.
+
+Suppose you have:
+
+Service
+influencer-service
+10.96.20.10:8080
+
+and Pods:
+
+Pod A → 10.1.1.5
+Pod B → 10.1.2.7
+Pod C → 10.1.3.8
+
+The Service provides a stable virtual endpoint:
+
+Client
+   │
+   ▼
+Service
+10.96.20.10:8080
+   │
+   ├── Pod A
+   ├── Pod B
+   └── Pod C
+
+kube-proxy helps implement the traffic forwarding/load-balancing rules for Services.
+
+Modern clusters may use iptables or IPVS, and some networking implementations replace or augment kube-proxy behavior.
+
+29. Pods
+
+Now we reach the most important workload concept.
+
+Pod is the smallest deployable unit in Kubernetes.
+
+Not container.
+
+Not Deployment.
+
+Pod.
+
+30. Pod architecture
+
+A Pod can contain one or more containers.
+
+Pod
+│
+├── Container 1
+│
+├── Container 2
+│
+└── Shared:
+     ├── Network namespace
+     ├── IP address
+     ├── localhost
+     └── volumes
+
+Example:
+
+Pod
+│
+├── Spring Boot container
+│
+└── Sidecar container
+
+Both share the Pod's network namespace.
+
+31. Why multiple containers in a Pod?
+
+Usually when containers are tightly coupled.
+
+For example:
+
+Pod
+│
+├── Spring Boot
+│
+└── Logging sidecar
+
+or:
+
+Pod
+│
+├── Application
+│
+└── Proxy
+
+The containers share:
+
+localhost
+network
+volumes
+Pod lifecycle
+32. Pod IP
+
+Suppose:
+
+Pod A
+IP = 10.1.1.5
+
+Containers inside that Pod can communicate using:
+
+localhost
+
+For example:
+
+Spring Boot
+localhost:8080
+
+Sidecar
+localhost:9000
+
+They don't normally get separate Pod IPs.
+
+33. Pod lifecycle
+
+A simplified lifecycle:
+
+Pending
+   ↓
+Running
+   ↓
+Succeeded
+
+or:
+
+Pending
+   ↓
+Running
+   ↓
+Failed
+
+Containers themselves can restart within a Pod depending on restart policy/container state.
+
+34. Kubernetes Service
+
+Pods are ephemeral.
+
+Suppose:
+
+Pod A = 10.1.1.5
+
+gets deleted.
+
+New Pod:
+
+Pod A = 10.1.4.9
+
+Therefore clients shouldn't depend on Pod IPs.
+
+That's why Services exist.
+
+             Service
+          10.96.20.10
+               │
+       ┌───────┼────────┐
+       ▼       ▼        ▼
+     Pod A   Pod B    Pod C
+
+Service gives a stable endpoint.
+
+35. Ingress
+
+Ingress handles HTTP/HTTPS routing into the cluster.
+
+Example:
+
+Internet
+   │
+   ▼
+Ingress
+   │
+   ├── /users     → user-service
+   ├── /orders    → order-service
+   └── /payment   → payment-service
+
+But remember:
+
+An Ingress resource itself doesn't necessarily implement the traffic routing. An Ingress Controller does.
+
+Examples include NGINX Ingress Controller and cloud-provider controllers.
+
+36. Complete request flow
+
+For a typical Spring Boot application:
+
+User
+ │
+ ▼
+DNS
+ │
+ ▼
+Load Balancer
+ │
+ ▼
+Ingress Controller
+ │
+ ▼
+Kubernetes Service
+ │
+ ▼
+Pod
+ │
+ ▼
+Spring Boot Container
+
+Potentially:
+
+Spring Boot
+ │
+ ├── Redis
+ │
+ ├── PostgreSQL
+ │
+ ├── Kafka
+ │
+ └── external APIs
+37. ConfigMap
+
+A ConfigMap stores non-sensitive configuration.
+
+Example:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: influencer-config
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  LOG_LEVEL: "INFO"
+
+Pod:
+
+Pod
+ │
+ ├── Container
+ │      ↑
+ │      │
+ └── ConfigMap
+38. Secret
+
+Secrets are intended for sensitive configuration.
+
+Examples:
+
+DB_PASSWORD
+JWT_SECRET
+API_KEY
+
+Conceptually:
+
+Pod
+ │
+ └── Secret
+       ├── username
+       └── password
+
+Important interview nuance:
+
+Kubernetes Secrets are not automatically equivalent to a secure external secret-management system. By default, Kubernetes stores Secret objects in etcd, and production deployments should configure appropriate encryption/access controls or integrate with an external secret manager.
+
+For AWS, you might integrate with:
+
+AWS Secrets Manager
+
+For Azure:
+
+Azure Key Vault
+39. Namespace
+
+Namespaces logically isolate resources.
+
+For example:
+
+Cluster
+│
+├── namespace: npd
+│   ├── Pods
+│   ├── Services
+│   └── ConfigMaps
+│
+├── namespace: ft
+│   ├── Pods
+│   └── Services
+│
+└── namespace: prod
+    ├── Pods
+    └── Services
+
+Namespaces are useful for:
+
+organization
+RBAC
+quotas
+isolation boundaries
+
+They are not equivalent to separate clusters.
+
+40. Resource requests and limits
+
+This is extremely important for Java applications.
+
+Example:
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+  limits:
+    cpu: 1
+    memory: 1Gi
+Request
+
+How much resource does this Pod need for scheduling purposes?
+
+Limit
+
+What is the maximum resource allowed?
+
+41. Why requests matter
+
+Suppose:
+
+Pod requires:
+CPU = 500m
+Memory = 512Mi
+
+Scheduler needs to find a node with enough available capacity.
+
+Worker 1
+available CPU = 250m
+        ↓
+❌
+
+Worker 2
+available CPU = 2 CPU
+        ↓
+✅
+42. Liveness probe
+
+Answers:
+
+Is the application alive?
+
+Example:
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+
+If the application is considered unhealthy repeatedly:
+
+liveness failure
+      ↓
+container restart
+43. Readiness probe
+
+Answers:
+
+Can this application receive traffic?
+
+Example:
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: 8080
+
+If readiness fails:
+
+Pod
+ ↓
+not ready
+ ↓
+removed from Service endpoints
+
+The container doesn't necessarily restart.
+
+This distinction is very important.
+
+44. Startup probe
+
+Useful for applications that take a long time to start.
+
+For Spring Boot:
+
+Container starts
+      ↓
+JVM starts
+      ↓
+Spring context
+      ↓
+DB connection
+      ↓
+Kafka initialization
+      ↓
+Application ready
+
+A startup probe can prevent liveness/readiness checks from killing the application prematurely while it is still starting.
+
+45. Node architecture
+
+Let's put everything together.
+
+┌──────────────────────────────────────────────┐
+│                 WORKER NODE                  │
+│                                              │
+│  ┌────────────────────────────────────────┐  │
+│  │                kubelet                  │  │
+│  └───────────────────┬────────────────────┘  │
+│                      │                       │
+│                      ▼                       │
+│             Container Runtime               │
+│                containerd                   │
+│                      │                       │
+│          ┌───────────┴───────────┐           │
+│          ▼                       ▼           │
+│       Pod A                    Pod B         │
+│   ┌───────────┐            ┌───────────┐    │
+│   │ Spring    │            │ Spring    │    │
+│   │ Boot      │            │ Boot      │    │
+│   └───────────┘            └───────────┘    │
+│                                              │
+│               kube-proxy                     │
+│                    │                         │
+│             Service networking               │
+│                                              │
+└──────────────────────────────────────────────┘
+46. Complete Control Plane architecture
+┌────────────────────────────────────────────────────────────┐
+│                    CONTROL PLANE                           │
+│                                                            │
+│  ┌───────────────────────┐                                 │
+│  │    kube-apiserver     │◄──────────── kubectl             │
+│  └───────────┬───────────┘                                 │
+│              │                                              │
+│      ┌───────┴────────┐                                     │
+│      ▼                ▼                                     │
+│    etcd           Controllers                               │
+│                       │                                      │
+│          ┌────────────┼───────────────┐                     │
+│          ▼            ▼               ▼                     │
+│    Deployment     Node             Job                      │
+│    Controller    Controller      Controller                 │
+│                                                            │
+│  ┌───────────────────────┐                                 │
+│  │    kube-scheduler     │                                 │
+│  └───────────┬───────────┘                                 │
+│              │                                              │
+│              ▼                                              │
+│        Selects worker node                                  │
+│                                                            │
+│  ┌───────────────────────────┐                              │
+│  │ cloud-controller-manager  │                              │
+│  └───────────────────────────┘                              │
+│                                                            │
+└────────────────────────────┬────────────────────────────────┘
+                             │
+                             │ API
+                             ▼
+47. Complete worker architecture
+┌──────────────────────────────────────────────────────┐
+│                    WORKER NODE                       │
+│                                                      │
+│  ┌─────────────────┐                                 │
+│  │     kubelet     │                                 │
+│  └────────┬────────┘                                 │
+│           │ CRI                                      │
+│           ▼                                          │
+│  ┌─────────────────┐                                 │
+│  │ containerd/CRI-O│                                 │
+│  └────────┬────────┘                                 │
+│           │                                          │
+│      ┌────┴──────────────┐                            │
+│      ▼                   ▼                            │
+│  ┌──────────┐        ┌──────────┐                    │
+│  │  Pod A   │        │  Pod B   │                    │
+│  │          │        │          │                    │
+│  │ Spring   │        │ Spring   │                    │
+│  │ Boot     │        │ Boot     │                    │
+│  └──────────┘        └──────────┘                    │
+│                                                      │
+│  ┌─────────────────┐                                 │
+│  │   kube-proxy    │                                 │
+│  └─────────────────┘                                 │
+│          │                                           │
+│          ▼                                           │
+│    Service routing                                   │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+48. Now understand one deployment end-to-end
+
+This is the flow I would memorize for interviews.
+
+Suppose you run:
+
+kubectl apply -f deployment.yaml
+Step 1 — kubectl
+kubectl
+   ↓
+API Server
+Step 2 — Authentication
+
+API server determines:
+
+Who is making this request?
+
+Step 3 — Authorization
+
+RBAC determines:
+
+Is this identity allowed to create/update a Deployment?
+
+Step 4 — Admission
+
+Admission controllers may validate or mutate the request.
+
+Step 5 — API server stores state
+
+The Deployment object is persisted in etcd.
+
+API Server
+    ↓
+etcd
+
+Deployment:
+replicas = 3
+Step 6 — Controller notices
+
+Deployment controller sees:
+
+Desired:
+Deployment exists
+replicas = 3
+
+It creates/updates a ReplicaSet.
+
+Deployment
+     ↓
+ReplicaSet
+Step 7 — ReplicaSet creates Pods
+ReplicaSet
+    │
+    ├── Pod A
+    ├── Pod B
+    └── Pod C
+Step 8 — Scheduler sees unscheduled Pods
+
+Initially:
+
+Pod A
+node = none
+
+Scheduler selects:
+
+Pod A → Worker 1
+Pod B → Worker 2
+Pod C → Worker 3
+Step 9 — kubelet sees assigned Pod
+
+Worker 1's kubelet sees:
+
+Pod A assigned to me
+Step 10 — kubelet asks container runtime
+kubelet
+   ↓
+CRI
+   ↓
+containerd
+Step 11 — Runtime pulls image
+containerd
+    ↓
+ACR/ECR/Docker Registry
+    ↓
+influencer-service:8f42a91
+Step 12 — Container starts
+Pod
+ │
+ └── Spring Boot container
+Step 13 — kubelet monitors
+
+Kubelet monitors:
+
+Container
+Pod
+Node
+Probes
+Resources
+Step 14 — readiness
+
+Spring Boot becomes ready:
+
+/readiness → UP
+
+Pod becomes:
+
+Ready
+Step 15 — Service sends traffic
+Client
+  ↓
+Load Balancer / Ingress
+  ↓
+Service
+  ↓
+Ready Pod
+  ↓
+Spring Boot
+
+That's the entire lifecycle.
+
+49. What happens if a Pod dies?
+
+This is where Kubernetes' reconciliation model becomes powerful.
+
+Suppose:
+
+Desired = 3
+
+Actual:
+Pod A
+Pod B
+Pod C
+
+Pod C crashes permanently:
+
+Desired = 3
+Actual = 2
+
+Controller detects:
+
+3 != 2
+
+and creates a replacement.
+
+Pod A
+Pod B
+Pod C ❌
+
+      ↓
+
+Pod A
+Pod B
+Pod D ✅
+
+This is self-healing.
+
+50. What happens if a Worker Node dies?
+
+Suppose:
+
+Worker 1 ❌
+
+Pods on it disappear from the cluster's active capacity.
+
+The control plane detects the node problem.
+
+Depending on workload/controller and timing:
+
+Worker 1
+   ❌
+   │
+   ▼
+Node unhealthy
+   │
+   ▼
+Pods become unavailable
+   │
+   ▼
+Controllers recreate workload
+   │
+   ▼
+Scheduler
+   │
+   ▼
+Worker 2 / Worker 3
+
+Then new Pods can be scheduled onto healthy nodes.
+
+51. Very important distinction: Deployment vs Pod
+
+Interviewers frequently ask this.
+
+Pod
+
+Runs containers.
+
+Pod
+ ↓
+Container
+ReplicaSet
+
+Maintains desired number of Pods.
+
+ReplicaSet
+ ↓
+Pods
+Deployment
+
+Manages ReplicaSets and rollout/rollback.
+
+Deployment
+ ↓
+ReplicaSets
+ ↓
+Pods
+52. Kubernetes object hierarchy
+
+Memorize this:
+
+Deployment
+      │
+      ▼
+ReplicaSet
+      │
+      ▼
+Pod
+      │
+      ▼
+Container
+
+But Services are different:
+
+Service
+   │
+   │ selects
+   ▼
+Pods
+
+Service doesn't own the Pods.
+
+53. Control Plane communication model
+
+A useful mental model:
+
+                 API SERVER
+               /     |      \
+              /      |       \
+             ▼       ▼        ▼
+        Scheduler  Controllers  kubelets
+             │         │          │
+             │         │          │
+             └─────────┴──────────┘
+                       │
+                      etcd
+
+More precisely, Kubernetes components communicate through the API server rather than arbitrary direct communication.
+
+54. Kubernetes networking model
+
+One of Kubernetes' core networking assumptions is:
+
+Every Pod gets its own IP address, and Pods can communicate with other Pods without necessarily requiring NAT between them.
+
+Conceptually:
+
+Pod A
+10.1.1.5
+   │
+   │
+   ├──────────────► Pod B
+   │               10.1.2.8
+   │
+   └──────────────► Pod C
+                   10.1.3.9
+
+The actual implementation comes from the cluster's CNI plugin.
+
+Examples:
+
+Calico
+Cilium
+AWS VPC CNI
+Azure CNI
+55. CNI
+
+This is another component worth knowing.
+
+CNI = Container Network Interface.
+
+It is responsible for configuring networking for Pods.
+
+When a Pod starts:
+
+kubelet
+   ↓
+container runtime
+   ↓
+CNI
+   ↓
+Pod network
+   ↓
+Pod gets IP
+
+So don't confuse:
+
+kube-proxy ≠ CNI
+
+CNI provides/configures Pod networking.
+
+kube-proxy traditionally handles Service traffic rules.
+
+56. CSI
+
+Another interview term:
+
+CSI = Container Storage Interface
+
+It allows Kubernetes to interact with storage systems.
+
+For example:
+
+Pod
+ ↓
+PersistentVolumeClaim
+ ↓
+PersistentVolume
+ ↓
+CSI driver
+ ↓
+AWS EBS / Azure Disk / other storage
+57. Storage architecture
+
+Typical flow:
+
+Application Pod
+      │
+      ▼
+PVC
+      │
+      ▼
+PV
+      │
+      ▼
+StorageClass
+      │
+      ▼
+CSI Driver
+      │
+      ▼
+Cloud Storage
+
+For AWS:
+
+EBS
+
+For Azure:
+
+Azure Disk
+58. DaemonSet
+
+A DaemonSet ensures a Pod runs on each eligible node.
+
+Example:
+
+Worker 1 → logging agent
+Worker 2 → logging agent
+Worker 3 → logging agent
+
+Typical uses:
+
+logging agents
+monitoring agents
+networking agents
+node-level security agents
+59. StatefulSet
+
+Used for stateful applications that require stable identity/storage semantics.
+
+Example:
+
+postgres-0
+postgres-1
+postgres-2
+
+Unlike ordinary Pods:
+
+Pod recreated with potentially different identity
+
+StatefulSet provides stable identities such as:
+
+postgres-0
+postgres-1
+
+and integrates with persistent storage patterns.
+
+For databases, though, you should carefully consider whether Kubernetes is the right place to operate them versus managed services such as RDS.
+
+60. Job and CronJob
+Job
+
+Runs a task until completion.
+
+Job
+ ↓
+Pod
+ ↓
+Task completes
+CronJob
+
+Runs Jobs on a schedule.
+
+CronJob
+ ↓
+Job
+ ↓
+Pod
+ ↓
+Task
+
+Example:
+
+Every night at 2 AM
+    ↓
+Database cleanup
+61. Horizontal Pod Autoscaler
+
+HPA changes the number of Pods.
+
+Example:
+
+CPU > threshold
+      ↓
+HPA
+      ↓
+3 Pods → 6 Pods
+
+Then load drops:
+
+6 Pods → 3 Pods
+
+Architecture:
+
+Metrics
+   ↓
+HPA
+   ↓
+Deployment
+   ↓
+ReplicaSet
+   ↓
+Pods
+62. Cluster Autoscaler
+
+Don't confuse HPA with Cluster Autoscaler.
+
+HPA
+
+Changes:
+
+number of Pods
+Cluster Autoscaler
+
+Changes:
+
+number of Nodes
+
+Example:
+
+HPA:
+3 Pods → 10 Pods
+       ↓
+not enough node capacity
+       ↓
+Cluster Autoscaler
+       ↓
+add Worker Node
+63. Full production architecture
+
+For a Spring Boot application on AWS EKS, you could have:
+
+                         Internet
+                            │
+                            ▼
+                         Route 53
+                            │
+                            ▼
+                       CloudFront
+                            │
+                            ▼
+                    AWS Load Balancer
+                            │
+                            ▼
+                     Ingress Controller
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+             ▼                             ▼
+       Kubernetes Service           Kubernetes Service
+             │                             │
+       ┌─────┴─────┐                 ┌─────┴─────┐
+       ▼           ▼                 ▼           ▼
+      Pod         Pod               Pod         Pod
+       │           │                 │           │
+       └─────┬─────┘                 └─────┬─────┘
+             │                             │
+             └──────────────┬──────────────┘
+                            │
+                     Spring Boot
+                            │
+           ┌────────────────┼────────────────┐
+           ▼                ▼                ▼
+         Redis             RDS              SQS
+
+Control plane sits above the worker infrastructure managing it.
+
+64. What happens during your CI/CD deployment?
+
+Connect this to the pipeline we discussed earlier.
+
+Developer
+    ↓
+Git
+    ↓
+Azure DevOps CI
+    ↓
+Maven
+    ↓
+Tests
+    ↓
+Sonar
+    ↓
+Docker build
+    ↓
+Security scan
+    ↓
+ACR/ECR
+    ↓
+CD
+    ↓
+helm upgrade
+    ↓
+Kubernetes API
+    ↓
+Deployment
+    ↓
+ReplicaSet
+    ↓
+Pods
+    ↓
+Scheduler
+    ↓
+Worker Nodes
+    ↓
+kubelet
+    ↓
+containerd
+    ↓
+Spring Boot
+
+This is the connection between CI/CD + Docker + Kubernetes that interviewers love to explore.
+
+65. The 10 components you absolutely need to know
+
+For your interview, I'd memorize these first:
+
+Component	Main responsibility
+kube-apiserver	Kubernetes API/front door
+etcd	Cluster state
+scheduler	Chooses node for Pods
+controller-manager	Reconciles desired vs actual state
+cloud-controller-manager	Cloud integration
+kubelet	Runs/manages Pods on node
+containerd/CRI-O	Runs containers
+kube-proxy	Service networking implementation
+CNI	Pod networking
+CSI	Storage integration
+
+Then:
+
+Deployment
+ReplicaSet
+Pod
+Service
+Ingress
+ConfigMap
+Secret
+PVC/PV
+HPA
+DaemonSet
+StatefulSet
+Job
+CronJob
 
