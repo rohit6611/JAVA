@@ -2693,3 +2693,14 @@ StatefulSet
 Job
 CronJob
 
+Deployment
+   │
+   └── creates/manages Pods
+
+Service
+   │
+   └── routes traffic to Pods
+
+docker build -t rohitchopra6611/webapp-demo:02 .
+
+. the location where my dockerfile is located as of now in my current directory only.
