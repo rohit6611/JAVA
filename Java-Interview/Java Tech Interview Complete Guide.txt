@@ -1592,6 +1592,7 @@ public class ClassB {
 @PostConstruct is used after dependencies are injected and you may want to provide some bean initialization logic.
 setter injection is not lazy by default as per chatgpt.
 don't consider that setter injection is lazy.
+@PostConstruct in Spring Boot is used to execute a method once after Spring has created the bean and injected its dependencies, but before the bean is used by the application.
 
 "".equals(object) and object.equals("") are used to compare an object with an empty string (""), but there is a subtle difference in how they handle null values and which object is being 
 referenced first. Let's break down the key differences:
