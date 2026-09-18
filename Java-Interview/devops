@@ -2704,3 +2704,7 @@ Service
 docker build -t rohitchopra6611/webapp-demo:02 .
 
 . the location where my dockerfile is located as of now in my current directory only.
+
+An Internet Gateway provides a path between a VPC and the internet and is commonly used for public subnets. 
+A NAT Gateway is deployed in a public subnet and allows resources in private subnets to initiate outbound internet connections without exposing 
+those resources directly to inbound internet traffic.
