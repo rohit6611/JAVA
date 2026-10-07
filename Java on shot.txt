@@ -1,0 +1,1560 @@
+Session is the main interface that is used to establish the physical connection between the application and the database.
+   Its main function is to perform read,update,delete and insert operation for instances of mapped classes in db.
+   Lifecycle of session is bounded to the beginning and end of the transaction. associated insatances may exist in three states:
+   transient - when object is not associated to any of the session.
+   persistent - when object is associated to session. object can be persisted using persist(),save(),saveOrUpdate().
+   detached - previously persistent, not associated to any session.delete()
+   Session is not thread safe ie each thread/transaction should obtain its instance from sessionFactory.
+   Session instance is serializable if its associated entity class is serializable.
+   flush() forces the hibernate to execute the statement in db but if dont commit you won't see the changes in the database.
+   flush() is the process of synchronization of the state of the persistence context or object and database.
+
+EntityManager can be used to interact with the persistence context in JPA. It provides methods for managing entity lifecycle, 
+   querying entities, and performing CRUD operations on the database.
+   The flush modes in JPA determine when the changes made to entities in the persistence context are synchronized with the database.
+   The two main flush modes provided by JPA are AUTO and COMMIT.
+   AUTO is the default flush mode. It means that changes made to entities are automatically synchronized with the database when necessary,
+   such as when a transaction is committed, or when a query is executed that requires up-to-date data.
+   On the other hand COMMIT mode delays synchronization until the transaction is committed. This means that changes made to entities will not
+   be visible to other transactions until the current transaction is committed.
+   
+Composite key is a combination of two or more columns to form a primary key.
+	   it has 4 rules - composite primary key class must be public.
+	   There should be no args constructor.
+	   must provide equals and hashcode method.
+	   must implement serializable.
+
+	   @Embeddable
+		public class BookId implements Serializable {
+		private String title;
+		private String language;
+
+		// default constructor
+
+		public BookId(String title, String language) {
+			this.title = title;
+			this.language = language;
+		}
+
+		// getters, equals() and hashCode() methods
+		}  
+
+		@Entity
+		public class Book {
+			@EmbeddedId
+			private BookId bookId;
+
+			// constructors, other fields, getters and setters
+		}
+
+		CREATE TABLE book (
+			title VARCHAR(255) NOT NULL,
+			language VARCHAR(255) NOT NULL,
+			-- other columns
+			PRIMARY KEY (title, language)
+		);
+
+Spring Data JPA uses Hibernate as the default ORM (Object-Relational Mapping), which provides an inbuilt First-Level-Cache. 
+	   Each session has its own cache, which we refer to as the First-Level-Cache.
+	   The first-level cache is localized to a single session and helps to reduce database queries by caching retrieved data. The second-level
+	   cache is shared across sessions and enables data to be cached across multiple requests.
+	   The first-level cache in Hibernate is implemented using an internal HashMap that maps the entity identifier to the corresponding entity instance. 
+	   When Hibernate needs to retrieve an entity, it first checks the first-level cache to see if the entity is already present. If it is, Hibernate returns
+	   the cached entity instance instead of querying the database. If the entity is not present in the first-level cache, Hibernate queries the database and 
+	   stores the retrieved entity in the first-level cache before returning it to the application.
+	   
+Even though Spring Data JPA abstracts away the EntityManager, the first-level cache is still tied to the EntityManager. Each repository method invocation
+		   typically operates within the context of a single EntityManager.
+		   How it works:
+		Every @Transactional method (or repository method call) in Spring uses an EntityManager provided by the EntityManagerFactory.
+		The first-level cache is scoped to this EntityManager.
+		Hibernate keeps track of the entities retrieved or persisted within the current EntityManager and avoids hitting the database for the same entity within the transaction or session.	
+		@Transactional
+		public void someServiceMethod() {
+			Book book1 = bookRepository.findById(1L).get(); // Database hit
+			Book book2 = bookRepository.findById(1L).get(); // Served from first-level cache (same transaction)
+
+
+A Persistence Context is a set of managed entity instances associated with an EntityManager.
+
+Spring Boot typically creates one EntityManagerFactory for the persistence unit. When using @PersistenceContext, 
+	Spring injects a container-managed EntityManager, commonly represented by a proxy. The actual persistence context 
+	is associated with the current transaction, so concurrent transactions can have separate persistence contexts and 
+	therefore separate first-level caches. EntityManagers are also separate from JDBC connections, which are managed 
+	by the DataSource and connection pool such as HikariCP.
+	
+		@Repository
+		public class UserRepository {
+
+			@Transactional
+			public User getUser() {
+				...
+			}
+		}
+
+		@Repository
+		public class OrderRepository {
+
+			@Transactional
+			public Order getOrder() {
+				...
+			}
+		}
+
+		If these methods are called separately, each transaction can have its own persistence context.
+
+
+		UserRepository.getUser()
+				│
+		   @Transactional
+				│
+		   Transaction A
+				│
+		   Persistence Context A
+				│
+		   First-Level Cache A
+				│
+			  DB
+				│
+		   transaction ends
+
+
+		OrderRepository.getOrder()
+				│
+		   @Transactional
+				│
+		   Transaction B
+				│
+		   Persistence Context B
+				│
+		   First-Level Cache B
+				│
+			  DB
+			  
+			  2 transactions → potentially 2 persistence contexts.
+			  
+			  
+		process()
+		   │
+		   @Transactional
+		   │
+		   ▼
+		Transaction A
+		   │
+		   ├── userRepository.getUser()
+		   │       @Transactional REQUIRED
+		   │       ↓
+		   │   joins Transaction A
+		   │
+		   └── orderRepository.getOrder()
+				   @Transactional REQUIRED
+				   ↓
+			   joins Transaction A
+			   
+			   So three @Transactional annotations do NOT automatically mean three persistence contexts.it joins the current transaction basically persistencecontext will associate with
+			   transaction flow.Persistence context is associated with the transaction/persistence context scope, not with the @Transactional annotation itself.
+			   
+			   
+These interfaces provide a way to execute code after the application context is fully initialized.
+	Basically command line runner is used in case we want to log some message or start any method like for sending notification after the spring context is fully initialized.
+	and post construct is bean specific annotation and is used when to execute logic immediately after the bean's properties are set and dependency injection is complete, but before the 
+	Spring Application Context is fully initialized.eg validating bean properties.
+	If you need application-wide startup logic, prefer CommandLineRunner.
+	If you need bean-specific initialization logic, prefer @PostConstruct.
+			   
+According to the Java specification, if two objects are considered equal by the equals() method, they must have the same hashCode() and vice versa is not true.
+
+	TRACE	Detailed tracing information, method calls, and variable states. Useful during development.	"Entering method XYZ with parameters..."
+    DEBUG	General debugging information for developers, showing key internal operations or behaviors.	"Processed payment for user {} with amount {}"
+    INFO	General application flow and important events (e.g., start, shutdown, user actions).	"User {} logged in" 
+    WARN	Potential issues that don't stop execution but should be checked.	"Cache miss for user {}. Using fallback."
+    ERROR	Serious errors that cause failures or issues requiring attention.	"Error processing payment for user {}: {}", exception details"
+    FATAL	Critical, application-halting errors (not always used in every framework).	"System crash, cannot continue execution"
+	
+Save obj= new Save();
+	
+	File f = new File("obj.txt")
+	FileOutputStream fos = new FileOutputStream(f);
+	ObjectOutputStream oos =new ObjectOutputStream(fos);
+	oos.write(obj);
+
+	FileInputStream fis = new FileInputStream(f);
+	ObjectInputStream ois = new ObjectInputStream(fis);
+	Save ob = (Save)ois.readData();
+
+	ObjectOutputStream in Java is used for serialization, which is the process of converting an object into a byte stream so that it can be saved to a file, 	
+	transmitted over a network, or otherwise persisted or transferred. This allows the object's state to be saved and later reconstructed.
+	
+No, static fields are not serialized in Java because they belong to the class, not to
+	individual instances. Serialization is intended to capture the state of an object, and
+	static fields are part of the class's state, not the object's state
+	To override a method, the new method in the subclass must have the same name, return
+	type, and parameters as the method in the parent class. Also, the new method should not
+	be less accessible than the original.
+	Can 'this' keyword be assigned a new value in Java?
+	No, this keyword cannot be assigned a new value in Java. It is a read-only reference
+	that always points to the current object.
+	What happens if you attempt to use the "super" keyword in a class that doesn't have a superclass?
+	If we attempt to use the "super" keyword in a class that doesn't have a superclass, a
+	compilation error occurs. The "super" keyword is only applicable within subclasses to
+	refer to members of the superclass.
+	
+Static methods, however, are resolved at compile-time based on the type of the reference, not the object.
+			class Parent {
+			static void display() {
+				System.out.println("Parent static method");
+			}
+		}
+
+		class Child extends Parent {
+			static void display() {
+				System.out.println("Child static method");
+			}
+		}
+
+		public class Main {
+			public static void main(String[] args) {
+				Parent obj1 = new Parent();
+				Parent obj2 = new Child();
+
+				obj1.display(); // Output: Parent static method
+				obj2.display(); // Output: Parent static method (NOT Child static method)
+			}
+		}
+
+		public class Main {
+			public static void main(String[] args) {
+				Parent obj1 = new Parent();
+				Child obj2 = new Child();
+
+				obj1.display(); // Output: Parent static method
+				obj2.display(); // Output: Child static method
+			}
+		}
+		
+If a class implements two interfaces that have static methods with the same name, there is no conflict because static methods in interfaces are not inherited by the 
+implementing class. Static methods in interfaces are associated with the interface itself and can only be called using the interface name.
+
+Iterator allows forward traversal of a collection, while ListIterator extends Iterator
+	functionality to allow bidirectional traversal of lists and also supports element
+	modification.
+	
+When a bucket has at least 8 nodes, HashMap attempts to treeify it — but only if the table capacity is at least 64.
+	Bucket nodes >= 8
+			│
+			▼
+	Is HashMap capacity >= 64?
+			│
+		┌───┴───┐
+	   YES      NO
+		│        │
+		▼        ▼
+	Treeify    Resize
+	to         HashMap
+	Red-Black
+	Tree
+	
+The bucket needs to reach the threshold, not the entire HashMap.
+
+	HashMap has 100 elements
+
+	Bucket 0 → 2 nodes
+	Bucket 1 → 3 nodes
+	Bucket 2 → 1 node
+	Bucket 3 → 9 nodes  ← possible treeification
+	Bucket 4 → 2 nodes
+	...
+	
+	If a tree bucket shrinks sufficiently during resizing/removal, it can be converted back to a linked list. The relevant constant is:
+	UNTREEIFY_THRESHOLD = 6;
+	
+	initial capacity of hasmap is 16 ie 16 buckets once the resizing happen it doubles its size.
+
+User Threads are threads that are created by the application or user and they have high priority and jvm can't exit without completing user threads. jvm will wait
+	  for user threads to complete their execution.
+	  On the other hand daemon threads are threads that are created by the jvm and run in the background like garbage collection. they are less priority threads.jvm will exit as 
+	  soon as all user threads complete their execution.
+
+When the JVM shuts down after all user threads have completed their execution, it means your program has terminated.
+	  The JVM releases all resources, including memory, open file descriptors, and any other resources allocated during the program's execution.
+	  If your Java application interacts with native libraries or external processes, those connections or processes might terminate unless explicitly handled.
+	  If you register a shutdown hook, it will execute just before the JVM shuts down. This can be used to clean up resources, close connections, or save state.
+	  Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+		System.out.println("JVM is shutting down. Performing cleanup...");
+	  }));
+	  Default priority of thread is same as of its parent thread.
+
+Thread states - new() - thread is in new state before calling start() method.
+    runnable() - when thread.start() is called.
+	blocked() - when the thread is waiting for object lock to enter into synchronized block or in case of deadlock scenario.
+	waiting() - thread is in waiting state when sleep() or join() method is called.
+	timed waiting() - when sleep() or wait() or join() with timeout is called.
+	terminated() - when thread completes its execution.
+	
+join() - allows for currently executing thread to wait for some other thread to finish its execution.(in case eg we want to result in order)
+
+    yield() - allows currently executing thread to temporarily pause its execution and allows some other thread to execute.
+
+    wait() - allows currently executing thread to release this object lock and wait until other thread notifies it.
+
+    notify() - this wakes up any of the object that is waiting for the this object lock.
+
+    notifyAll() - this wakes up all threads that are waiting for this object lock and at a time only one thread acquires the lock.
+	
+Generics was added in Java 5 to provide compile-time type checking and removing risk of ClassCastException that was common while working with collection classes. The whole 
+			collection framework was re-written to use generics for type-safety. Let’s see how generics help us using collection classes safely.	 
+		List list = new ArrayList();
+	list.add("abc");
+	list.add(new Integer(5)); //OK
+
+	for(Object obj : list){
+		//type casting leading to ClassCastException at runtime
+		String str=(String) obj; 
+	}
+
+	Above code compiles fine but throws ClassCastException at runtime because we are trying to cast Object in the list to String whereas one of the element is of type Integer. After Java 5, 
+	we use collection classes like below.
+
+	List<String> list1 = new ArrayList<String>(); // java 7 ? List<String> list1 = new ArrayList<>(); 
+	list1.add("abc");
+	//list1.add(new Integer(5)); //compiler error
+
+	for(String str : list1){
+		 //no type casting needed, avoids ClassCastException
+	}
+
+	If we don’t provide the type at the time of creation, the compiler will produce a warning that “GenericsType is a raw type. References to generic type GenericsType<T> should be 
+	parameterized”. When we don’t provide the type, the type becomes Object and hence it’s allowing both String and Integer objects.
+	
+Basically, generic classes ( <T> ) only work with objects and don’t support primitives. As a result, if we want to work with them, we have to convert primitive values into wrapper objects.
+
+Steps to create class as immutable - make class final,make its member as private and final , dont provide setter and initialize instance sing constructor.
+
+All static variables are stored in PermGen space of the heap memory.
+
+	interface A {
+	  int x = 10;	
+	  void m1();
+	}
+	public class B implements A {
+	  int x = 20;
+	  public void m1(){
+		 System.out.println("One"); 	
+	  }
+	}
+	public class Test {
+	public static void main(String[] args){
+	   A a = new B();
+	   a.m1();
+	   System.out.println(a.x);
+	  }
+	}
+	Output: One, 10.
+	
+No, singleton beans in Spring are not thread-safe by default. Because they are shared by multiple
+parts of the application at the same time, we need to add extra code to make them safe for use by
+multiple threads. This usually means using synchronized methods or thread-safe data structures.
+
+@EnableAutoConfiguration(exclude = MailSenderAutoConfiguration.class)
+
+The spring-boot-starter-parent in a Spring Boot project provides a set of default configurations for
+Maven. It simplifies dependency management, specifies common properties like Java version, and
+includes useful plugins. This parent POM ensures consistent versions of dependencies and plugins,
+reducing the need for manual configuration and helping maintain uniformity across Spring Boot
+projects.
+
+EntityManager
+	The EntityManager serves as the primary interface for interactions with the Persistence Context, allowing CRUD (Create-Read-Update-Delete) operations on entities.
+
+	The EntityManagerFactory is a factory for EntityManager instances. The createEntityManager() method creates a new EntityManager instance.
+	JPQL is used to execute queries for CRUD operations on the database.
+	The EntityManager is responsible for managing entities and interacts with the persistence context.
+	Persistence Context
+	The persistence context acts as a first-level cache.
+	When an entity is loaded, JPA checks if it exists in the persistence context:
+	If yes, it returns the cached entity.
+	If no, it queries the database and stores the result in the persistence context.
+	
+CrudRepository provides basic CRUD operations, while JpaRepository provides JPA-specific methods
+like flushing changes to the database, deleting records in a batch, and more. JpaRepository extends
+CrudRepository, so it inherits all its methods and adds JPA-specific ones.
+
+findById() returns an Optional containing the entity with the given ID, fetching it from the database
+immediately. getOne() returns a proxy for the entity with the given ID, allowing lazy loading of its
+state. If the entity is not found, getOne() throws an EntityNotFoundException.
+
+To optimize batch processing in Spring JPA, I enable batch inserts and updates by configuring
+spring.jpa.properties.hibernate.jdbc.batch_size in application.properties. This setting allows
+Hibernate to group SQL statements together, reducing database round trips and improving
+performance significantly.
+
+The get() method in Hibernate retrieves the object if it exists in the database; otherwise, it returns
+null. The load() method also retrieves the object, but if it doesn’t exist, it throws an
+ObjectNotFoundException. load() can use a proxy to fetch the data lazily.
+
+The N+1 SELECT problem in Hibernate occurs when an application makes one query to retrieve N
+parent records and then makes N additional queries to retrieve related child objects. It can be
+prevented using strategies like join fetching, batch fetching, or subselect fetching to minimize the
+number of queries executed.
+
+To optimize query performance in Hibernate, I would consider using lazy loading for entity
+relationships. This means Hibernate will only fetch related entities when they are explicitly accessed,
+not at the time of fetching the parent entity. Additionally, I might use batch fetching and adjust the
+fetch sizes in the configuration to reduce the number of database queries.
+
+Fetch common records between two tables.
+SELECT *
+FROM table1
+intersect SELECT * FROM table2;
+
+While working with microservices, I face several challenges. One major issue is managing the
+communication between numerous small services, which can lead to problems like network
+latency and ensuring data consistency. Debugging and troubleshooting become more
+difficult because errors can occur in any of the many services. Setting up and maintaining
+monitoring and logging for each service is also complicated. Additionally, ensuring security
+across all services is crucial but challenging, as each service must be individually secured and
+regularly updated.
+
+persistence unit in jpa consists the information about db connections , which sql driver the application is using and dialect the application is using.
+if your application is connecting to 2 db then it will have 2 persistence unit. on your application bootstrap entityManagerFactory object is created and one persistence unit will have one 
+entityManagerFactory from app.properties or persistence.xml entityManagerFactory object is created. one manager can have mutilple entity manager (Session). each entitymanager has one 
+persistence context which stores the information about object on which operation are to performed basically it holds the object whatever the work it is going to do on entity.entity manger 
+is one for each http request. one persistence context can have many entities associated with it.
+
+while for objects, Java copies the value of the reference to the object. Therefore,
+changes made to the parameter inside the method do not affect the original value outside the
+method.
+
+If you try to sort a list containing null elements using Collections.sort(), it will throw a
+NullPointerException. This method requires all elements in the list to be non-null and comparable.
+Null elements lack a comparison order, which prevents Collections.sort() from determining their
+position relative to other elements. To sort such lists, you must either remove null elements or use a
+custom comparator that explicitly handles nulls.
+
+In Java 8, Stream.of() is a static method used to create a stream from a set of individual objects. You
+can pass one or more objects to this method, and it will return a stream containing the elements you
+provided. This is particularly useful for quickly turning a few elements into a stream without needing
+to create a collection first. It's a convenient way to work with a fixed number of elements for stream
+operations like filtering, mapping, or collecting.
+
+The volatile keyword in Java concurrency is crucial for ensuring visibility and preventing caching of
+variables across threads. When a variable is declared as volatile, it tells the JVM that every read or
+write to that variable should go directly to main memory, bypassing any intermediate caches. This
+ensures that changes made to a volatile variable by one thread are immediately visible to other
+threads, maintaining data consistency across threads without using synchronized blocks.
+
+The ExecutorService in the Java Executor Framework plays a crucial role in managing and controlling
+thread execution. It provides a higher-level replacement for working directly with threads, offering
+methods to manage lifecycle operations like starting, running, and stopping threads efficiently. Some
+key methods it provides include submit() for executing callable tasks that return a result, execute()
+for running runnable tasks, and shutdown() to stop the executor service gracefully once tasks are
+completed.
+
+The ConcurrentHashMap in Java is designed for concurrent access without the extensive use of
+synchronization. Internally, it divides the data into segments, effectively a hashtable-like structure.
+Each segment manages its own lock, reducing contention by allowing multiple threads to
+concurrently access different segments of the map. This means that read operations can generally be
+performed without locking, and writes require minimal locking, significantly increasing performance
+over a Hashtable or synchronized Map under concurrent access scenarios.
+
+When an exception occurs inside a synchronized block in Java, the lock that was acquired when
+entering the synchronized block is automatically released. This allows other threads to enter the
+synchronized block or method once the current thread has exited due to the exception. Essentially,
+the synchronized mechanism ensures that locks are managed cleanly, even in the event of an
+exception, preventing deadlocks and allowing program execution to continue in other threads.
+
+A simple way to break the cycle is by telling Spring to initialize one of the beans lazily. So, instead of fully initializing the bean, it will create a proxy 
+to inject it into the other 
+bean. The injected bean will only be fully created when it’s first needed.
+use setter injection (or field injection) instead of constructor injection. This way, Spring creates the beans, but the dependencies aren’t injected until they are needed.
+using @Primary also resolves circular dependency problem.
+
+When applied to a method or class, it ensures that the enclosed operations
+are executed within a transactional context, meaning they either all succeed or all fail
+together.
+
+The @Autowired annotation in Spring primarily uses constructor injection by default,
+where dependencies are provided through a class constructor at the time of object
+creation, promoting immutability and mandatory dependency declaration. However, it
+can also be used for field injection, where Spring directly sets the values of fields on your
+beans, and setter injection, where dependencies are injected through setter methods
+after the bean is constructed. This flexibility allows for various configurations depending
+on the needs of the application.
+
+FeignClient is synchronous by default, but you can make it asynchronous by wrapping it with an async wrapper that returns a CompletableFuture.
+Use the getBeanDefinitionNames() method from the
+ApplicationContext to get the list of beans.
+
+WebMvcConfigurer is an interface that lets you customize Spring MVC's default behavior without replacing the entire Spring MVC configuration.
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("https://myfrontend.com")
+                .allowedMethods("GET", "POST", "PUT", "DELETE");
+    }
+}
+
+Each HTTP request is handled by a separate thread from the servlet container's thread pool (e.g., Tomcat, Jetty).
+Multiple threads can execute controller methods simultaneously for different requests.
+Mono represents a single event/value and Flux represents a stream of multiple values.
+
+Java's Reflection API can be used to change the value of private fields. Reflection allows you to inspect and manipulate the internal structure of classes, including accessing
+private fields and methods.
+Access the Field: Use the Class.getDeclaredField(String name) method to get a Field object representing the private field.
+Make the Field Accessible: Use Field.setAccessible(true) to bypass the private access modifier.
+Change the Field Value: Use the Field.set(Object obj, Object value) method to modify the field's value.
+ 
+ Solution - Using @Lazy
+		@Component
+		public class ClassA {
+
+			
+			private ClassB b;
+			
+			public ClassA(@Lazy ClassB b) {
+				this.b=b;
+			}
+			
+		}
+
+		@Component
+		public class ClassB {
+			
+			private ClassA a;
+			
+			public ClassB(ClassA a) {
+				this.a=a;
+			}
+			
+
+		}
+		If you dont use lazy and use setter injection with parameterized constructor then still you will get this circular dependency error for resolving this use below setter injection
+		and remove parameterized constructor.
+
+		@Component
+		public class ClassB {
+			
+			private ClassA a;
+			
+			@Autowired
+			public void setClassB(ClassA a) {
+				this.a = a;
+			}
+			
+
+		}
+		
+@PostConstruct in Spring Boot is used to execute a method once after Spring has created the bean and injected its dependencies, but before the bean is used by the application.
+
+"".equals(object) - this dont throw null pointerexception on passing null and object.equals("") - this throws nullpointerexception.
+
+Query to find record where data exist in one table and doesn;t in other column
+SELECT t1.*
+FROM table1 t1
+LEFT JOIN table2 t2 ON t1.common_column = t2.common_column
+WHERE t2.common_column IS NULL;
+
+Shallow copy copies changes the actual object as all its associated referenced variable share same reference.
+	In case of deep copy all the objects are independent and changes made in the copied object does not reflect in other object.
+	
+Use StringBuilder:
+		When your application runs in a single-threaded environment.
+		When performance is critical and synchronization is not needed.
+
+		Use StringBuffer:
+		When your application runs in a multi-threaded environment.
+		When you need synchronized access to the object.
+		
+To ensure atomicity without using the synchronized keyword, you can use Java's Atomic classes from
+the java.util.concurrent.atomic package, such as AtomicInteger or AtomicReference. These classes
+provide lock-free thread-safe operations like incrementing or updating values atomically. By using
+these atomic classes, you avoid the need for explicit locking, ensuring safe concurrent access to
+shared resources while improving performance in multi-threaded environments.
+
+Class.forName() loads a class and also initializes it by executing any static blocks or static variable
+initializations. In contrast, ClassLoader.loadClass() only loads the class without initializing it until it's
+needed later. Use Class.forName() when you need the class to be loaded and initialized immediately,
+while ClassLoader.loadClass() is useful when you want to defer initialization for performance reasons
+or when initializing the class isn't immediately required.
+
+SecurityContextHolder, to provide access to the SecurityContext.
+	SecurityContext, to hold the Authentication and possibly request-specific security information.
+	Authentication, to represent the principal in a Spring Security-specific manner.
+	GrantedAuthority, to reflect the application-wide permissions granted to a principal.
+	UserDetails, to provide the necessary information to build an Authentication object from your application’s DAOs or other source of security data.
+	UserDetailsService, to create a UserDetails when passed in a String-based username (or certificate ID or the like).
+
+	The AuthenticationManager is just an interface, so the implementation can be anything we choose, but how does it work in practice? What if we need to check multiple authentication 
+	databases or a combination of different authentication services such as a database and an LDAP server?
+
+	The default implementation in Spring Security is called ProviderManager and rather than handling the authentication request itself, it delegates to a list of configured 
+	AuthenticationProvider s, each of which is queried in turn to see if it can perform the authentication. Each provider will either throw an exception or return a fully populated 
+	Authentication object. Remember our good friends, UserDetails and UserDetailsService? If not, head back to the previous chapter and refresh your memory. The most common approach to 
+	verifying an authentication request is to load the corresponding UserDetails and check the loaded password against the one that has been entered by the user. This is the approach used 
+	by the DaoAuthenticationProvider (see below). The loaded UserDetails object - and particularly the GrantedAuthority s it contains - will be used when building the fully populated 
+	Authentication object which is returned from a successful authentication and stored in the SecurityContext.
+
+	userDetailsService ia an interface which provides the single method loadUserByUsername(String name) and returns the object of userDetails which inturn is an interface and which provide only the getter methods to get grantedAuthorities,username,token etc.
+	In loadUserByUsername method after fetching the user object we return userDetails object by its implementing class build method;
+	
+The AuthenticationEntryPoint in Spring Security is invoked when an unauthenticated request is received by a secured endpoint. It is responsible for handling authentication failures and 
+		initiating the authentication process.
+		AuthenticationEntryPoint is an interface which posseses the single method commence()
+		Overall, the commence() method plays a crucial role in handling authentication failures and initiating the authentication process, ensuring that unauthenticated requests are handled 
+		appropriately according to the application's security policies.
+
+		If you don't provide an AuthenticationEntryPoint implementation while using UsernamePasswordAuthenticationFilter, and an unauthenticated request is made to a secured resource, 
+		Spring Security will use its default behavior to handle the authentication failure.
+
+		Without a custom AuthenticationEntryPoint, Spring Security typically sends a 401 Unauthorized response to the client when an unauthenticated request is made to a secured resource.
+		 This response indicates that authentication is required to access the requested resource. However, the response may lack additional details or customization that you might want to provide
+		 to the client.
+
+		In the context of Spring Security, the AuthenticationManager is a core component responsible for authenticating users based on their credentials. It is typically used to validate 
+		authentication requests, such as login attempts, against a configured set of authentication providers.
+
+		Here's an overview of how the AuthenticationManager works within Spring Security:
+
+		Authentication Request: When a user attempts to authenticate, usually by submitting login credentials through a form or an API request, Spring Security intercepts the authentication 
+		request.
+
+		Authentication Object: Spring Security creates an Authentication object encapsulating the user's credentials (e.g., username and password).
+
+		AuthenticationManager: The AuthenticationManager is responsible for processing the Authentication object and determining whether the provided credentials are valid. It delegates the 
+		authentication process to one or more configured AuthenticationProvider instances.
+
+		AuthenticationProvider: Each AuthenticationProvider in the authentication chain is responsible for authenticating users using a specific method or strategy. For example, 
+		Spring Security provides various AuthenticationProvider implementations for different authentication mechanisms, such as username/password authentication, LDAP authentication, 
+		or OAuth authentication.
+
+		Authentication Process: The AuthenticationManager iterates over the configured AuthenticationProviders until one of them successfully authenticates the user or until all providers have 
+		been tried without success.
+
+		Authentication Result: If authentication is successful, the AuthenticationManager returns a fully authenticated Authentication object containing details about the authenticated user, 
+		including their granted authorities (roles). If authentication fails, an exception is thrown or an unsuccessful authentication response is generated.
+
+		Authentication Flow Control: Depending on the outcome of the authentication process, Spring Security may proceed with the requested operation if authentication is successful or deny access and handle authentication failures accordingly.
+
+		In summary, the AuthenticationManager is a crucial component in Spring Security responsible for orchestrating the authentication process, validating user credentials, and determining 
+		whether access should be granted or denied based on the authentication result. It acts as the central authority for authenticating users within a Spring Security-enabled application.
+		AuthenticationManager has a single method authenticate() which authenticate the user.
+
+		AuthenticationProvider interface has 2 methods authenticate() and boolean supports. authenticate method returns the fully authenticated object if authenticated.and supports return true 
+		if AuthenticationProvider supports the indicated authentication object.and if false then request is delegated to another AuthenticationProvider.
+		
+@Configuration
+@EnableAsync
+public class SyncConfiguration {
+    @Bean(name = "myAsyncPoolTaskExecutor")
+    public ThreadPoolTaskExecutor executor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        // Core thread count.
+        taskExecutor.setCorePoolSize(10);
+        // The maximum number of threads maintained in the thread pool. Only when the buffer queue is full will threads exceeding the core thread count be requested.
+        taskExecutor.setMaxPoolSize(100);
+        // Cache queue.
+        taskExecutor.setQueueCapacity(50);
+        // Allowed idle time. Threads other than core threads will be destroyed after the idle time arrives.
+        taskExecutor.setKeepAliveSeconds(200);
+        // Thread name prefix for asynchronous methods.
+        taskExecutor.setThreadNamePrefix("async-");
+        /**
+         * When the task cache queue of the thread pool is full and the number of threads in the thread pool reaches maximumPoolSize, if there are still tasks coming, a
+		 task rejection policy will be adopted.
+         * There are usually four policies:
+         * ThreadPoolExecutor.AbortPolicy: Discard the task and throw RejectedExecutionException.
+         * ThreadPoolExecutor.DiscardPolicy: Also discard the task, but do not throw an exception.
+         * ThreadPoolExecutor.DiscardOldestPolicy: Discard the task at the front of the queue and then try to execute the task again (repeat this process).
+         * ThreadPoolExecutor.CallerRunsPolicy: Retry adding the current task and automatically call the execute() method repeatedly until it succeeds.
+         */
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
+}
+
+A ClassLoader is a part of the Java Runtime Environment that loads classes into memory. It abstracts the process of locating and importing class files.
+
+Runnable doesn't return a result and cannot throw checked exceptions.
+Callable returns a result and can throw checked exceptions.
+
+A WeakReference allows you to hold a reference to an object without preventing it from being garbage collected. Useful for caches where you want to allow GC to reclaim memory if 
+needed.
+
+The Fork/Join framework is used for parallel execution of tasks. It splits a task into smaller subtasks (forks), processes them in parallel, and then joins the results.
+
+There are basically two types of Encryption. Symmetric Encryption — Single key is used for encryption and decryption. It is used when you can securely share key between sender and 
+	recipient. Symmetric Encryption is used when you want to encrypt large amount of data, encrypt data at rest. Common Symmetric Encryption method — AES, DES
+
+	Asymmetric Encryption: Two different keys are used — Private Key and Public Key. Data encrypted with public key and it can only be decrypted with corresponding private key. A 
+	website’s SSL/TLS certificate which is available publicly contains the Public Key. Common Asymmetric Encryption method — RCA
+
+@Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    } for shallow copy
+	
+	 @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Person cloned = (Person) super.clone();
+        cloned.address = (Address) address.clone(); // Deep copy of address
+        return cloned;
+    } for deep copy
+	
+java.util.Date: Represents both date and time information.
+ java.sql.Date: Represents only the date (year, month, and day) without time information.
+ 
+ Summary Table  load factor is same ie 0.75 ie on reaching load factor size increases
+Collection	Default Initial Capacity	Resize Behavior
+ArrayList		10							Grows by 50% of the current size
+LinkedList		No fixed capacity			Dynamically grows
+HashSet			16							Doubles when load factor exceeded
+LinkedHashSet		16						Doubles when load factor exceeded
+TreeSet			No fixed capacity			Dynamically grows (balanced tree)
+HashMap			16								Doubles when load factor exceeded
+LinkedHashMap		16						Doubles when load factor exceeded
+TreeMap			No fixed capacity				Dynamically grows (balanced tree)
+PriorityQueue		11						Dynamically grows
+ArrayDeque		16							Doubles during resizing
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Autowired
+    private LoggingInterceptor loggingInterceptor;
+
+    @Autowired
+    private ProductInterceptor productInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loggingInterceptor)
+                .addPathPatterns("/api/**") // Define the URL patterns to be intercepted
+                .excludePathPatterns("/api/auth/**"); // Define the URL patterns to be excluded from interception
+
+        registry.addInterceptor(productInterceptor)
+                .addPathPatterns("/product/**") // Define the URL patterns to be intercepted
+                .excludePathPatterns("/api/auth/**");
+    }
+}
+
+volatile: Ensures visibility of changes to variables across threads.
+synchronized: Ensures both visibility and atomicity of code execution.
+
+
+To find second highest in each dept - 
+		Map<String, List<Double>> result = employees.stream()
+			.collect(Collectors.groupingBy(
+				Employee::getDept,
+				Collectors.collectingAndThen(
+					Collectors.toList(),
+					list -> list.stream()
+						.map(Employee::getSalary)
+						.sorted(Comparator.reverseOrder())
+						.skip(1)
+						.limit(1)
+						.collect(Collectors.toList())    
+				)
+			));
+			System.out.println(result);
+
+		Map<String, List<Employee>> result = employees.stream()
+			.collect(Collectors.groupingBy(
+				Employee::getDept,
+				Collectors.collectingAndThen(
+					Collectors.toList(),
+					list -> list.stream()
+						.sorted(Comparator.comparing(Employee::getSalary).reversed())
+						.skip(1)
+						.limit(1)
+						.collect(Collectors.toList())
+				)
+			));
+			
+List<String> transactions = Arrays.asList(
+    "A:+100",
+    "B:+200",
+    "A:-50",
+    "C:+300",
+    "B:-100",
+    "A:+150"
+);
+  Map<String,Integer> result =  transactions.stream().map(i->i.split(":"))
+    .collect(Collectors.groupingBy(arr->arr[0],
+    Collectors.summingInt(arr->Integer.parseInt(arr[1]))
+    ));
+    System.out.println(result);
+	
+In the Authorization Code flow, the client redirects the user to the Authorization Server with client ID, redirect URI, scopes, state and PKCE challenge.
+The Authorization Server authenticates the user and obtains consent, then redirects back with a short-lived authorization code. The client exchanges that code 
+at the token endpoint along with the PKCE verifier and, for confidential clients, client credentials. The Authorization Server validates everything and returns 
+an access token and optionally a refresh token and ID token when using OpenID Connect. The client sends the access token as a Bearer token to the Resource Server. 
+The Resource Server validates the token's signature, issuer, audience, expiry and scopes before allowing access. When the access token expires, the refresh token 
+can be used to obtain a new access token.
+
+client request server and client redirects to auth server with client id and redirect uri and return one authorization code back to resource server on the provided 
+callback uri and resource server sends request to auth server with auth code to validate and gets jwt token in response.
+
+String.join() - String[] words = {"Java", "Python", "C++"};
+	String result = String.join(", ", words);
+	System.out.println(result); // Output: Java, Python, C++
+	
+Iterator allows forward traversal of a collection, while ListIterator extends Iterator
+	functionality to allow bidirectional traversal of lists and also supports element
+	modification.
+	
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+
+        List<String> names = new ArrayList<>(
+            Arrays.asList("Rohit", "Amit", "Raj", "Neha")
+        );
+
+        Iterator<String> iterator = names.iterator();
+
+        while (iterator.hasNext()) {
+            String name = iterator.next();
+
+            System.out.println(name);
+
+            if (name.equals("Raj")) {
+                iterator.remove();
+            }
+        }
+
+        System.out.println(names);
+    }
+}
+Rohit
+Amit
+Raj
+Neha
+
+[Rohit, Amit, Neha]
+
+
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+
+        List<String> names = new ArrayList<>(
+            Arrays.asList("Rohit", "Amit", "Raj", "Neha")
+        );
+
+        ListIterator<String> iterator = names.listIterator();
+
+        // Forward
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+
+        // Backward
+        while (iterator.hasPrevious()) {
+            System.out.println(iterator.previous());
+        }
+    }
+}
+
+Rohit
+Amit
+Raj
+Neha
+
+Neha
+Raj
+Amit
+Rohit
+
+| Feature            | Iterator | ListIterator |
+| ------------------ | -------- | ------------ |
+| Forward traversal  | ✅        | ✅            |
+| Backward traversal | ❌        | ✅            |
+| `remove()`         | ✅        | ✅            |
+| `add()`            | ❌        | ✅            |
+| `set()`            | ❌        | ✅            |
+| Works with Set     | ✅        | ❌            |
+| Works with List    | ✅        | ✅            |
+| Index information  | ❌        | ✅            |
+
+A fail-fast iterator throws ConcurrentModificationException if the collection is structurally modified while you are iterating over it.
+Common fail-fast collections:
+ArrayList
+HashMap
+HashSet
+LinkedList
+
+With an Iterator, use the iterator's own remove()
+List<String> names = new ArrayList<>(
+        Arrays.asList("Rohit", "Amit", "Raj")
+);
+
+Iterator<String> iterator = names.iterator();
+
+while (iterator.hasNext()) {
+
+    String name = iterator.next();
+
+    if (name.equals("Amit")) {
+        iterator.remove();
+    }
+}
+
+System.out.println(names);
+[Rohit, Raj]
+
+A fail-safe iterator does not directly operate on the original collection, or uses a mechanism that allows modification without throwing ConcurrentModificationException.
+CopyOnWriteArrayList - ex
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        List<String> names = new CopyOnWriteArrayList<>(
+                Arrays.asList("Rohit", "Amit", "Raj")
+        );
+
+        for (String name : names) {
+
+            System.out.println(name);
+
+            if (name.equals("Amit")) {
+                names.remove(name);
+            }
+        }
+
+        System.out.println(names);
+    }
+}
+Rohit
+Amit
+Raj
+[Rohit, Raj]
+Original Array
+[Rohit, Amit, Raj]
+
+Iterator gets snapshot
+[Rohit, Amit, Raj]
+
+names.remove("Amit")
+
+New Array
+[Rohit, Raj]
+concurrent collections: Classes such as ConcurrentHashMap provide weakly consistent iterators, which don't fail-fast and may reflect some concurrent modifications.
+Fail-fast iterators work on the original collection and detect structural modification using mechanisms like modCount, potentially throwing 
+ConcurrentModificationException; fail-safe-style iterators such as CopyOnWriteArrayList iterate over a snapshot and therefore can tolerate concurrent modification.
+
+1xx: Informational
+
+• 100 Continue: Indicates that the initial part of a request has been received and the client should continue with the request.
+
+• 101 Switching Protocols: Indicates that the server is switching protocols as requested by the client.
+
+2xx: Success
+
+• 200 OK: The request was successful, and the server returned the requested resource (typically used for GET requests).
+
+• 201 Created: The request was successful, and a new resource was created (typically used for POST requests).
+
+• 202 Accepted: The request has been accepted for processing, but the processing is not complete.
+
+• 204 No Content: The request was successful, but there is no content to return (often used for DELETE operations).
+
+3xx: Redirection
+
+• 301 Moved Permanently: The resource has been moved to a new URL permanently.
+
+• 302 Found: The resource is temporarily located at a different URL.
+
+• 304 Not Modified: Indicates that the resource has not been modified since the last request, allowing the client to use a cached version.
+
+4xx: Client Errors
+
+• 400 Bad Request: The request is malformed or contains invalid data.
+
+• 401 Unauthorized: Authentication is required, or the provided authentication is invalid.
+
+• 403 Forbidden: The client does not have permission to access the resource.
+
+• 404 Not Found: The requested resource could not be found.
+
+• 405 Method Not Allowed: The HTTP method used is not supported for the resource.
+
+• 409 Conflict: The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate entries).
+
+• 422 Unprocessable Entity: The server understands the request, but it can’t be processed due to semantic errors (often used for validation errors).
+
+5xx: Server Errors
+
+• 500 Internal Server Error: A generic error message indicating that something went wrong on the server.
+
+• 501 Not Implemented: The server does not support the functionality required to fulfill the request.
+
+• 502 Bad Gateway: The server received an invalid response from an upstream server.
+
+• 503 Service Unavailable: The server is currently unavailable (e.g., due to overload or maintenance).
+
+• 504 Gateway Timeout: The server, acting as a gateway, did not receive a timely response from an upstream server.
+
+ Hashtable - It is similar to HashMap, but is synchronized.
+ 
+executor.setQueueCapacity(100): Sets the maximum number of tasks that can be queued and are waiting for execution. If the queue is full, additional tasks may be rejected 
+	based on the rejection policy.
+	executor.setMaxPoolSize(2): Sets the maximum number of threads that the pool can have.
+	executor.setCorePoolSize(2): Sets the core number of threads in the pool. These are the threads kept alive even when idle.
+	executor.setThreadNamePrefix("poolThread-"): Sets a prefix for the names of the threads created by the pool. Threads will be named like "poolThread-1", "poolThread-2", and 
+	so on.
+	executor.initialize(): Initializes the ThreadPoolTaskExecutor with the configured settings.
+
+They are first put on the heap, in the young generation heap. Once the method finishes its execution they are no longer needed and they start being eligible for 
+garbage collection. When a young generation garbage collection happens the memory used by those variables may be reclaimed. If that happens the previously occupied memory 
+will be visible as free.
+
+HashMap - accepts one null key
+Hashtable - doesn't accept any null key
+TreeMap - doesn't accept any null key
+LinkedHashMap - accepts one null key
+Any number of null values can be added as value in any of above implementations
+
+Popular implementations of the Set are:
+
+HashSet - accepts one null element
+TreeSet - doesn't accept any null element
+LinkedHashSet - accepts one null element
+Any implementations of List, like ArrayList or LinkedList can accept nulls.
+
+tree type doesn't accepts null because they are used to sort the elements and internally use comparator which will throw nullPointerException.
+
+comparable provides only one instance to compare and to override its compareTo() method and we use coparator when we want to sort by more than on property.
+class RatingCompare implements Comparator<Movie> {
+    public int compare(Movie m1, Movie m2)
+    {
+        if (m1.getRating() < m2.getRating())
+            return -1;
+        if (m1.getRating() > m2.getRating())
+            return 1;
+        else
+            return 0;
+    }
+}
+ 
+// Class to compare Movies by name
+class NameCompare implements Comparator<Movie> {
+    public int compare(Movie m1, Movie m2)
+    {
+        return m1.getName().compareTo(m2.getName());
+    }
+}
+
+class Movie implements Comparable<Movie>
+{
+    private double rating;
+    private String name;
+    private int year;
+ 
+    // Used to sort movies by year
+    public int compareTo(Movie m)
+    {
+        return this.year - m.year;
+    }
+ 
+    // Constructor
+    public Movie(String nm, double rt, int yr)
+    {
+        this.name = nm;
+        this.rating = rt;
+        this.year = yr;
+    }
+ 
+    // Getter methods for accessing private data
+    public double getRating() { return rating; }
+    public String getName()   {  return name; }
+    public int getYear()      {  return year;  }
+}
+
+If the s1 value is "book", then both statements will return true. The difference arises when s1 will be a null value. In that case, s1.equals("book") will throw the 
+null pointer exception, and on the other hand "book" .equals(s1) will return false.
+
+				 Throwable
+                 /       \
+           Error         Exception
+                        /        \
+               RuntimeException  CheckedException
+                      /            \
+		ArithmeticException        FileNotFoundException
+		
+Locking mechanism is more recommendable as we can control the order of locking and also uses reentrant lock which means same thread can be acquire the same lock in the nested call.
+
+Divided into:
+
+             ┌───────────── Heap ─────────────┐
+             │       Young Gen                 │
+             │    ┌───────┬───────────┬────┐  │
+             │    │ Eden  │ Survivor1 │ S2 │  │
+             │    └───────┴───────────┴────┘  │
+             │           Old Gen               │
+             └─────────────────────────────────┘
+			 
+Basically JVM architecture java source code is converted into byte code which is platform independent and then class loader used to load the class into the memory
+and it invloves loading ,linking and initialization and then that code is compiled used compiler and JVM is tuned by using the JIT compiler which stores the hot code 
+that is frequently used by the JVM and eventually program is executed.
+
+Summary Table  load factor is same ie 0.75 ie on reaching load factor size increases
+Collection	Default Initial Capacity	Resize Behavior
+ArrayList		10							Grows by 50% of the current size
+LinkedList		No fixed capacity			Dynamically grows
+HashSet			16							Doubles when load factor exceeded
+LinkedHashSet		16						Doubles when load factor exceeded
+TreeSet			No fixed capacity			Dynamically grows (balanced tree)
+HashMap			16								Doubles when load factor exceeded
+LinkedHashMap		16						Doubles when load factor exceeded
+TreeMap			No fixed capacity				Dynamically grows (balanced tree)
+PriorityQueue		11						Dynamically grows
+ArrayDeque		16							Doubles during resizing
+
+Sealed classes in Java 17 allow developers to control which classes can extend a given class
+
+// Sealed class allowing only specific subclasses
+public sealed class Vehicle permits Car, Bike {
+    public void start() {
+        System.out.println("Vehicle is starting...");
+    }
+}
+
+// Permitted subclass
+final class Car extends Vehicle {
+    public void drive() {
+        System.out.println("Car is driving...");
+    }
+}
+
+// Permitted subclass
+final class Bike extends Vehicle {
+    public void ride() {
+        System.out.println("Bike is riding...");
+    }
+}
+
+// ❌ The following will cause a compilation error
+// class Truck extends Vehicle {} // Not permitted!
+
+public record Employee(String name, int age) {}
+
+public record Employee(String name, int age) {
+    public String greet() {
+        return "Hello, my name is " + name + " and I am " + age + " years old.";
+    }
+}
+
+Before Java 16, using instanceof required explicit type casting after checking an object's type.
+		Problems in the Old Approach
+
+		Redundant Casting ((String) obj) even after instanceof check, More boilerplate code, NullPointerException.
+		Object obj = "Hello, Java 17!";
+
+		if (obj instanceof String str) {  // Direct variable declaration
+			System.out.println(str.toUpperCase()); // null pointer in case of null 
+		}
+
+		In java 17 no explicit casting required and also no need to check for null
+		Object obj = null;
+
+		if (obj instanceof String str) { //  No need for explicit null checks
+			System.out.println(str.toUpperCase());  // This won't execute
+		} else {
+			System.out.println("Object is null");
+		}
+		
+Z Garbage Collector (ZGC) is a low-latency, scalable garbage collector introduced in Java 11 and improved in subsequent releases. Java 17 brings major enhancements, 
+making it more efficient for large heaps and low-latency applications.
+
+List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
+    Integer sum = numbers.stream().mapToInt(Integer::intValue).sum();
+    System.out.print(sum);
+    
+     List<Integer> numbers = Arrays.asList(1,2,3,4,5);
+    Integer max=numbers.stream().max(Integer::compareTo).get();
+    System.out.println(max);
+	
+SELECT salary
+FROM employees
+ORDER BY salary DESC
+LIMIT 1 OFFSET 1;
+
+A non-clustered index creates a separate structure that has pointers (row locators) to the actual data rows.
+
+ int largest = Integer.MIN_VALUE;
+        int secondLargest = Integer.MIN_VALUE;
+
+        for (int num : arr) {
+            if (num > largest) {
+                secondLargest = largest;
+                largest = num;
+            } else if (num > secondLargest && num != largest) {
+                secondLargest = num;
+            }
+        }
+		
+When we try to dynamically load the class using Class.forName or ClassLoader.loadClass() that is not present in the classpath then we 
+        face ClassNotFoundException.
+        When class was present during compiletime,but missing when loading JVM tries to load dynamically then we encounter NoClassDefFoundError.
+        
+        Class.forName(String className)
+        Loads the class by name (fully qualified class name like "com.example.MyClass").
+        Also initializes it immediately (runs static initializers and static blocks).
+		
+public class LazyInitializedSingleton {
+
+    private static LazyInitializedSingleton instance;
+
+    private LazyInitializedSingleton(){}
+
+    public static LazyInitializedSingleton getInstance() {
+        if (instance == null) {
+            instance = new LazyInitializedSingleton();
+        }
+        return instance;
+    }
+}
+
+sorted(Comparator.comparing(Map.Entry<String,Integer>::getValue,
+        Comparator.reverseOrder()).thenComparing())
+		
+The heap is a region of memory in the JVM (Java Virtual Machine) where objects are stored.
+		Whenever you use new to create an object, it is allocated in the heap memory.
+		Young Generation (Eden + Survivor spaces)
+		Newly created objects are first allocated here.
+		The young gen is further divided into:
+		Eden space: Where most new objects are initially created.
+		Survivor spaces (S0 & S1): Where objects are moved after surviving a garbage collection cycle.
+		Old Generation (Tenured)
+		Objects that live long enough (survive multiple GCs) are promoted here.
+		It’s typically collected less frequently but takes longer to collect.
+		
+ String s = "Hello my name is   Rohit  ";
+        String output = Arrays.stream(s.trim().split("\\s+"))
+        .collect(Collectors.collectingAndThen(
+            Collectors.toList(),
+            list -> {
+                Collections.reverse(list);
+                return list.stream();
+            }
+            )).collect(Collectors.joining(" "));
+            
+            System.out.println(output);
+            
+            output - Rohit is name my Hello
+			
+String.intern() method: This method returns the canonical representation of a string object.
+If the string object (the one on which intern() is called) is already present in the String Constant Pool, the method returns a reference to that existing object in the pool.
+If the string object is not in the pool, a copy of the string is created in the pool, and a reference to this newly added string is returned.
+
+List<String> list = List.of("apple","banana","orange");
+       System.out.println(
+       String.join("",list).chars().filter(ch -> ch=='a').count());
+	   
+	   int[] arr = {1, 5, 0, 3, 2, 0, 0, 5};
+       int count = 0;
+       int n = arr.length;
+       for(int i=0;i<n;i++)
+       {
+           if(arr[i]!=0)
+           {
+               arr[count++]=arr[i];
+           }
+       }
+       while(count<n)
+       {
+           arr[count++]=0;
+       }
+       System.out.println(Arrays.toString(arr));
+	   
+Client
+   ↓
+Filter (Servlet level)
+   ↓
+DispatcherServlet
+   ↓
+Interceptor (Spring level)
+   ↓
+Controller
+   ↓
+Interceptor (postHandle)
+   ↓
+View Rendering
+   ↓
+Interceptor (afterCompletion)
+   ↓
+Filter (response)
+   ↓
+Client
+
+Filters run before Spring MVC gets the request.
+Interceptors run inside Spring MVC, just before the controller.
+
+A claim is a piece of information embedded inside a JWT.
+Claims are key-value pairs that describe something about the user, the token, or any other data you want to transmit securely.
+
+applicationContext is the central interface to the Spring IoC container. It is responsible for instantiating, configuring, and assembling the beans in the application. 
+It acts as a container that holds all the beans and provides various functionalities such as dependency injection, event propagation, and resource loading.
+
+String arr[] = {"apple","orange","banana"};
+       long count = String.join("",arr).chars().
+       map(ch -> (char)ch).filter(c ->c=='a').count();
+       System.out.println(count);
+	   
+GC is expensive when gc thread starts all application thread is paused.
+In concurrent mark and sweep gc thread and application thread works concurrently.but it does not gurantee but it will try its best.In g1 gc it gurantees application thread wont 
+stop along with gc thread and it also ensures memory compaction so that remaining memory can be used effectively.
+In heap memory objects are stored in young and old gen. young gen is divided into 3 parts eden,s0,s1 basically survivors.and they are set with age threshold so when they reach the 
+threshold limit they are moved to old gen. in young gen it is minor gc that runs periodically lets say in every 10 secs and in old generation it is called major gc that is lets 
+say runs in every half hours . metaspace is used to store class variables ,static and final variables,constants etc outside the heap memory and metadata about the class. Objects  
+are freed up from young generation and keeps on moving from eden to s0 and s1 depending upon the mark and sweep algorithm of gc.
+
+
+{ "even" -> [2, 4, 6], "odd" -> [1, 3, 5] }
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+  Map<Boolean, List<Integer>> partitioned = numbers.stream()
+                .collect(Collectors.partitioningBy(n -> n % 2 == 0));
+                
+        System.out.println("Even Numbers: " + partitioned.get(true));
+        System.out.println("Odd Numbers: " + partitioned.get(false));
+		
+Class loading process in java - jvm loads the class the class initializes it and run do static block initialization and runs the static blocks.
+one class loader can load the class once and can't be loaded twice.
+
+Synchronized and Lock interface (renterant lock) are basically both are used when working in multithreaded environment but lock interface ensure fair ordering like can control which thread will
+       execute first when comes to thread scheduler.
+	   
+When the objects are no longer referenced by they become eleigible for GC. GC runs periodically and you cannot predict whether it will run. it is devided into young generationa nd old generation
+where newly created objects are stored in young gen and short lived objects and those survived young gen using mark and sweep they are passed to old generation and then finally removed from old gen.
+to manually make your system eligible for gc use System.gc() or Runtime.getRuntime().gc().
+Before destroying an object, the garbage collector calls the finalize() method to perform cleanup activities. The method is defined in the Object class as follows:
+Eden: is for initial object allocation.
+Survivor spaces: are for objects that have survived initial collection but are still in the Young Generation, acting as a bridge to the Old Generation.
+The eden space in Java is a memory pool where objects are created. When the eden space is full, the garbage collector either removes objects if they are no longer in use or stores them in the survivor space if they are still being used. This space is considered part of the young generation in the memory heap.
+There are two survivor spaces in the JVM: survivor zero and survivor one. This space is also part of the young generation.
+young generation is minor gc and old generation is major gc.
+There are two phases in this algorithm: mark followed by sweep.
+When a Java object is created in the heap, it has a mark bit that is set to 0 (false).
+During the mark phase, the garbage collector traverses object trees starting at their roots. When an object is reachable from the root, the mark bit is set to 1 (true). Meanwhile, the mark bits for unreachable objects is unchanged.
+During the sweep phase, the garbage collector traverses the heap, reclaiming memory from all items with a mark bit of 0 (false).
+
+The serial garbage collector is typically used for smaller, single-threaded environments. Don’t use it in a production environment because the process of garbage collection takes 
+over the thread, freezing other processes. This is known as a “stop the world” event.
+The parallel garbage collector is JVM’s default garbage collector. As the name implies this garbage collector uses multiple (parallel) threads. Because it can also use multiple 
+CPUs to speed up throughput, it’s also known as the throughput collector. However, when running garbage collection, it will also freeze application threads.
+Like the parallel garbage collector, the concurrent mark-and-sweep collector uses multiple threads. However, this collector is known as a “low-pause” collector because it freezes 
+application threads less frequently, making it more appropriate for user-facing applications where “stop the world” events will cause issues for your users. It can only garbage 
+collect the old generation concurrently, though—it still needs to freeze execution when collecting the young generation. Also, because the collector’s threads execute at the same 
+time as the application’s threads, it does use more processing power than other garbage collectors.
+The G1 garbage collector takes a different approach altogether. Instead of collecting the young and old generations separately, it can collect both at once by splitting the heap 
+into many spaces—not just the eden, survivor, and tenured spaces that other garbage collectors use. This allows it to clear smaller regions instead of clearing large regions all 
+at once, optimizing the collection process. It runs concurrently like the CMS collector, but it very rarely freezes execution and can collect both the young and old generations 
+concurrently.
+
+List<String> names = Arrays.asList("Alice", "Bob", "Alice", "Alice", "Bob", "Charlie", "Charlie", "Bob");
+    
+        List<Map.Entry<String, Long>> sortedList=names.stream().collect(Collectors.groupingBy(name -> name,Collectors.counting())).
+    entrySet().stream().sorted(
+        Comparator.comparing(Map.Entry<String,Long>::getValue,
+        Comparator.reverseOrder())
+        .thenComparing(Map.Entry::getKey)
+        
+        ).collect(Collectors.toList());
+        
+        System.out.println(sortedList);
+		
+save may schedule the save and may not immediately flushes the changes and after saving it returns unique id. while saveAndFlush() immediately save the changes into db
+by synchronizing the state of persistence context and DB.
+
+Static variables are stored in heap memory area in permanent generation and the same copy is being shared by all the variables and are created when class is loaded in the memory
+class loader and destroyed when class is unloaded.Only one copy exists per class loader, shared among all instances of that class.
+
+"Reentrant" means that the same thread can acquire the lock multiple times without blocking itself.
+That is, if a thread already holds the lock, and it tries to lock again (within a nested call), it will succeed immediately — not deadlock.
+It comes with the timeout aslo it try locking for some time unit.
+
+Feature	G1 GC (Garbage First)	ZGC (Z Garbage Collector)
+Introduced In	Java 9 (default from Java 9–13)	Java 11 (production-ready since Java 15) 
+Goal	Balance between throughput and low pause time	Ultra-low pause time regardless of heap size
+Pause Time Target	< ~200 ms (tunable)	< 10 ms (typically 1–2 ms)
+
+#acks=0 fire and forget doesn't wait for any confirmation.
+ acks=1 wait for the leader to confirm the leader that data is written.
+ acks=all or -1 ensures that leader and all follower must confirm about the data write.
+ 
+ArrayList — Use When You Need
+	Fast random access (index-based reads)
+	get(index) → O(1)
+	Because ArrayList stores data in a contiguous array.
+	Frequent read operations
+	Perfect for read-heavy workloads.
+
+	LinkedList — Use Only When:
+	Frequent insertions/deletions in the middle
+	Removing/adding at known position → O(1)
+	(but… only if you already have a reference to the node)
+	
+| Method            | When Value Present | When Value Missing            | Execution Style                      | Use Case                       |
+| ----------------- | ------------------ | ----------------------------- | ------------------------------------ | ------------------------------ |
+| **orElse()**      | Returns value      | Returns default value         | Default object is **always created** | Simple default values          |
+| **orElseGet()**   | Returns value      | Calls Supplier to get default | Lazy evaluation                      | Expensive default construction |
+| **orElseThrow()** | Returns value      | Throws exception              | Lazy                                 | Mandatory value must exist     |
+
+public String getUserName(Optional<String> nameOpt) {
+
+    String name1 = nameOpt.orElse("Guest");  
+    // "Guest" is created immediately
+
+    String name2 = nameOpt.orElseGet(() -> getDefaultName());  
+    // getDefaultName() executed only if needed
+
+    String name3 = nameOpt.orElseThrow(() -> new RuntimeException("Name missing"));
+    // throws exception if name not present
+
+    return name1; // Just example
+}
+
+The Fork/Join framework helps break a large task into multiple small tasks (called subtasks) that can execute in parallel using multiple CPU cores.
+It uses a special thread pool called ForkJoinPool, which uses the work-stealing algorithm to keep threads busy.
+Basic Flow
+
+fork() → split the large task into smaller tasks
+compute() → execute tasks
+join() → merge results
+
+If HikariCP is enabled by default (as in Spring Boot), then the default maximum number of connections in the pool = 10.
+
+String result = input.chars()
+        .filter(ch -> ch != remove)
+        .mapToObj(ch -> String.valueOf((char) ch))
+        .collect(Collectors.joining());
+
+System.out.println(result);
+
+given a list of transactions - find top 3 customers by total spending
+transactions.stream()
+        .collect(Collectors.groupingBy(
+                Transaction::getCustomerId,
+                Collectors.summingDouble(Transaction::getAmount)
+        ))
+        .entrySet().stream()
+        .sorted((e1, e2) -> (int)(e2.getValue() - e1.getValue())) // simple lambda
+        .limit(3)
+        .forEach(entry ->
+                System.out.println(entry.getKey() + " : " + entry.getValue())
+        );
+		
+Map<String, List<Employee>> top5ByDept = employees.stream()
+        .collect(Collectors.groupingBy(
+                Employee::getDepartment,
+                Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> list.stream()
+                                .sorted((e1, e2) -> Double.compare(e2.getSalary(), e1.getSalary())) // descending
+                                .limit(5)
+                                .toList()
+                )
+        ));
+		
+calculate totals by user id using streams
+Map<String, Double> totalsByUser = transactions.stream()
+        .collect(Collectors.groupingBy(
+                Transaction::getUserId,
+                Collectors.summingDouble(Transaction::getAmount)
+        ));
+
+Enhancements made in hashmap after 1.8 is when the bucket size reaches to 8 then the linkedlist is converted to balanced tree(Red-Black Tree) so that hash collision cases can 
+be handled more efficiently as for all hash function for the same bucket time complexity is acheived to O(logn) from O(n).
+
+
+Metaspace is a native memory region introduced in Java 8 to store class metadata, replacing the PermGen space. PermGen had several limitations — it had a fixed maximum size, 
+often caused OutOfMemoryError: PermGen space, and was prone to classloader memory leaks during application redeployment. Metaspace solved these issues by allocating metadata in 
+native memory, allowing it to grow dynamically and free unused class metadata when classloaders are garbage collected. This improves JVM reliability, reduces tuning effort, and 
+eliminates a significant source of production issues.
+
+when threshold is 8 and capacity is 64 then hashmap converts the bucket into tree. and resizing occurs when the load factor reaches to 0.75 . initial capacity of hashmap is 16 so 
+when size 
+reaches to 12 then resizing occurs and new capacity is doubled.
+
+B-Tree indexes store data in sorted order and support both equality and range queries, while hash indexes use a hash function for very fast equality lookups but cannot handle 
+range queries or sorting.
+
+Before Java 8, this data was stored in PermGen (Permanent Generation).
+Starting from Java 8, PermGen was removed and replaced by Metaspace.
+Unlike other JVM memory areas, Metaspace is allocated in native memory (outside the heap).
+
+In Loading phase object is loaded into main memory using class loaders and after loading linking is done where as the the byte code is verified for its correctness and after 
+the memory is allocated to static fields in the metaspace and objects are created in the heap and in the final stage initialization is done using static blocks and static 
+initializers.
+
+Yes. When resizing occurs in a HashMap in Java, the existing entries are redistributed into a new bucket array, but their hashCode() is NOT recomputed again.
+Only the bucket index changes because the capacity changes.
+
+// Know these by heart:
+Predicate<T>   → boolean test(T t)         // filter
+Function<T,R>  → R apply(T t)              // transform
+Consumer<T>    → void accept(T t)          // consume
+Supplier<T>    → T get()                   // produce
+BiFunction<T,U,R> → R apply(T t, U u)     // two inputs
+UnaryOperator<T>  → T apply(T t) 
+
+Bean Lifecycle:
+  Instantiation
+       │
+       ▼
+  Populate Properties (DI)
+       │
+       ▼
+  BeanNameAware.setBeanName()
+       │
+       ▼
+  BeanFactoryAware.setBeanFactory()
+       │
+       ▼
+  @PostConstruct
+       │
+       ▼
+  InitializingBean.afterPropertiesSet()
+       │
+       ▼
+  Custom init-method
+       │
+       ▼
+  ═══ BEAN READY TO USE ═══
+       │
+       ▼
+  @PreDestroy
+       │
+       ▼
+  DisposableBean.destroy()
+       │
+       ▼
+  Custom destroy-method
+  
+  * Find missing number in array of 1 to N
+public class MissingNumber {
+    public static int findMissing(int[] arr, int n) {
+        int expectedSum = n * (n + 1) / 2;
+        int actualSum = 0;
+
+        for (int num : arr) {
+            actualSum += num;
+        }
+        return expectedSum - actualSum;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 4, 5, 6};  // missing 3
+        System.out.println(findMissing(arr, 6));  // 3
+    }
+}
+
+
