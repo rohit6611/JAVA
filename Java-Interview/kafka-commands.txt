@@ -7,3 +7,5 @@ STEP 5:  READ THE EVENTS
 .\bin\windows\kafka-console-consumer.bat --topic topic_demo --from-beginning --bootstrap-server localhost:9092
 hello world
 topic demo
+
+cd /d C:\Kafka && set "JAVA_HOME=C:\Users\HP5CD334B2HM\.jdks\corretto-21.0.11" && set "KAFKA_HEAP_OPTS=-Xmx1G -Xms1G" && bin\windows\kafka-server-start.bat config\server.properties
