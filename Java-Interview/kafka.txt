@@ -121,27 +121,63 @@ delivery.timeout.ms
 spring.kafka.producer.properties[delivery.timeout.ms]=${KAFKA_PRODUCER_DELIVERY_TIMEOUT_MS:10000}
 Meaning: Maximum total time allowed for a record to be successfully acknowledged by the broker, including applicable delays such as batching, retries and waiting for broker responses.
 
+spring.deserializer.value.delegate.class
+spring.kafka.consumer.properties[spring.deserializer.value.delegate.class]=${KAFKA_VALUE_DELEGATE_DESERIALIZER:org.springframework.kafka.support.serializer.JsonDeserializer}
+
+
+Your consumer is configured with:
+spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+
+So why are we configuring another deserializer?
+Because ErrorHandlingDeserializer acts as a wrapper around the actual deserializer.
+
+
+
 Partitions → Scalability and parallelism.
-
-
 
 Replication → Fault tolerance and availability.
 
-
-
 Retry → Handling temporary processing failures.
-
-
 
 Backoff → Avoiding immediate repeated failures.
 
-
-
 DLT → Storing messages that could not be processed successfully.
 
+Kafka receives message
+       |
+       v
+ErrorHandlingDeserializer
+       |
+       v
+JsonDeserializer
+       |
+       v
+Check trusted package
+       |
+       v
+Convert JSON to Java object
+       |
+       v
+@KafkaListener receives object
 
+Kafka receives malformed JSON
+       |
+       v
+ErrorHandlingDeserializer
+       |
+       v
+Deserialization exception captured
+       |
+       v
+Spring Kafka Error Handler
+       |
+       v
+Retry attempts
+       |
+       v
+Dead Letter Topic (DLT)
 
-Fund transfer: transfer request → fraud check consumer → debit/credit → ledger audit; idempotent on transactionId
-Insurance claim: submit → validate policy → assess → approve or reject → payout event
-Ticket booking: hold seat with expiry → payment event → confirm, or release on timeout
-
+Question	Answer
+Why use ErrorHandlingDeserializer?	To capture deserialization failures and make them available to Spring Kafka error handling.
+What is delegate deserializer?	The actual deserializer used internally by ErrorHandlingDeserializer.
