@@ -107,6 +107,20 @@ app:
       attempts: 3                                # retries after the first failure, then DLT
       backoff-ms: 1000
 
+
+spring.kafka.producer.properties[max.block.ms]=${KAFKA_PRODUCER_MAX_BLOCK_MS:5000}
+Meaning: Maximum time the Kafka producer's send() method can block while waiting for metadata or buffer memory.
+Default configured here: 5000 milliseconds (5 seconds).
+
+request.timeout.ms
+spring.kafka.producer.properties[request.timeout.ms]=${KAFKA_PRODUCER_REQUEST_TIMEOUT_MS:5000}
+Meaning: Maximum time the producer waits for a response to an individual request sent to the Kafka broker.
+Configured value: 5 seconds.
+
+delivery.timeout.ms
+spring.kafka.producer.properties[delivery.timeout.ms]=${KAFKA_PRODUCER_DELIVERY_TIMEOUT_MS:10000}
+Meaning: Maximum total time allowed for a record to be successfully acknowledged by the broker, including applicable delays such as batching, retries and waiting for broker responses.
+
 Partitions → Scalability and parallelism.
 
 
@@ -124,6 +138,8 @@ Backoff → Avoiding immediate repeated failures.
 
 
 DLT → Storing messages that could not be processed successfully.
+
+
 
 Fund transfer: transfer request → fraud check consumer → debit/credit → ledger audit; idempotent on transactionId
 Insurance claim: submit → validate policy → assess → approve or reject → payout event
