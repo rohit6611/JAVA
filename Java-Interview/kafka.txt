@@ -1,0 +1,79 @@
+
+1. Kafka Architecture Overview
+Kafka follows a publish-subscribe model where producers send messages to Kafka topics, and consumers read from these topics.
+
+Key Components:
+Broker: Kafka runs as a cluster of brokers (servers) where each broker handles storage, message distribution, and replication.
+Topic: A logical entity where messages are stored.
+Partition: A topic is split into multiple partitions for scalability and parallel processing.
+Producer: Sends messages to Kafka topics.
+Consumer: Reads messages from Kafka topics.
+Consumer Group: A set of consumers sharing a topic’s partitions.
+Zookeeper: Manages metadata, leader election, and cluster coordination.
+Offset: Keeps track of the last read message in a partition.
+Replication: Ensures fault tolerance by duplicating partitions across multiple brokers.
+Controller Node: Manages partition leader elections and cluster metadata.
+
+Producers are responsible for sending messages to Kafka topics.
+
+Key-based partitioning: If a message has a key (e.g., UserID), Kafka ensures all messages with the same key go to the same partition.
+Round-robin partitioning: If no key is provided, messages are distributed randomly across partitions.
+Acks & Durability: The producer can wait for acknowledgments (acks=all) to ensure reliability.
+Compression: Producers can compress messages (gzip, snappy, etc.) to reduce network load and storage.
+Batching: Kafka allows batching messages to improve efficiency and reduce latency.
+
+Consumers read messages from Kafka topics, and they belong to consumer groups for better scalability.
+
+Each consumer in a group reads from a unique set of partitions.
+If a topic has 3 partitions and a consumer group has 3 consumers, each consumer gets one partition.
+If there are more consumers than partitions, some consumers will be idle.
+If there are fewer consumers than partitions, some consumers will handle multiple partitions.
+
+Rebalancing occurs when a consumer joins, leaves, or fails in a consumer group. Kafka redistributes partitions among the remaining consumers.
+
+Example:
+
+Initially, Consumer A is assigned Partition-0, and Consumer B is assigned Partition-1.
+If Consumer A fails, Kafka reassigns Partition-0 to Consumer B.
+To avoid frequent rebalancing, Kafka provides Sticky Assignor and Incremental Cooperative Assignor to minimize disruptions.
+
+Offsets track the last consumed message in each partition.
+
+Kafka stores offsets in a special topic (__consumer_offsets).
+Each consumer group maintains its own offsets, ensuring different groups consume data independently.
+Consumers can manually commit offsets (for precise control) or automatically commit (enable.auto.commit=true).
+
+If a consumer crashes and restarts, it can resume from the last committed offset.
+
+If offsets are not found, Kafka follows auto.offset.reset policy:
+earliest → Start from the beginning.
+latest (default) → Start from the newest messages.
+
+To ensure high availability, Kafka supports replication.
+
+Each partition has one leader and multiple followers.
+Only the leader handles reads/writes, and followers replicate data.
+If a leader fails, Kafka elects a new leader from the followers.
+The min.insync.replicas setting controls the number of replicas that must acknowledge a write for durability.
+
+Replication factor is the number of copies of each partition you configure. In-sync replicas (ISR) are the copies that are currently caught up with the leader. One is a fixed setting; the other changes at runtime.
+
+Replication factor (RF)
+Set per topic when it’s created, e.g. --replication-factor 3.
+With RF = 3, each partition has 3 copies on 3 different brokers: 1 leader and 2 followers.
+All reads and writes go to the leader by default, and followers copy from it.
+It’s static: it only changes if you reassign partitions.
+It can’t be larger than the number of brokers.
+In-sync replicas (ISR)
+The subset of those replicas, including the leader, that is fully caught up.
+A follower drops out of the ISR if it falls behind for longer than replica.lag.time.max.ms (30s by default), because the broker is slow, has crashed, or has network trouble. It rejoins once it catches up.
+It changes at runtime. Check it with:
+
+Do at least two under a time limit:
+
+Loan application: apply → KYC check → credit/eligibility → sanction → EMI schedule
+Order processing: order → payment → inventory reserve → shipment. If payment fails, release inventory (Saga compensation)
+Fund transfer: transfer request → fraud check consumer → debit/credit → ledger audit; idempotent on transactionId
+Insurance claim: submit → validate policy → assess → approve or reject → payout event
+Ticket booking: hold seat with expiry → payment event → confirm, or release on timeout
+
