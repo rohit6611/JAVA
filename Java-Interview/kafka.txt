@@ -99,6 +99,14 @@ Order processing: order → payment → inventory reserve → shipment. If payme
       ack-mode: record                           # commit the offset after each record is processed
       concurrency: 3                             # for a consumer 3 threads will be created that will handle concoruntly
 
+app:
+  kafka:
+    partitions: 3
+    replicas: 1                                  # 1 for a local single broker; use 3 in production
+    retry:
+      attempts: 3                                # retries after the first failure, then DLT
+      backoff-ms: 1000
+
 Partitions → Scalability and parallelism.
 
 
