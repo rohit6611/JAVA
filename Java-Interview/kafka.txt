@@ -98,6 +98,25 @@ Order processing: order → payment → inventory reserve → shipment. If payme
     listener:
       ack-mode: record                           # commit the offset after each record is processed
       concurrency: 3                             # for a consumer 3 threads will be created that will handle concoruntly
+
+Partitions → Scalability and parallelism.
+
+
+
+Replication → Fault tolerance and availability.
+
+
+
+Retry → Handling temporary processing failures.
+
+
+
+Backoff → Avoiding immediate repeated failures.
+
+
+
+DLT → Storing messages that could not be processed successfully.
+
 Fund transfer: transfer request → fraud check consumer → debit/credit → ledger audit; idempotent on transactionId
 Insurance claim: submit → validate policy → assess → approve or reject → payout event
 Ticket booking: hold seat with expiry → payment event → confirm, or release on timeout
