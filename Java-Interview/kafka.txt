@@ -132,7 +132,9 @@ spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.seria
 So why are we configuring another deserializer?
 Because ErrorHandlingDeserializer acts as a wrapper around the actual deserializer.
 
-
+max.block.ms: Producer may block while fetching topic metadata or waiting for buffer memory.
+request.timeout.ms: Producer sends a request to Kafka broker and waits for its response. If it times out, the producer may retry.
+delivery.timeout.ms: The producer must successfully deliver the record within this overall deadline. Otherwise, delivery fails.
 
 Partitions → Scalability and parallelism.
 
