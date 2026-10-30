@@ -73,6 +73,31 @@ Do at least two under a time limit:
 
 Loan application: apply → KYC check → credit/eligibility → sanction → EMI schedule
 Order processing: order → payment → inventory reserve → shipment. If payment fails, release inventory (Saga compensation)
+
+  kafka:
+    bootstrap-servers: localhost:9092    -kafka server
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all                                  # wait for all in-sync replicas
+      properties:
+        enable.idempotence: true                 # no duplicates from producer retries
+        spring.json.add.type.headers: false
+    consumer:
+      auto-offset-reset: earliest                # new consumer groups start from the beginning
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # ErrorHandlingDeserializer turns a bad message (poison pill) into an error the
+      # error handler can send to the DLT, instead of failing the consumer forever.
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: com.rohit.loan.messaging.LoanEvent
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: com.rohit.loan.messaging
+        max.poll.records: 50
+    listener:
+      ack-mode: record                           # commit the offset after each record is processed
+      concurrency: 3                             # for a consumer 3 threads will be created that will handle concoruntly
 Fund transfer: transfer request → fraud check consumer → debit/credit → ledger audit; idempotent on transactionId
 Insurance claim: submit → validate policy → assess → approve or reject → payout event
 Ticket booking: hold seat with expiry → payment event → confirm, or release on timeout
