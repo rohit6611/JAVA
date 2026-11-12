@@ -1557,4 +1557,7 @@ public class MissingNumber {
     }
 }
 
+Why does @Transactional not work on self-invocation?
+Spring applies transactions through a proxy. A call from one method to another method in the same class bypasses the proxy, so the transaction advice never runs.
+
 
