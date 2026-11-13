@@ -665,3 +665,290 @@ Future<String> future =
 		 */
 		 
 		 
+List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
+    Integer sum = numbers.stream().mapToInt(Integer::intValue).sum();
+    System.out.print(sum);
+    
+     List<Integer> numbers = Arrays.asList(1,2,3,4,5);
+    Integer max=numbers.stream().max(Integer::compareTo).get();
+    System.out.println(max);
+    
+    int sum = numbers.stream().mapToInt(i -> i).sum(); 
+    
+    Optional<Student> student = studentList.stream().max(Comparator.comparing(Student::getRank));
+    
+    List<Integer> numbers = Arrays.asList(10, 5, 20, 8, 15);
+Integer secondHighest=numbers.stream().sorted(Comparator.reverseOrder()).skip(1).findFirst().get();
+
+Optional<Employee> lowestPaidEmployees = employees.stream()
+                .min(Comparator.comparingDouble(Employee::getSalary)
+				
+				     List<String> words = Arrays.asList("apple", "banana", "apple", "apple", "banana", "cherry");
+        Map.Entry<String,Long> res=words.stream().collect(Collectors.groupingBy(s -> s,Collectors.counting())).entrySet().stream().
+        max(Comparator.comparing(entry -> entry.getValue())).get();
+        System.out.println(res.getKey());
+        
+        // String s = "local";
+        // System.out.println(new StringBuilder(s).reverse());
+        
+        String s = "i love programming very much";
+        String[] arr=s.split(" ");
+        StringBuilder ans = new StringBuilder();
+        for(int i=arr.length-1;i>0;i--){
+            ans= ans.append(reverse(arr[i]));
+            if(i!=0){
+                ans=ans.append(" ");
+            }
+        }
+        System.out.println(ans);
+		
+		List<String> words = Arrays.asList("apple", "banana", "apple", "apple", "banana", "cherry");
+        Map.Entry<String,Long> res=words.stream().collect(Collectors.groupingBy(s -> s,Collectors.counting())).entrySet().stream().
+        max(Comparator.comparing(entry -> entry.getValue())).get();
+        System.out.println(res.getKey());
+        
+        String s = "local";
+        System.out.println(new StringBuilder(s).reverse());
+        
+        String s = "i love programming very much";
+        String[] arr=s.split(" ");
+        StringBuilder ans = new StringBuilder();
+        for(int i=arr.length-1;i>0;i--){
+            ans= ans.append(reverse(arr[i]));
+            if(i!=0){
+                ans=ans.append(" ");
+            }
+        }
+        System.out.println(ans);
+    }
+    
+    public static StringBuilder reverse(String s){
+        return new StringBuilder(s).reverse();
+    }
+    
+    List<Integer> list = Arrays.asList(1,4,5,7,10);
+    int sum = list.stream().mapToInt(Integer::intValue).sum();
+System.out.println(sum);
+
+    
+    int sum = list.stream().mapToInt(Integer::intValue).sum();
+    System.out.println(sum);
+	
+	List<String> words = Arrays.asList("apple", "banana", "cherry", "strawberry");
+Expected Output:
+
+
+"strawberry"
+
+List<String> words =
+          Arrays.asList("apple", "banana", "cherry", "strawberry");
+          
+          Map.Entry<String,Integer> res = words.stream().
+          collect(Collectors.toMap(i->i,String::length))
+          .entrySet().stream().
+          max(Comparator.comparing(Map.Entry<String,Integer>::getValue)).get();
+        
+        System.out.println(res.getKey());
+
+String word=words.stream().max(Comparator.comparingInt(String::length)).get();
+    System.out.print(word);
+	max and min accepts comparator.
+
+ List<String> words = 
+        Arrays.asList("apple", "banana", "cherry", "strawberry");
+        
+        // OptionalInt length = words.stream().mapToInt(String::length).max();
+        // System.out.println(length.orElse(0));
+        
+        Optional<Entry<String,Integer>> output=
+        words
+        .stream()
+        .collect(Collectors.toMap(i->i,String::length))
+        .entrySet()
+        .stream()
+        .max(Comparator.comparingInt(Map.Entry<String,Integer>::getValue));
+        
+        System.out.println(output.get().getKey());
+	
+	List<String> list = Arrays.asList("Geeks", "for", "gfg", 
+                                          "GeeksforGeeks", "GeeksQuiz");
+	list.stream().mapToInt(str -> str.length()).forEach(System.out::println);
+
+List<String> list = Arrays.asList("Geeks", "for", "gfg", 
+                                          "GeeksforGeeks", "GeeksQuiz");
+        Map.Entry<String,Integer> map = list.stream().
+        collect(Collectors.toMap(s->s,s->s.length())).
+        entrySet().stream()
+        .sorted(Comparator.comparing(Map.Entry<String,Integer>::getValue,
+        Comparator.reverseOrder())
+        ).findFirst().get();
+	
+	List<Integer> numbers = Arrays.asList(5, 12, 18, 3, 9, 20);
+    Long count=numbers.stream().filter(n -> n>10).count();
+    System.out.print(count);
+
+List<Integer> list = Arrays.asList(1,12,4,2,12,4,5,12,41);
+        
+        list.stream().map(i->String.valueOf(i))
+        .filter(i -> i.contains("1")).
+        collect(Collectors.toList())
+        .forEach(System.out::println);
+
+List<String> list = Arrays.asList("1","12","4","2","12","4"
+        ,"5","12","41");
+        
+        list.stream().map(i->Integer.parseInt(i))
+        .filter(i -> i>10).
+        collect(Collectors.toList())
+        .forEach(System.out::println);
+		
+		String[] arr=s.trim().split("\\s+"); to split by more than one space
+
+ String s = "Hello my name is   Rohit  ";
+        String output = Arrays.stream(s.trim().split("\\s+"))
+        .collect(Collectors.collectingAndThen(
+            Collectors.toList(),
+            list -> {
+                Collections.reverse(list);
+                return list.stream();
+            }
+            )).collect(Collectors.joining(" "));
+            
+            System.out.println(output);
+            
+            output - Rohit is name my Hello
+			
+			String s1 = new String("madam");
+String s2 = new String("madam");
+System.out.println(s1 == s2); // false
+System.out.println(s1.intern() == s2.intern()); // true
+Trick: Using intern() ensures SCP reference comparison works
+
+  List<String> list = List.of("apple","banana","orange");
+       System.out.println(
+       String.join("",list).chars().filter(ch -> ch=='a').count());
+	   
+	          String arr[] = {"apple","orange","banana"};
+       long count = String.join("",arr).chars().
+       map(ch -> (char)ch).filter(c ->c=='a').count();
+       System.out.println(count);
+
+	double d = 1/2; output - 0.0
+Double d = 1/2 output - runtime exception int can't be converted to double
+
+#Find first non repeating integer in a list of Integer
+ Integer[] numbers = {4, 5, 1, 2, 0, 4, 5, 2};
+        
+        Optional<Map.Entry<Integer,Long>> firstNonRepeating = Arrays.stream(numbers).
+        collect(Collectors.groupingBy(i->i,LinkedHashMap::new,Collectors.counting()))
+        .entrySet().stream().filter(e -> e.getValue()==1)
+        .findFirst();
+        
+        System.out.println(firstNonRepeating.get().getKey());
+		
+		String s1 = new String("Java");
+       String s2=s1.intern();
+       System.out.println(s1==s2);
+       output - false
+       This above is correct if there was direct assignment then it would have printed true.
+	   
+	   List<Employee> sortedList = employees.stream()
+    .sorted(
+        Comparator.comparing(Employee::getDepartment)
+                  .thenComparing(Comparator.comparing(Employee::getSalary).reversed())
+                  .thenComparing(Employee::getName)
+    )
+    .collect(Collectors.toList());
+It will sort on the basis of department first if two employee has same department then it will sort by salary if the employee has same salaray also then by name.
+
+List<String> names = Arrays.asList("Alice", "Bob", "Alice", "Alice", "Bob", "Charlie", "Charlie", "Bob");
+    
+        List<Map.Entry<String, Long>> sortedList=names.stream().collect(Collectors.groupingBy(name -> name,Collectors.counting())).
+    entrySet().stream().sorted(
+        Comparator.comparing(Map.Entry<String,Long>::getValue,
+        Comparator.reverseOrder())
+        .thenComparing(Map.Entry::getKey)
+        
+        ).collect(Collectors.toList());
+        
+        System.out.println(sortedList);
+        
+        List<Integer> list = Arrays.asList(1,6,3,8,5,3,7,2,9);
+      List<Integer> top3=list.stream().distinct().
+      sorted(Comparator.reverseOrder()).limit(3).collect(Collectors.toList());
+    
+        System.out.println(top3);
+        
+        List<Integer> list = Arrays.asList(1,6,3,1);
+      
+      First non repeating ---
+      Optional<Map.Entry<Integer,Long>> result = list.stream().
+      collect(Collectors.groupingBy(i -> i,LinkedHashMap::new,
+      Collectors.counting()))
+      .entrySet().stream().
+      filter(e -> e.getValue()==1)
+      .findFirst();
+      
+      System.out.println(result.get().getKey());
+	  
+	  # Program to print pallindrome strings in a list of String.
+      List<String> list = Arrays.asList("abc","aba","ebe","ebabe");
+      
+      list.stream().filter(x -> x.equals(new StringBuilder(x).reverse().toString()))
+      .forEach(System.out::println);
+	  
+	  #group employees by department and get the higghest salary per department
+Map<String, Optional<Employee>> highestSalaryByDept =
+        employees.stream()
+                .collect(Collectors.groupingBy(
+                        Employee::getDepartment,
+                        Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary))
+                ));
+				
+				String result = input.chars()
+        .filter(ch -> ch != remove)
+        .mapToObj(ch -> String.valueOf((char) ch))
+        .collect(Collectors.joining());
+		
+		public class SpecialCharFinder {
+    public static void main(String[] args) {
+        String input = "Hello@World#123!";
+
+        input.chars()
+                .mapToObj(c -> (char) c)
+                .filter(c -> !Character.isLetterOrDigit(c))
+                .forEach(System.out::println);
+    }
+}
+
+given a list of transactions - find top 3 customers by total spending
+transactions.stream()
+        .collect(Collectors.groupingBy(
+                Transaction::getCustomerId,
+                Collectors.summingDouble(Transaction::getAmount)
+        ))
+        .entrySet().stream()
+        .sorted((e1, e2) -> (int)(e2.getValue() - e1.getValue())) // simple lambda
+        .limit(3)
+        .forEach(entry ->
+                System.out.println(entry.getKey() + " : " + entry.getValue())
+        );
+		
+		Map<String, List<Employee>> top5ByDept = employees.stream()
+        .collect(Collectors.groupingBy(
+                Employee::getDepartment,
+                Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> list.stream()
+                                .sorted((e1, e2) -> Double.compare(e2.getSalary(), e1.getSalary())) // descending
+                                .limit(5)
+                                .toList()
+                )
+        ));
+		
+		calculate totals by user id using streams
+Map<String, Double> totalsByUser = transactions.stream()
+        .collect(Collectors.groupingBy(
+                Transaction::getUserId,
+                Collectors.summingDouble(Transaction::getAmount)
+        ));
