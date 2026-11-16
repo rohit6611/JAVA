@@ -1560,4 +1560,64 @@ public class MissingNumber {
 Why does @Transactional not work on self-invocation?
 Spring applies transactions through a proxy. A call from one method to another method in the same class bypasses the proxy, so the transaction advice never runs.
 
+class A {
+    static {
+        sop("A");
+    }
 
+    {
+        sop("AA");
+    }
+
+    A() {
+        sop("AAA");
+    }
+}
+
+class B extends A {
+    static {
+        sop("B");
+    }
+
+    {
+        sop("BB");
+    }
+
+    B() {
+        sop("BBB");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new B();
+        new B();
+    }
+}
+
+output - A
+B
+AA
+AAA
+BB
+BBB
+AA
+AAA
+BB
+BBB
+
+Execution order
+First new B()
+1. Static block of parent A → A
+2. Static block of child B → B
+3. Instance initializer of parent A → AA
+4. Parent constructor A → AAA
+5. Instance initializer of child B → BB
+6. Child constructor B → BBB
+Second new B()
+
+Static blocks are not executed again because classes have already been initialized.
+1. Instance initializer of A → AA
+2. Parent constructor A → AAA
+3. Instance initializer of B → BB
+4. Child constructor B → BBB
